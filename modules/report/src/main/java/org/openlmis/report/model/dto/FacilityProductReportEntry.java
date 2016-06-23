@@ -50,7 +50,7 @@ public class FacilityProductReportEntry {
         this.code = stockCard.getProduct().getCode();
     }
 
-    private String getExpirationDateFromStockCardEntry(StockCardEntry entry) {
+    private String getExpirationDateFromStockCardEntry(StockCardEntry entry){
         Optional<StockCardEntryKV> stockCardEntryKVOptional = from(entry.getExtensions()).firstMatch(new Predicate<StockCardEntryKV>() {
             @Override
             public boolean apply(StockCardEntryKV input) {

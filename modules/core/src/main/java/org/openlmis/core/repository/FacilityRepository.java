@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 import org.openlmis.core.domain.*;
 import org.openlmis.core.dto.FacilityContact;
 import org.openlmis.core.dto.FacilityGeoTreeDto;
-import org.openlmis.core.dto.FacilityImages;
 import org.openlmis.core.dto.FacilitySupervisor;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.core.repository.helper.CommaSeparator;
@@ -38,14 +37,27 @@ import static org.openlmis.core.domain.RightName.commaSeparateRightNames;
 @NoArgsConstructor
 public class FacilityRepository {
 
-  @Autowired
   private FacilityMapper mapper;
+
+  private FacilityTypeRepository facilityTypeRepository;
 
   @Autowired
   private CommaSeparator commaSeparator;
 
-  @Autowired
   private GeographicZoneRepository geographicZoneRepository;
+
+  private FacilityOperatorRepository facilityOperatorRepository;
+
+  @Autowired
+  public FacilityRepository(FacilityMapper facilityMapper,
+                            FacilityTypeRepository facilityTypeRepository,
+                            GeographicZoneRepository geographicZoneRepository,
+                            FacilityOperatorRepository facilityOperatorRepository) {
+    this.mapper = facilityMapper;
+    this.facilityTypeRepository = facilityTypeRepository;
+    this.geographicZoneRepository = geographicZoneRepository;
+    this.facilityOperatorRepository = facilityOperatorRepository;
+  }
 
   @Autowired
   private PriceScheduleService priceScheduleService;
@@ -53,7 +65,7 @@ public class FacilityRepository {
   public List<Facility> getMailingLabels(){
     return mapper.getMailingLabels();
   }
-  
+
   public void save(Facility facility) {
     try {
       validateAndSetFacilityOperatedBy(facility);
@@ -87,7 +99,7 @@ public class FacilityRepository {
         facility.setPriceSchedule(priceSchedule);
     }
 
-    private void validateEnabledAndActive(Facility facility) {
+  private void validateEnabledAndActive(Facility facility) {
     if (facility.getEnabled() == Boolean.FALSE && facility.getActive() == Boolean.TRUE)
       throw new DataException("error.enabled.false");
   }
@@ -112,7 +124,7 @@ public class FacilityRepository {
       throw new DataException("error.reference.data.facility.type.missing");
 
     String facilityTypeCode = facilityType.getCode();
-    FacilityType existingFacilityType = mapper.getFacilityTypeForCode(facilityTypeCode);
+    FacilityType existingFacilityType = facilityTypeRepository.getByCode(facilityTypeCode);
 
     if (existingFacilityType == null)
       throw new DataException("error.reference.data.invalid.facility.type");
@@ -130,15 +142,7 @@ public class FacilityRepository {
     if (operatedById == null)
       throw new DataException("error.reference.data.invalid.operated.by");
 
-    facility.setOperatedBy(mapper.getFacilityOperatorById(operatedById));
-  }
-
-  public List<FacilityType> getAllTypes() {
-    return mapper.getAllTypes();
-  }
-
-  public List<FacilityOperator> getAllOperators() {
-    return mapper.getAllOperators();
+    facility.setOperatedBy(facilityOperatorRepository.getById(operatedById));
   }
 
   public Facility getHomeFacility(Long userId) {
@@ -180,13 +184,6 @@ public class FacilityRepository {
     return mapper.getHomeFacilityWithRights(userId, commaSeparateRightNames(rightNames));
   }
 
-  public FacilityType getFacilityTypeByCode(FacilityType facilityType) {
-    facilityType = mapper.getFacilityTypeForCode(facilityType.getCode());
-    if (facilityType == null) {
-      throw new DataException("error.facility.type.code.invalid");
-    }
-    return facilityType;
-  }
 
   public Facility getByCode(String code) {
     return mapper.getByCode(code);
@@ -249,10 +246,6 @@ public class FacilityRepository {
   }
 
   public List<FacilitySupervisor> getFacilitySupervisors(Long facilityId) {  return mapper.getFacilitySupervisors(facilityId); }
-
-  public List<FacilityImages> getFacilityImages(Long facilityId) {
-    return mapper.getFacilityImages(facilityId);
-  }
 
   public List<Facility> getAllForGeographicZone(Long geographicZoneId){
       return mapper.getForGeographicZone(geographicZoneId);

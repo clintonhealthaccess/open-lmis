@@ -10,9 +10,9 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class StockCardEntryKV {
-    private String key;
-    private String value;
-    private Date syncedDate;
+  private String key;
+  private String value;
+  private Date syncedDate;
 }

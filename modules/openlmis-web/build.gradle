@@ -53,7 +53,11 @@ task jsHint(type: GruntTask) {
 
 task karmaRun(type: Exec) {
     description = 'Runs jasmine specs and publishes js tests coverage report'
-    commandLine 'karma', 'start', 'karma.config.js'
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd', '/c', 'karma', 'start', 'karma.config.js'
+    } else {
+        commandLine 'karma', 'start', 'karma.config.js'
+    }
 }
 
 task lesslint(type: GruntTask) {
@@ -132,11 +136,17 @@ tasks.withType(War) {
         }
         if (fileCopy.name.endsWith('html') || fileCopy.name.endsWith('css') || fileCopy.name.endsWith('appcache'))
             fileCopy.filter { String line ->
-                if (!line.contains(".html"))
+                if (!line.contains(".html") && !line.contains("/settings/")) //eg: http://localhost:9091/settings/LOGIN_SUCCESS_DEFAULT_LANDING_PAGE.json
                     line.replace('/public', '/public/v' + prepareVersionedDirectory.currentTime)
                 else
                     "$line"
             }
+        if (fileCopy.name.equals('login-form.html')) {
+            fileCopy.filter(ReplaceTokens, tokens: [major_version: majorVersion, 
+                                                    minor_version: minorVersion, 
+                                                    patch_version: patchVersion, 
+                                                    build_version: buildVersion])
+        }
     }
 }
 
@@ -152,6 +162,7 @@ build.doLast {
 
 dependencies {
     compile 'log4j:log4j:1.2.15',
+            'org.slf4j:slf4j-log4j12:1.7.5',
             'commons-fileupload:commons-fileupload:1.2.2',
             'com.itextpdf:itextpdf:5.4.0',
 
@@ -186,7 +197,6 @@ sonarRunner {
     sonarProperties {
         properties["sonar.sources"] += 'src/main/webapp/public/js'
         properties["sonar.sources"] += 'src/main/webapp/public/pages'
-        properties["sonar.sources"] += 'src/main/webapp/public/site'
         properties["sonar.sources"] += 'src/main/webapp/public/less'
         properties["sonar.tests"] += 'src/test/javascript/specs'
     }
@@ -198,6 +208,7 @@ jettyRun {
     daemon = true;
     jettyRun.scanIntervalSeconds = 1
     System.properties.get('defaultLocale', 'en')
+    System.properties.get('environmentName', 'local')
 }
 
 def configureHttps(keystore, password) {

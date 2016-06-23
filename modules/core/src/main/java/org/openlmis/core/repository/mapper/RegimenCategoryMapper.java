@@ -10,7 +10,9 @@
 
 package org.openlmis.core.repository.mapper;
 
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.openlmis.core.domain.RegimenCategory;
 import org.springframework.stereotype.Repository;
 
@@ -30,4 +32,31 @@ public interface RegimenCategoryMapper {
 
   @Select({"SELECT * FROM regimen_categories WHERE name = #{name}"})
   RegimenCategory getByName(String name);
+
+  @Select("SELECT * FROM regimen_categories WHERE LOWER(code) = LOWER(#{code})")
+  RegimenCategory getByCode(String code);
+
+  @Insert({"INSERT INTO regimen_categories (code"
+    , ", name"
+    , ", displayOrder"
+    , ", createdBy"
+    , ", createdDate"
+    , ", modifiedBy"
+    , ", modifiedDate"
+    , ") VALUES ( #{code}"
+    , ", #{name}"
+    , ", #{displayOrder}"
+    , ", #{createdBy}"
+    , ", NOW()"
+    , ", #{modifiedBy}"
+    , ", NOW())"})
+  void insert(RegimenCategory regimenCategory);
+
+  @Update({"UPDATE regimen_categories SET code = #{code}"
+    , ", name = #{name}"
+    , ", displayOrder = #{displayOrder}"
+    , ", modifiedBy = #{modifiedBy}"
+    , ", modifiedDate = NOW()"
+    , "WHERE id = #{id}"})
+  void update(RegimenCategory regimenCategory);
 }

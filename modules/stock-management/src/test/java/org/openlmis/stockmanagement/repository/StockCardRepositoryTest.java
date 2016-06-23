@@ -19,7 +19,6 @@ import org.openlmis.stockmanagement.repository.mapper.StockCardMapper;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

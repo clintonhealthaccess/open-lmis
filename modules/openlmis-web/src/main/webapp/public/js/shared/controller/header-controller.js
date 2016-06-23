@@ -8,10 +8,12 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.  If not, see http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org. 
  */
 
-function HeaderController($scope, localStorageService, loginConfig, ConfigSettingsByKey, AppPropertiesService, $window, $cacheFactory, $location) {
+function HeaderController($scope, localStorageService, loginConfig, ConfigSettingsByKey, AppPropertiesService, AuthorizationService, $window, $cacheFactory, $location) {
     $scope.loginConfig = loginConfig;
     $scope.user = localStorageService.get(localStorageKeys.USERNAME);
     $scope.userId = localStorageService.get(localStorageKeys.USER_ID);
+    $scope.hasPermission = AuthorizationService.hasPermission;
+
     if ($cacheFactory.get('keepHistoryInStockOnHandPage') !== undefined && $location.path().indexOf("stock-on-hand-all-products") < 0) {
         $cacheFactory.get('keepHistoryInStockOnHandPage').put('saveDataOfStockOnHand', "no");
     }

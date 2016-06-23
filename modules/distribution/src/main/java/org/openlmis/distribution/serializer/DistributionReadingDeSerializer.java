@@ -32,7 +32,7 @@ public class DistributionReadingDeSerializer extends JsonDeserializer<Reading> {
     JsonNode value = jsonNode.get("value");
     JsonNode notRecorded = jsonNode.get("notRecorded");
 
-    String stringValue = value != null ? value.textValue() : null;
+    String stringValue = value != null ? value.asText() : null;
     Boolean notRecordedValue = notRecorded != null && notRecorded.booleanValue();
 
     return new Reading(stringValue, notRecordedValue);

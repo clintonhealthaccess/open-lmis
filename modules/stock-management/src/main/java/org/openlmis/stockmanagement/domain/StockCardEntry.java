@@ -64,9 +64,16 @@ public class StockCardEntry extends BaseModel {
     return true;
   }
 
+  public Map<String, String> getCustomProps() {
+    Map<String, String> customProps = new HashMap<>();
+    for (StockCardEntryKV item : extensions) {
+      customProps.put(item.getKey(), item.getValue());
+    }
+    return customProps.isEmpty() ? null : customProps;
+  }
+
   public void addKeyValue(String key, String value) {
     String newKey = key.trim().toLowerCase();
     extensions.add(new StockCardEntryKV(newKey, value, new Date()));
   }
-
 }

@@ -12,10 +12,20 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @Category(UnitTests.class)
 @PowerMockRunnerDelegate(BlockJUnit4ClassRunner.class)
 public class LotOnHandTest {
+
+    @Test
+    public void shouldGetNullCustomPropsFromEmptyKeyValues() {
+        StockCardEntry entry = new StockCardEntry(new StockCard(), StockCardEntryType.ADJUSTMENT, 1L, null, null, null);
+
+        Map<String, String> customProps = entry.getCustomProps();
+
+        assertNull(customProps);
+    }
 
     @Test
     public void shouldGetCustomPropsFromKeyValues() {

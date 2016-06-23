@@ -15,6 +15,11 @@ apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'properties'
 apply plugin: 'sonar-runner'
 
+ext.versionProps = new Properties()
+versionProps.load(new FileInputStream("version.properties"))
+versionProps.each { versionProp ->
+  ext.set(versionProp.key, versionProp.value)
+}
 
 idea.project.languageLevel = '1.7'
 idea.project.jdkName = '1.7'
@@ -31,20 +36,21 @@ buildscript {
     classpath "net.saliman:gradle-cobertura-plugin:2.2.7"
     classpath 'com.github.ben-manes:gradle-versions-plugin:0.8'
     classpath "net.saliman:gradle-properties-plugin:1.4.2"
+    classpath 'org.flywaydb:flyway-gradle-plugin:3.2.1'
   }
 }
 sonarRunner {
     sonarProperties {
 	  property "sonar.host.url", "$sonarServer"
 	  property "sonar.jdbc.url", "$sonarJdbc"
-	  property "sonar.projectName", "$sonarProject"
       property "sonar.projectVersion", "$sonarProjectVersion"
-    }
+  }
 }
 subprojects {
   apply plugin: 'java'
   apply plugin: 'idea'
   apply plugin: 'properties'
+  apply plugin: 'org.flywaydb.flyway'
   idea {
     project {
       ext.languageLevel = '1.7'
@@ -94,8 +100,8 @@ subprojects {
         'org.springframework.integration:spring-integration-ftp:4.1.2.RELEASE',
 
         'xml-apis:xml-apis:2.0.2',
-        'commons-collections:commons-collections:3.2.1',
-        'org.apache.commons:commons-collections4:4.0',
+        'commons-collections:commons-collections:3.2.2',
+        'org.apache.commons:commons-collections4:4.1',
         'javax.servlet:javax.servlet-api:3.1.0',
 
         'org.projectlombok:lombok:1.16.2',
@@ -109,11 +115,11 @@ subprojects {
 
         'commons-codec:commons-codec:1.10',
         'commons-lang:commons-lang:2.6',
-        'commons-io:commons-io:2.4'
+      'commons-io:commons-io:2.4'
 
     testCompile 'junit:junit:4.12',
         'org.mockito:mockito-core:1.10.19',
-        'org.hamcrest:hamcrest-all:1.3',
+      'org.hamcrest:hamcrest-all:1.3',
         'cglib:cglib-nodep:3.1',
         'org.powermock:powermock-module-junit4-rule-agent:1.6.2',
         'org.powermock:powermock-module-junit4-rule:1.6.2',
@@ -128,6 +134,7 @@ subprojects {
     jvmArgs '-XX:-UseSplitVerifier', '-XX:MaxPermSize=256m'
     System.properties.get('environmentName', 'local')
     systemProperties System.properties
+    systemProperty 'toggleOnCustom', toggleOnCustom
     useJUnit {
       includeCategories 'org.openlmis.db.categories.UnitTests'
       includeCategories 'org.openlmis.db.categories.IntegrationTests'
@@ -142,6 +149,7 @@ subprojects {
     jvmArgs '-XX:-UseSplitVerifier', '-XX:MaxPermSize=256m'
     System.properties.get('environmentName', 'local')
     systemProperties System.properties
+    systemProperty 'toggleOnCustom', toggleOnCustom
     useJUnit {
       includeCategories 'org.openlmis.db.categories.IntegrationTests'
     }

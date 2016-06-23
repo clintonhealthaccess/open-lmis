@@ -16,9 +16,10 @@ You should have received a copy of the GNU Affero General Public License along w
 System Requirements
 ---------------------------
 - JDK 7
-- Postgresql 9
+- Postgresql 9.4
 - Git
-- Gradle 2.3
+- Firefox
+- Gradle 2.8
   * **For Linux users**
     * Download the source binary directly from the gradle website.
     * Copy the downloaded folder to `/usr/bin`
@@ -45,19 +46,30 @@ System Requirements
     `> npm install -g karma karma-coverage`
   * Install karma command line with:
     `> npm install -g karma-cli`
-  * Install project-specific grunt dependencies by navigating to `modules/openlmis-web` from project root directory and run
-    `> npm install` (one-time activity)
+  * You may need to install further karma dependencies for FireFox:
+    `> npm install -g  karma-firefox-install`
+  * And for jasmine:
+    `> npm install -g  karma-jasmine`
   * Grunt tasks available can be found in `modules/openlmis-web/Gruntfile.js`
 
 Source code
 ------------------
 1. Get the source code using `git clone https://github.com/openlmis/open-lmis.git`.
-2. For now, all work should be pushed to the 2.0 branch, not master. After cloning, you can do `git checkout 2.0` to get into the 2.0 branch.
-3. Set up dependencies on submodules using
-    ```bash
+2. By default you'll checkout the `master` branch.  This is the latest stable code.  For the latest development code
+checkout the `dev` branch.
+3. Set up dependencies on submodules & Grunt using:  
+  
+    ```shell  
+    > cd open-lmis
     > git submodule init
     > git submodule update
+    > cd modules/openlmis-web
+    > npm install
     ```
+  
+### Contributing
+If you're intending to contribute to the OpenLMIS project, please read through [CONTRIBUTING.md](CONTRIBUTING.md).  
+**note** that new features should be placed in modules and should be managed using git-repo.
 
 IntelliJ IDEA Setup
 -------------------
@@ -70,21 +82,33 @@ Jasmine Tests
 -------------------
 1. To run jasmine tests headlessly: gradle karmaRun
 
+Feature Toggle (for 2.0)
+--------------------------------------------------
+A number of country-specific features (eLMIS, VIMS, Moz) are integrated into the project. These are turned off by 
+default. To turn them on, edit the `gradle.properties` file by setting `toggleOnCustom = true`.
+
+See https://openlmis.atlassian.net/wiki/display/OP/2.0+Feature+Toggle+Mechanism for more details.
+
+To add features to the toggling mechanism, see [Feature Toggle.md](docs/Feature%20Toggle.md) in the `docs` folder.
+
 Running App on embedded Jetty server
 --------------------------------------------------
 1. Clone the project repository using git.
 2. Setup _postgres_ user with password as configured in `gradle.properties` file.
-3. You can use `gradle clean setupdb setupExtensions seed build testseed run` to start the app.
-4. You can use `gradle clean setupdb setupExtensions seed build` to just run all of the tests.
-5. There are bunch of gradle tasks that you can see by running `gradle tasks`:
+3. Add psql command to your PATH
+4. You can use `gradle clean setupdb seed build testseed run` to start the app.
+5. You can use `gradle clean setupdb seed build` to just run all of the tests.
+6. There are bunch of gradle tasks that you can see by running `gradle tasks`:
   - `build` is to build the app.
   - `setupdb` is to recreate the database and schema.
-  - `setupExtensions` is to apply the database schema extensions added.
   - `seed` is to seed in the reference data.
   - `testseed` puts in some test data which can be used to browse through basic functionality in the system.
   - `run` is to start the embedded jetty server.
+7. If you wish to run the app using supplied demo data, you can do so by running the following two commands in succession:
+  - `gradle clean setupdb seed build` to build the WAR.
+  - `gradle setupdb baseseed demoseed run` to initialize the database and run the server.
 
-Once the system is running, you can access the home page at `http://localhost:9091/`. You can log into the default instance with: user: `Admin123`, pass: `Admin123`
+Once the system is running, you can access the home page at `http://localhost:9091/`. You can log into the default instance with: user: `Admin123`, pass: `Admin123` (case sensitive)
 
 ## Code analysis
 Analysis of Java and Javascript sources can be reported on and visualized using a SonarQube server and the included
@@ -103,24 +127,30 @@ See [SonarQube.org](http://www.sonarqube.org/) for official documentation.  For 
   [OpenLMIS sonar-configuration](https://github.com/OpenLMIS/sonar-configuration) repository.
 
 ## Issues
-1. You may encounter a `java.lang.OutOfMemoryError: PermGen space`. This is a result of not enough memory for the Jetty JVM. One way to fix this is to export the following (or include in `$HOME/.bash_profile` or `$HOME/.profile` or `$HOME/.bashrc` or `$HOME/.zshrc`, depending on your shell).
-
-    ```bash
-    export JAVA_OPTS="-XX:MaxPermSize=512m"
-    export JAVA_TOOL_OPTIONS="-Xmx1024m -XX:MaxPermSize=512m -Xms512m"
-    ```
-2. If a few integration tests fail, like this:
+1. If a few integration tests fail, like this:
 `org.openlmis.core.repository.mapper.FacilityMapperIT > shouldUpdateFacilityWithSuppliedModifiedTime FAILED java.lang.AssertionError at FacilityMapperIT.java:292`
 This can be caused by the timezone in `postgresql.conf` being different than your operating system timezone. To fix, stop the postgresql server, and edit the following line: `timezone = 'US/Pacific'` to match your current operating system timezone, then restart the postgresql server.
 
 Tech Stack
 ---------------------------------
  - Java 1.7
- - Gradle 2.3
- - Postgres 9
+ - Gradle 2.8
+ - Postgres 9.4
  - Spring
  - Mybatis
  - Angularjs
  - Jasmine
  - Node.js
  - Grunt.js
+
+License Terms
+---------------------------
+This program is part of the OpenLMIS logistics management information system platform software. Copyright © 2013, 2014, 2015 VillageReach, JSI, and ThoughtWorks.
+
+This site contains code and related material necessary to implement a configuration of the OpenLMIS logistics management information system platform.  See https://github.com/OpenLMIS/open-lmis/ for details of OpenLMIS.
+
+This site contains free software: you can redistribute it and/or modify it under the terms of the appropriate license.  As this site contains code developed by more than one organization and licensed under different terms you should refer to the license terms stated in each component for details.
+
+The programs and documents on this site are distributed in the hope that they will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the applicable License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program.  If not, see http://www.gnu.org/licenses.

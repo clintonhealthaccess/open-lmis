@@ -53,6 +53,10 @@ var utils = {
       }
     });
     return sum;
+  },
+
+  getFormattedPercent: function(number) {
+    return (number === null) ? '' : number + '%';
   }
 
 };
@@ -71,4 +75,8 @@ String.prototype.endsWith = function (searchString) {
   if (position >= 0 && position < length)
     return false;
   return this.indexOf(searchString, position) !== -1;
+};
+
+Number.prototype.hasValue = function () {
+  return utils.isNumber(this);
 };

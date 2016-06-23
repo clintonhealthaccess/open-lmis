@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.*;
 import org.openlmis.core.domain.Facility;
 import org.openlmis.core.domain.Product;
 import org.openlmis.core.domain.StockAdjustmentReason;
+
 import org.openlmis.stockmanagement.domain.*;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface StockCardMapper {
-  
+
   @Select("SELECT *" +
       " FROM stock_cards" +
       " WHERE facilityid = #{facilityId}" )
@@ -36,6 +37,8 @@ public interface StockCardMapper {
           one = @One(select = "org.openlmis.core.repository.mapper.FacilityMapper.getById")),
       @Result(property = "product", column = "productId", javaType = Product.class,
           one = @One(select = "org.openlmis.core.repository.mapper.ProductMapper.getById")),
+      @Result(property = "extensions", column = "id", javaType = List.class,
+          one = @One(select = "getStockCardKeyValues")),
       @Result(property = "entries", column = "id", javaType = List.class,
           many = @Many(select = "getEntries")),
       @Result(property = "lotsOnHand", column = "id", javaType = List.class,
@@ -53,6 +56,8 @@ public interface StockCardMapper {
           one = @One(select = "org.openlmis.core.repository.mapper.FacilityMapper.getById")),
       @Result(property = "product", column = "productId", javaType = Product.class,
           one = @One(select = "org.openlmis.core.repository.mapper.ProductMapper.getById")),
+      @Result(property = "extensions", column = "id", javaType = List.class,
+          one = @One(select = "getStockCardKeyValues")),
       @Result(property = "entries", column = "id", javaType = List.class,
           many = @Many(select = "getEntries")),
       @Result(property = "lotsOnHand", column = "id", javaType = List.class,
@@ -67,6 +72,8 @@ public interface StockCardMapper {
       @Result(property = "id", column = "id"),
       @Result(property = "product", column = "productId", javaType = Product.class,
           one = @One(select = "org.openlmis.core.repository.mapper.ProductMapper.getById")),
+      @Result(property = "extensions", column = "id", javaType = List.class,
+          one = @One(select = "getStockCardKeyValues")),
       @Result(property = "entries", column = "id", javaType = List.class,
           many = @Many(select = "getEntries")),
       @Result(property = "lotsOnHand", column = "id", javaType = List.class,
@@ -88,7 +95,6 @@ public interface StockCardMapper {
       " FROM stock_card_entry_key_values" +
       " WHERE stockcardentryid = #{stockCardEntryId}")
   List<StockCardEntryKV> getStockCardEntryExtensionAttributes(@Param("stockCardEntryId") Long stockCardEntryId);
-
 
   @Select("SELECT *" +
       " FROM stock_card_entries" +

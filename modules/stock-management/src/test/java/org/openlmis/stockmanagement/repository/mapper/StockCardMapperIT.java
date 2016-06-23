@@ -94,6 +94,7 @@ public class StockCardMapperIT {
     StockCardEntry entry = getStockCardEntry();
     Timestamp date = new Timestamp(DateUtil.parseDate("2015-12-12 12:12:12").getTime());
     entry.setCreatedDate(date);
+
     mapper.insertEntry(entry);
 
     List<StockCardEntry> entries = mapper.getEntries(defaultCard.getId());
@@ -130,6 +131,7 @@ public class StockCardMapperIT {
     StockAdjustmentReason reason = StockAdjustmentReason.create("reason");
     stockAdjustmentReasonMapper.insert(reason);
     entry.setAdjustmentReason(reason);
+
     mapper.insertEntry(entry);
 
     StockCard stockCard = mapper.getByFacilityAndProduct(defaultFacility.getId(), defaultProduct.getCode());
@@ -143,6 +145,7 @@ public class StockCardMapperIT {
     Date occurred = DateUtil.parseDate("2015-10-30 00:00:00");
     StockCardEntry entry = getStockCardEntry();
     entry.setOccurred(occurred);
+
     mapper.insertEntry(entry);
 
     List<StockCardEntry> entries = mapper.getEntries(defaultCard.getId());
@@ -155,6 +158,7 @@ public class StockCardMapperIT {
     String referenceNumber = "110";
     StockCardEntry entry = getStockCardEntry();
     entry.setReferenceNumber(referenceNumber);
+
     mapper.insertEntry(entry);
 
     List<StockCardEntry> entries = mapper.getEntries(defaultCard.getId());

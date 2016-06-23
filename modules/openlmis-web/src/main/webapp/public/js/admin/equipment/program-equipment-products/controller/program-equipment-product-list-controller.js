@@ -23,7 +23,7 @@ function ProgramEquipmentProductController($scope, $dialog, messageService, navi
 
   $scope.getAllEquipments = function () {
     EquipmentTypes.get(function (data) {
-       $scope.allEquipments = data.equipment_type;
+       $scope.allEquipments = data.equipment_types;
        $scope.equipmentsLoaded = true;
       });
   };
@@ -167,7 +167,7 @@ function ProgramEquipmentProductController($scope, $dialog, messageService, navi
       $scope.programEquipmentProduct = response.programEquipmentProduct;
       $scope.productError = false;
       $scope.productErrorMessage = '';
-      $scope.message = response.success;
+      $scope.message = messageService.get(response.success);
       $scope.showMessage = true;
       $scope.closeModal();
       $scope.refreshProgramEquipmentProductList();
@@ -241,7 +241,7 @@ function ProgramEquipmentProductController($scope, $dialog, messageService, navi
   $scope.removeProgramEquipmentProduct = function () {
 
     var successCallBack = function (response) {
-      $scope.message = response.success;
+      $scope.message = messageService.get(response.success);
       $scope.showMessage = true;
     };
 
