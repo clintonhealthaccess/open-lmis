@@ -1,1 +1,0 @@
-ALTER TABLE regimens ADD COLUMN isCustom BOOLEAN DEFAULT false;

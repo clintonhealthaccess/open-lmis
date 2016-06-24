@@ -1,6 +1,0 @@
-CREATE TABLE moz_app_info(
-  id  SERIAL PRIMARY KEY,
-  facilityId INTEGER NOT NULL REFERENCES facilities (id),
-  appVersion VARCHAR NOT NULL,
-  createdDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);

@@ -1,5 +1,0 @@
-CREATE TABLE archived_products(
-  id SERIAL PRIMARY KEY,
-  facilityId INT NOT NULL REFERENCES facilities(id) ON DELETE CASCADE,
-  productCode VARCHAR(50) NOT NULL REFERENCES products(code) ON DELETE CASCADE
-);
