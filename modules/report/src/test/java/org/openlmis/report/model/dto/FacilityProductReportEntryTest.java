@@ -71,7 +71,7 @@ public class FacilityProductReportEntryTest {
 
     ArrayList<StockCardEntryKV> keyValues = new ArrayList<>();
     keyValues.add(new StockCardEntryKV(FacilityProductReportEntry.EXPIRATION_DATES, "10/10/2019, 10/21/2020", null));
-    stockCardEntry.setKeyValues(keyValues);
+    stockCardEntry.setExtensions(keyValues);
 
     StockCardEntry secondStockCardEntry = new StockCardEntry();
     secondStockCardEntry.setQuantity(100L);
@@ -80,7 +80,7 @@ public class FacilityProductReportEntryTest {
 
     ArrayList<StockCardEntryKV> secondKeyValues = new ArrayList<>();
     secondKeyValues.add(new StockCardEntryKV(FacilityProductReportEntry.EXPIRATION_DATES, "10/10/2017, 10/20/2020", null));
-    secondStockCardEntry.setKeyValues(secondKeyValues);
+    secondStockCardEntry.setExtensions(secondKeyValues);
 
     List<StockCardEntry> entries = asList(secondStockCardEntry,stockCardEntry);
     stockCard.setEntries(entries);

@@ -31,7 +31,6 @@ import static com.natpryce.makeiteasy.MakeItEasy.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.openlmis.core.builder.FacilityBuilder.*;
 import static org.openlmis.core.builder.ProgramBuilder.*;
 import static org.openlmis.core.builder.ProgramSupportedBuilder.*;
@@ -201,10 +200,10 @@ public class ProgramSupportedMapperIT {
     List<ProgramSupported> programsSupported = mapper.getActiveProgramsByFacilityId(facility.getId());
 
     assertThat(programsSupported.size(), is(2));
-    assertThat(programsSupported.get(0).getProgram().getCode(), is(programParent.getCode()));
-    assertThat(programsSupported.get(0).getProgram().getIsSupportEmergency(), is(false));
-    assertThat(programsSupported.get(1).getProgram().getCode(), is(programSupported.getProgram().getCode()));
-    assertThat(programsSupported.get(1).getProgram().getParent().getCode(), is(programParent.getCode()));
+    assertThat(programsSupported.get(1).getProgram().getCode(), is(programParent.getCode()));
+    assertThat(programsSupported.get(1).getProgram().getIsSupportEmergency(), is(false));
+    assertThat(programsSupported.get(0).getProgram().getCode(), is(programSupported.getProgram().getCode()));
+    assertThat(programsSupported.get(0).getProgram().getParent().getCode(), is(programParent.getCode()));
   }
 
   @Test
