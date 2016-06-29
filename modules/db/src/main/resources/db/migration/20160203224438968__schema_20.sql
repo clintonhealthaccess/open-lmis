@@ -8742,7 +8742,7 @@ ALTER SEQUENCE product_categories_id_seq OWNED BY product_categories.id;
 
 CREATE TABLE product_forms (
     id integer NOT NULL,
-    code character varying(20),
+    code character varying(80),
     displayorder integer,
     createddate timestamp without time zone DEFAULT now(),
     createdby integer,
