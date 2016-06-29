@@ -17,6 +17,7 @@ import org.apache.log4j.WriterAppender;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mock;
@@ -50,7 +51,7 @@ public class ApplicationLoggerTest {
         LmisThreadLocal.set("TEST_USER");
     }
 
-    @Test
+    @Test @Ignore
     public void shouldLogExceptions() {
         Exception exception = new RuntimeException("An exception was thrown !!");
         when(joinPoint.getSignature()).thenReturn(signature);
