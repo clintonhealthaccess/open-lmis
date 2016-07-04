@@ -1,4 +1,4 @@
-function BaseProductReportController($scope, $filter, ProductReportService, $cacheFactory, FacilityService, GeographicZoneService, $dialog, DateFormatService, $location) {
+function BaseProductReportController($scope, $filter, ProductReportService, $cacheFactory, $timeout, FacilityService, GeographicZoneService, $dialog, DateFormatService, $location) {
     $scope.provinces = [];
     $scope.districts = [];
     $scope.facilities = [];
@@ -9,7 +9,7 @@ function BaseProductReportController($scope, $filter, ProductReportService, $cac
         $cacheFactory.get('keepHistoryInStockOnHandPage').put('saveDataOfStockOnHand', "no");
     }
     if ($cacheFactory.get('BaseProductReportController') !== undefined && $location.path().indexOf("stock-out-all-products") < 0) {
-        $cacheFactory.get('BaseProductReportController').put('saveDataOfStockOutReport',"no");
+        $cacheFactory.get('BaseProductReportController').put('saveDataOfStockOutReport', "no");
     }
     $scope.todayDateString = $filter('date')(new Date(), "yyyy-MM-dd");
 
@@ -52,6 +52,7 @@ function BaseProductReportController($scope, $filter, ProductReportService, $cac
                 });
             });
             $scope.facilities = healthFacilities;
+            addAllOption($scope.facilities, "facility");
         });
     };
 
@@ -66,6 +67,8 @@ function BaseProductReportController($scope, $filter, ProductReportService, $cac
             }
         });
         $scope.fullGeoZoneList = _.union($scope.fullGeoZoneList, $scope.provinces, $scope.districts);
+        addAllOption($scope.provinces, "province");
+        addAllOption($scope.districts, "district");
     };
 
     $scope.selectedProvince = function () {
@@ -138,7 +141,7 @@ function BaseProductReportController($scope, $filter, ProductReportService, $cac
 
     $scope.cmmStatus = function (entry) {
         var cmm = entry.cmm;
-        var soh = entry.productQuantity;
+        var soh = entry.soh;
         if (soh === 0) {
             return "stock-out";
         }
@@ -173,6 +176,18 @@ function BaseProductReportController($scope, $filter, ProductReportService, $cac
             return facility.id == $scope.reportParams.facilityId;
         }));
     };
+
+    function addAllOption(locations, location) {
+        $timeout(function () {
+            if (locations.length > 1) {
+                $("#" + location + "DropDown").append($('<option>', {
+                    value: "",
+                    text: 'ALL'
+                }));
+            }
+            $scope.reportParams[location + "Id"] = locations[0].id;
+        });
+    }
 
     function loadGeographicZones() {
         GeographicZoneService.loadGeographicLevel().get({}, function (data) {

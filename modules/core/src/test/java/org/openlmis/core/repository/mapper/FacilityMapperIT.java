@@ -127,25 +127,22 @@ public class FacilityMapperIT {
   }
 
   @Test
-  public void shouldGetAllReportFacilities() throws Exception {
-    Facility trz001 = make(a(defaultFacility,
-      with(code, "TRZ001"),
-      with(name, "Ngorongoro Hospital"),
-      with(type, "warehouse"),
-      with(geographicZoneId, 1L)));
-    Facility trz002 = make(a(defaultFacility,
-            with(code, "TRZ002"),
-            with(name, "Rural Clinic"),
-            with(type, "lvl3_hospital"),
-            with(geographicZoneId, 2L)));
-    mapper.insert(trz001);
-    mapper.insert(trz002);
+  public void shouldGetAllFacilityTypes() throws Exception {
+    List<FacilityType> facilityTypes = mapper.getAllTypes();
 
-    List<Facility> facilities = mapper.getAllReportFacilities();
+    assertThat(facilityTypes.size(), is(11));
+    FacilityType facilityType = facilityTypes.get(0);
+    assertThat(facilityType.getCode(), is("lvl3_hospital"));
+    assertThat(facilityType.getName(), is("Lvl3 Hospital"));
+    assertThat(facilityType.getDescription(), is("State Hospital"));
+    assertThat(facilityType.getLevelId(), is(nullValue()));
+    assertThat(facilityType.getNominalMaxMonth(), is(3));
+    assertThat(facilityType.getNominalEop(), is(0.5));
+    assertThat(facilityType.isActive(), is(true));
 
-    assertEquals(facilities.get(0).getCode(), trz001.getCode());
-    assertEquals(facilities.get(1).getName(), trz002.getName());
-    assertEquals(facilities.get(1).getFacilityType().getCode(),FacilityBuilder.FACILITY_TYPE_CODE);
+    for (int index = 0; index < facilityTypes.size(); index++) {
+      assertThat(facilityTypes.get(index).getDisplayOrder(), is(index + 1));
+    }
   }
 
   @Test
@@ -168,6 +165,16 @@ public class FacilityMapperIT {
 
     assertThat(facilities.size(), is(1));
     assertThat(facilities.get(0).getId(), is(facility2.getId()));
+  }
+
+  @Test
+  public void shouldGetAllOperators() throws Exception {
+    List<FacilityOperator> allOperators = mapper.getAllOperators();
+    assertThat(allOperators.size(), is(4));
+    FacilityOperator facilityOperator = allOperators.get(0);
+    assertThat(facilityOperator.getCode(), is("MoH"));
+    assertThat(facilityOperator.getText(), is("MoH"));
+    assertThat(facilityOperator.getDisplayOrder(), is(1));
   }
 
   @Test
@@ -295,6 +302,34 @@ public class FacilityMapperIT {
 
     id = mapper.getOperatedByIdForCode("InValid");
     assertThat(id, is(nullValue()));
+  }
+
+  @Test
+  public void shouldReturnFacilityTypeForCode() {
+    FacilityType facilityType = mapper.getFacilityTypeForCode(FACILITY_TYPE_CODE);
+    assertThat(facilityType.getId(), is(1L));
+
+    facilityType = mapper.getFacilityTypeForCode("InValid");
+    assertThat(facilityType, is(nullValue()));
+  }
+
+  @Test
+  public void shouldReturnFacilityTypeById() {
+    FacilityType facilityTypeWithId = mapper.getFacilityTypeForCode(FACILITY_TYPE_CODE);
+
+    FacilityType facilityType = mapper.getFacilityTypeById(facilityTypeWithId.getId());
+    assertThat(facilityType, is(notNullValue()));
+    assertThat(facilityType.getId(), is(facilityTypeWithId.getId()));
+    assertThat(facilityType.getCode(), is(FACILITY_TYPE_CODE));
+  }
+
+  @Test
+  public void shouldReturnFacilityOperatorById() throws Exception {
+    Long id = mapper.getOperatedByIdForCode(OPERATED_BY_MOH);
+
+    FacilityOperator operator = mapper.getFacilityOperatorById(id);
+    assertThat(operator.getId(), is(id));
+    assertThat(operator.getCode(), is(OPERATED_BY_MOH));
   }
 
   @Test

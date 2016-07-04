@@ -74,11 +74,18 @@ function ExpiryDatesReportController($scope, $filter, $controller, $http, CubesG
     function getExpiryDatesBeforeOccurredForFacility(dataForOneFacility) {
         var drugOccurredHash = {};
         _.forEach(dataForOneFacility, function (item) {
+            var createddate = item.last_createddate;
             var occurredDate = item.last_occurred;
             var drugCode = item['drug.drug_code'];
             if (drugOccurredHash[drugCode]) {
-                if (occurredDate > drugOccurredHash[drugCode].occurred_date) {
+                if (occurredDate === drugOccurredHash[drugCode].occurred_date) {
+                    if (createddate > drugOccurredHash[drugCode].createddate) {
+                        drugOccurredHash[drugCode].createddate = createddate;
+                        drugOccurredHash[drugCode].expiry_dates = item.expiry_dates;
+                    }
+                } else if(occurredDate > drugOccurredHash[drugCode].occurred_date) {
                     drugOccurredHash[drugCode].occurred_date = occurredDate;
+                    drugOccurredHash[drugCode].createddate = createddate;
                     drugOccurredHash[drugCode].expiry_dates = item.expiry_dates;
                 }
             } else {
@@ -86,6 +93,7 @@ function ExpiryDatesReportController($scope, $filter, $controller, $http, CubesG
                     code: drugCode,
                     name: item['drug.drug_name'],
                     expiry_dates: item.expiry_dates,
+                    createddate: createddate,
                     occurred_date: occurredDate,
                     facility_code: item['facility.facility_code']
                 };
@@ -96,7 +104,7 @@ function ExpiryDatesReportController($scope, $filter, $controller, $http, CubesG
 
     function getExpiryDateReportsParams() {
         var params = {};
-        params.endTime = new Date($scope.reportParams.endTime).getTime();
+        params.endTime = new Date($scope.reportParams.endTime).setHours(23,59,59,999);
         $scope.locationIdToCode(params);
         return params;
     }

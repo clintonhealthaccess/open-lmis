@@ -54,11 +54,15 @@ public class FacilityType extends BaseModel implements Importable {
   @ImportField(name="Active", mandatory=true, type="boolean")
   private boolean active;
 
-  public FacilityType(String code) {
-    this.code = code;
-  }
+    public FacilityType(String code) {
+        this.code = code;
+    }
 
-  public FacilityType(Long id) {
-    this.id = id;
-  }
+    public FacilityType(Long id) {
+        this.id = id;
+    }
+
+    public boolean is(String typeCode) {
+        return typeCode.equals(this.code);
+    }
 }
