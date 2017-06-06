@@ -1,6 +1,8 @@
 package org.openlmis.web.controller.cubesreports;
 
 import lombok.NoArgsConstructor;
+import org.apache.log4j.Logger;
+import org.openlmis.core.dto.BaseFeedDTO;
 import org.openlmis.web.controller.cubesreports.validation.CubesAccessInfo;
 import org.openlmis.web.controller.cubesreports.validation.CubesReportValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +24,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @NoArgsConstructor
 public class CubesReportProxyController {
 
-    private static final String CUBES_ADDRESS = "http://localhost:5555";
+    private static final String CUBES_ADDRESS = "http://localhost:5000";
     private static final String CUBES_REQUEST_PREFIX = "\\/cubesreports";
+    private static Logger logger = Logger.getLogger(CubesReportProxyController.class);
 
     @Autowired
     private RestTemplate restTemplate;
@@ -39,7 +42,11 @@ public class CubesReportProxyController {
         CubesAccessInfo cubesAccessInfo = cubesReportValidationService.validate(queryUri, queryString);
         if (cubesAccessInfo.isValid()) {
             String cubesRequestUrl = CUBES_ADDRESS + queryUri + cubesAccessInfo.getCubesQueryString();
-            return restTemplate.exchange(cubesRequestUrl, HttpMethod.GET, EMPTY, String.class);
+            logger.error("**********************cubesAccessInfo" + cubesAccessInfo.getCubesQueryString());
+            logger.error("**********************url" + cubesRequestUrl);
+            ResponseEntity r = restTemplate.exchange(cubesRequestUrl, HttpMethod.GET, EMPTY, String.class);
+            logger.error("**********************status" + r.getStatusCode() + "-" + r.getBody().toString());
+            return r;
         } else {
             return new ResponseEntity(FORBIDDEN);
         }
