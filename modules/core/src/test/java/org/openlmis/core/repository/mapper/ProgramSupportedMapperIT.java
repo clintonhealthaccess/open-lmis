@@ -298,4 +298,5 @@ public class ProgramSupportedMapperIT {
 
     assertThat(mapper.getAllByFacilityId(facility.getId()).size(), is(1));
   }
+
 }
