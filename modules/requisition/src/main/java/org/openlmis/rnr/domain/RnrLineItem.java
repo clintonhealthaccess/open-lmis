@@ -103,7 +103,9 @@ public class RnrLineItem extends LineItem {
   private Integer total;
   @SuppressWarnings("unused")
   private Boolean skipped = false;
+  private Integer totalServiceQuantity;
   private Program program;
+  private List<ServiceItem> serviceItems;
 
   public RnrLineItem(Long rnrId,
                      FacilityTypeApprovedProduct facilityTypeApprovedProduct,
@@ -142,6 +144,7 @@ public class RnrLineItem extends LineItem {
       this.packsToShip = null;
       this.remarks = null;
       this.expirationDate = null;
+      this.serviceItems = new ArrayList<>();
     }
     if(quantityApproved == null){
       quantityApproved = (quantityRequested == null) ? calculatedOrderQuantity : quantityRequested;

@@ -37,6 +37,7 @@ public class RequisitionEmailServiceForSIMAM {
 	private static final Logger logger = LoggerFactory.getLogger(RequisitionEmailServiceForSIMAM.class);
 
 	public static final String TEMPLATE_IMPORT_RNR_XLSX = "template_Simam_import_Requi.xlsx";
+	public static final String TEMPLATE_IMPORT_RNR_XLSX_EMPTY = "template_Simam_import_Requi_EMPTY.xlsx";
 	public static final String TEMPLATE_IMPORT_REGIMEN_XLSX = "template_Simam_import_Regimen.xlsx";
 	public static final String TEMPLATE_IMPORT_REGIMEN_XLSX_EMPTY = "template_Simam_import_Regimen_EMPTY.xlsx";
 
@@ -151,6 +152,12 @@ public class RequisitionEmailServiceForSIMAM {
 
 	public String generateRequisitionExcelForSIMAM(Rnr requisition) {
 		List<Map<String, String>> requisitionItemsData = rnrMapperForSIMAM.getRnrItemsForSIMAMImport(requisition);
+
+		if(requisition.getProgram().getCode().equals("PTV")) {
+			for(Map<String, String> requisitionItem : requisitionItemsData) {
+				requisitionItem.put("quantity_dispensed", requisitionItem.get("total_service_quantity"));
+			}
+		}
 		CollectionUtils.collect(requisitionItemsData, new Transformer() {
 			@Override
 			public Map<String, String> transform(Object input) {
@@ -158,10 +165,14 @@ public class RequisitionEmailServiceForSIMAM {
 				return (Map<String, String>) input;
 			}
 		});
-
-		convertOpenLMISProgramCodeToSIMAMCode(requisitionItemsData);
-		Workbook workbook = singleListSheetExcelHandler.readXssTemplateFile(TEMPLATE_IMPORT_RNR_XLSX, ExcelHandler.PathType.FILE);
-		singleListSheetExcelHandler.createDataRows(workbook.getSheetAt(0), requisitionItemsData);
+		Workbook workbook;
+		if(requisitionItemsData.isEmpty()) {
+			workbook = singleListSheetExcelHandler.readXssTemplateFile(TEMPLATE_IMPORT_RNR_XLSX_EMPTY, ExcelHandler.PathType.FILE);
+		} else {
+			convertOpenLMISProgramCodeToSIMAMCode(requisitionItemsData);
+			workbook = singleListSheetExcelHandler.readXssTemplateFile(TEMPLATE_IMPORT_RNR_XLSX, ExcelHandler.PathType.FILE);
+			singleListSheetExcelHandler.createDataRows(workbook.getSheetAt(0), requisitionItemsData);
+		}
 
 		return singleListSheetExcelHandler.createXssFile(workbook, fileNameForRequiItems(requisition));
 	}

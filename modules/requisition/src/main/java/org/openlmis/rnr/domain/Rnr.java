@@ -16,9 +16,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.openlmis.core.domain.*;
 import org.openlmis.core.exception.DataException;
+import org.openlmis.rnr.dto.ProgramDataColumnDTO;
+import org.openlmis.rnr.dto.ServiceDTO;
+import org.openlmis.rnr.dto.ServiceLineItemDTO;
+import org.springframework.beans.BeanUtils;
 
 import javax.persistence.Transient;
 import java.math.BigDecimal;
@@ -63,7 +68,7 @@ public class Rnr extends BaseModel {
   private List<RnrLineItem> allLineItems = new ArrayList<>();
 
   private Facility supplyingDepot;
-  private Long supplyingDepotId;
+  private Long supplyingDepotId;;
   private Long supervisoryNodeId;
   private Date submittedDate;
   private Date clientSubmittedTime;
@@ -73,6 +78,8 @@ public class Rnr extends BaseModel {
   private Date actualPeriodStartDate;
   private Date actualPeriodEndDate;
   private Long programDataFormId;
+
+  List<ServiceLineItem> serviceLineItems = new ArrayList<>();
 
   public Rnr(Facility facility, Program program, ProcessingPeriod period, Boolean emergency, Long modifiedBy, Long createdBy) {
     this.facility = facility;
@@ -324,6 +331,7 @@ public class Rnr extends BaseModel {
         throw new DataException("product.code.invalid");
       savedLineItem.copyCreatorEditableFieldsForFullSupply(lineItem, template);
       savedLineItem.setModifiedBy(rnr.getModifiedBy());
+      savedLineItem.setTotalServiceQuantity(lineItem.getTotalServiceQuantity());
     }
   }
 
@@ -397,6 +405,69 @@ public class Rnr extends BaseModel {
       } catch (NoSuchFieldException | IllegalAccessException e) {
         throw new DataException(RNR_VALIDATION_ERROR);
       }
+    }
+  }
+
+  public List<ServiceDTO> getServices(){
+    List<ServiceDTO> services = new ArrayList<>();
+    for (ServiceLineItem serviceLineItem : this.serviceLineItems) {
+      ServiceDTO service = getExistedService(services, serviceLineItem);
+      boolean isNew = false;
+      if(service == null) {
+        isNew = true;
+        service = new ServiceDTO();
+        BeanUtils.copyProperties(serviceLineItem.getService(), service);
+      }
+
+      ProgramDataColumnDTO programDataColumn = new ProgramDataColumnDTO();
+      BeanUtils.copyProperties(serviceLineItem.getProgramDataColumn(), programDataColumn);
+
+      ServiceLineItemDTO serviceLineItemDTO = new ServiceLineItemDTO();
+      BeanUtils.copyProperties(serviceLineItem, serviceLineItemDTO);
+
+      programDataColumn.setServiceLineItem(serviceLineItemDTO);
+      service.getProgramDataColumns().add(programDataColumn);
+      if(isNew){
+        services.add(service);
+      }
+
+
+    }
+
+    return services;
+  }
+
+  private ServiceDTO getExistedService(List<ServiceDTO> services, ServiceLineItem source) {
+    if(CollectionUtils.isNotEmpty(services)) {
+      for(ServiceDTO serviceDTO : services) {
+        if(serviceDTO.getCode().equals(source.getService().getCode())){
+          return serviceDTO;
+        }
+      }
+    }
+    return null;
+  }
+
+  public void copyServiceItems(Rnr rnr) {
+    copyServiceItemsForFullSupply(rnr);
+    copyServiceItemsForNonFullSupply(rnr);
+  }
+
+  private void copyServiceItemsForFullSupply(Rnr rnr) {
+    for(RnrLineItem rnrLineItem : rnr.getFullSupplyLineItems()) {
+      RnrLineItem savedLineItem = this.findCorrespondingLineItem(rnrLineItem);
+      if (savedLineItem == null)
+        throw new DataException("product.code.invalid");
+      savedLineItem.setServiceItems(rnrLineItem.getServiceItems());
+    }
+  }
+
+  private void copyServiceItemsForNonFullSupply(Rnr rnr) {
+    for(RnrLineItem rnrLineItem : rnr.getNonFullSupplyLineItems()) {
+      RnrLineItem savedLineItem = this.findCorrespondingLineItem(rnrLineItem);
+      if (savedLineItem == null)
+        throw new DataException("product.code.invalid");
+      savedLineItem.setServiceItems(rnrLineItem.getServiceItems());
     }
   }
 

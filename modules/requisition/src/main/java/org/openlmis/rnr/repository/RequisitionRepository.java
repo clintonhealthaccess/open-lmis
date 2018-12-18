@@ -10,6 +10,7 @@
 
 package org.openlmis.rnr.repository;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.openlmis.core.domain.*;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.core.repository.helper.CommaSeparator;
@@ -69,6 +70,15 @@ public class RequisitionRepository {
   @Autowired
   private SignatureMapper signatureMapper;
 
+  @Autowired
+  private ServiceLineItemMapper serviceLineItemMapper;
+
+  @Autowired
+  private ServiceMapper serviceMapper;
+
+  @Autowired
+  private ServiceItemMapper serviceItemMapper;
+
   public void insert(Rnr requisition) {
     requisition.setStatus(INITIATED);
     requisitionMapper.insert(requisition);
@@ -76,6 +86,20 @@ public class RequisitionRepository {
     insertLineItems(requisition, requisition.getNonFullSupplyLineItems());
     insertRegimenLineItems(requisition, requisition.getRegimenLineItems());
     insertEquipmentStatus(requisition, requisition.getEquipmentLineItems());
+    insertServiceLineItems(requisition);
+  }
+
+  private void insertServiceLineItems(Rnr requisition) {
+    List<ServiceLineItem> serviceLineItems = requisition.getServiceLineItems();
+    if(CollectionUtils.isNotEmpty(serviceLineItems)) {
+      for(ServiceLineItem serviceLineItem : serviceLineItems){
+        serviceLineItem.setRnrId(requisition.getId());
+        serviceLineItem.setCreatedBy(requisition.getCreatedBy());
+        serviceLineItem.setCreatedDate(requisition.getCreatedDate());
+        serviceLineItem.setModifiedBy(requisition.getModifiedBy());
+        serviceLineItemMapper.insert(serviceLineItem);
+      }
+    }
   }
 
   public void insertPatientQuantificationLineItems(Rnr rnr) {
@@ -180,6 +204,20 @@ public class RequisitionRepository {
       updateLineItem(requisition, lineItem);
       lossesAndAdjustmentsMapper.deleteByLineItemId(lineItem.getId());
       insertLossesAndAdjustmentsForLineItem(lineItem);
+      if(lineItem.getSkipped() != true && null != lineItem.getServiceItems()) {
+        serviceItemMapper.deleteByLineItemId(lineItem.getId());
+        insertServiceItemsForLineItem(lineItem);
+      }
+    }
+  }
+
+  private void insertServiceItemsForLineItem(RnrLineItem lineItem) {
+    for(ServiceItem serviceItem : lineItem.getServiceItems()) {
+      Long serviceId = serviceMapper.getIdByServiceCode(serviceItem.getCode());
+      if(null == serviceId) {
+        throw new DataException("could not find service such service by code %s", serviceItem.getCode());
+      }
+      serviceItemMapper.insert(lineItem, serviceItem, serviceId);
     }
   }
 

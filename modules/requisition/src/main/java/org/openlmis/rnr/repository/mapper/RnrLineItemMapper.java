@@ -57,7 +57,10 @@ public interface RnrLineItemMapper {
    @Result(property = "productPrimaryName", column = "primaryname"),
     @Result(property = "previousNormalizedConsumptions", column = "previousNormalizedConsumptions", typeHandler = StringToList.class),
     @Result(property = "lossesAndAdjustments", javaType = List.class, column = "id",
-      many = @Many(select = "org.openlmis.rnr.repository.mapper.LossesAndAdjustmentsMapper.getByRnrLineItem"))
+      many = @Many(select = "org.openlmis.rnr.repository.mapper.LossesAndAdjustmentsMapper.getByRnrLineItem")),
+    @Result(property = "serviceItems", javaType = List.class, column = "id",
+      many = @Many(select = "org.openlmis.rnr.repository.mapper.ServiceItemMapper.getByRnrLineItem")
+    )
   })
   List<RnrLineItem> getRnrLineItemsByRnrId(Long rnrId);
 
@@ -83,6 +86,7 @@ public interface RnrLineItemMapper {
     "reportingDays = #{reportingDays},",
     "expirationDate = #{expirationDate},",
     "skipped = #{skipped},",
+    "totalservicequantity = #{totalServiceQuantity},",
     "modifiedBy = #{modifiedBy},",
     "modifiedDate = CURRENT_TIMESTAMP",
     "WHERE id = #{id}"
@@ -95,14 +99,14 @@ public interface RnrLineItemMapper {
     "packRoundingThreshold, fullSupply, modifiedBy, quantityReceived, quantityDispensed, beginningBalance,",
     "stockInHand, totalLossesAndAdjustments, calculatedOrderQuantity, quantityApproved,",
     "newPatientCount, stockOutDays, normalizedConsumption, amc, maxStockQuantity,",
-    "remarks, quantityRequested, reasonForRequestedQuantity)",
+    "remarks, quantityRequested, reasonForRequestedQuantity, totalservicequantity)",
     "VALUES ( ",
     "#{rnrId}, #{productCode}, #{product}, #{productDisplayOrder}, #{productCategory}, #{productCategoryDisplayOrder}, #{dispensingUnit},",
     "#{dosesPerMonth}, #{dosesPerDispensingUnit}, #{maxMonthsOfStock},#{packSize}, #{price}, #{roundToZero},",
     "#{packRoundingThreshold}, #{fullSupply}, #{modifiedBy}, 0, 0, 0,",
     "0, 0, 0, #{quantityApproved},",
     "0, 0, 0, 0, 0,",
-    " #{remarks}, #{quantityRequested}, #{reasonForRequestedQuantity})"})
+    " #{remarks}, #{quantityRequested}, #{reasonForRequestedQuantity}, #{totalServiceQuantity})"})
   @Options(useGeneratedKeys = true)
   void insertNonFullSupply(RnrLineItem requisitionLineItem);
 
@@ -168,12 +172,18 @@ public interface RnrLineItemMapper {
   })
   RnrLineItem getNonSkippedLineItem(@Param("rnrId") Long rnrId, @Param("productCode") String productCode);
 
-  @Select({"SELECT productCode, beginningBalance, quantityReceived, quantityDispensed, ",
+  @Select({"SELECT id, productCode, beginningBalance, quantityReceived, quantityDispensed, ",
       "stockInHand, quantityRequested, calculatedOrderQuantity, quantityApproved, ",
       "totalLossesAndAdjustments, expirationDate",
       "FROM requisition_line_items",
       "WHERE rnrId = #{rnrId} and fullSupply = TRUE",
       "AND skipped = FALSE"})
+  @Results(value = {
+    @Result(property = "id", column = "id"),
+    @Result(property = "serviceItems", javaType = List.class, column = "id",
+      many = @Many(select = "org.openlmis.rnr.repository.mapper.ServiceItemMapper.getByRnrLineItem")
+          )
+  })
   List<RnrLineItem> getNonSkippedRnrLineItemsByRnrId(Long rnrId);
 
   @Select({"SELECT productCode, beginningBalance, quantityReceived, quantityDispensed, ",

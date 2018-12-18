@@ -2,27 +2,23 @@ package org.openlmis.restapi.service;
 
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.openlmis.core.domain.Facility;
-import org.openlmis.core.domain.moz.ProgramDataColumn;
-import org.openlmis.core.domain.moz.ProgramDataForm;
-import org.openlmis.core.domain.moz.ProgramDataFormBasicItem;
-import org.openlmis.core.domain.moz.ProgramDataItem;
-import org.openlmis.core.domain.moz.SupplementalProgram;
+import org.openlmis.core.domain.moz.*;
 import org.openlmis.core.exception.DataException;
+import org.openlmis.core.repository.ProgramDataColumnRepository;
 import org.openlmis.core.repository.ProgramDataRepository;
 import org.openlmis.core.repository.SyncUpHashRepository;
 import org.openlmis.core.repository.mapper.FacilityMapper;
 import org.openlmis.core.repository.mapper.ProgramDataColumnMapper;
 import org.openlmis.core.repository.mapper.SupplementalProgramMapper;
 import org.openlmis.core.utils.DateUtil;
-import org.openlmis.restapi.domain.ProgramDataFormBasicItemDTO;
-import org.openlmis.restapi.domain.ProgramDataFormDTO;
-import org.openlmis.restapi.domain.ProgramDataFormItemDTO;
-import org.openlmis.restapi.domain.RegimenLineItemForRest;
-import org.openlmis.restapi.domain.Report;
+import org.openlmis.restapi.domain.*;
+import org.openlmis.rnr.domain.Rnr;
 import org.openlmis.rnr.domain.RnrLineItem;
+import org.openlmis.rnr.domain.ServiceLineItem;
+import org.openlmis.rnr.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,10 +49,16 @@ public class RestProgramDataService {
   @Autowired
   private RestRequisitionService restRequisitionService;
 
+  @Autowired
+  private ServiceRepository serviceRepository;
+
+  @Autowired
+  private ProgramDataColumnRepository programDataColumnRepository;
+
   @Transactional
-  public void createProgramDataForm(ProgramDataFormDTO requestBodyData, long userId) {
+  public Rnr createProgramDataForm(ProgramDataFormDTO requestBodyData, long userId) {
     if (syncUpHashRepository.hashExists(requestBodyData.getSyncUpHash())) {
-      return;
+      return null;
     }
 
     Facility facility = facilityMapper.getById(requestBodyData.getFacilityId());
@@ -67,8 +69,9 @@ public class RestProgramDataService {
     ProgramDataForm programDataForm = convertRequestBodyDataToProgramDataForm(requestBodyData, userId, facility);
 
     programDataRepository.createProgramDataForm(programDataForm);
-    restRequisitionService.submitReport(createReport(programDataForm), userId);
+    Rnr requisition = restRequisitionService.submitReport(createReport(programDataForm), userId);
     syncUpHashRepository.save(requestBodyData.getSyncUpHash());
+    return requisition;
   }
 
   public ProgramDataForm convertRequestBodyDataToProgramDataForm(ProgramDataFormDTO requestBodyData, long userId, Facility facility) {
@@ -96,10 +99,13 @@ public class RestProgramDataService {
                 programDataFormBasicItemDTO.getQuantityReceived(),
                 programDataFormBasicItemDTO.getQuantityDispensed(),
                 programDataFormBasicItemDTO.getTotalLossesAndAdjustments(),
-                programDataFormBasicItemDTO.getStockInHand(), programDataForm);
+                programDataFormBasicItemDTO.getStockInHand(),
+                programDataFormBasicItemDTO.getExpirationDate(),
+                programDataForm);
         programDataForm.getProgramDataFormBasicItems().add(programDataFormBasicItem);
       }
     }
+    programDataForm.setObservation(requestBodyData.getObservation());
     programDataForm.setProgramDataFormSignatures(requestBodyData.getProgramDataFormSignatures());
     return programDataForm;
   }
@@ -127,8 +133,47 @@ public class RestProgramDataService {
     report.setProgramDataFormId(programDataForm.getId());
     report.setProducts(rnrLineItems(programDataForm));
     report.setRegimens(regimens(programDataForm));
+    report.setClientSubmittedNotes(programDataForm.getObservation());
     report.setProgramCode("TEST_KIT");
+    report.setServiceLineItems(converterServiceLineItems(programDataForm));
+
     return report;
+  }
+
+  private List<ServiceLineItem> converterServiceLineItems(ProgramDataForm programDataForm) {
+    List<ServiceLineItem> serviceLineItems = new ArrayList<>();
+    List<ProgramDataItem> programDataItems = programDataForm.getProgramDataItems();
+    List<org.openlmis.rnr.domain.Service> services = serviceRepository.getAll();
+    List<ProgramDataColumn> programDataColumns = programDataColumnRepository.getAll();
+    if(CollectionUtils.isNotEmpty(programDataItems)) {
+      for(ProgramDataItem programDataItem : programDataItems) {
+        ServiceLineItem serviceLineItem = new ServiceLineItem();
+        serviceLineItem.setServiceId(getServiceId(services, programDataItem));
+        serviceLineItem.setProgramDataColumnId(getProgramDateColumnId(programDataColumns, programDataItem));
+        serviceLineItem.setValue(programDataItem.getValue());
+        serviceLineItems.add(serviceLineItem);
+      }
+
+    }
+    return serviceLineItems;
+  }
+
+  private Long getProgramDateColumnId(List<ProgramDataColumn> programDataColumns, ProgramDataItem programDataItem) {
+    for(ProgramDataColumn programDataColumn : programDataColumns) {
+      if(programDataColumn.getCode().equals(programDataItem.getProgramDataColumn().getCode())) {
+        return programDataColumn.getId();
+      }
+    }
+    throw new DataException("Program data not existed!");
+  }
+
+  private Long getServiceId(List<org.openlmis.rnr.domain.Service> services, ProgramDataItem programDataItem) {
+    for(org.openlmis.rnr.domain.Service service : services) {
+      if(service.getName().equals(programDataItem.getName())) {
+        return service.getId();
+      }
+    }
+    throw new DataException("Service not existed!");
   }
 
   private List<RnrLineItem> rnrLineItems(ProgramDataForm programDataForm) {
@@ -145,6 +190,7 @@ public class RestProgramDataService {
                   rnrLineItem.setQuantityDispensed(programDataFormBasicItem.getQuantityDispensed());
                   rnrLineItem.setTotalLossesAndAdjustments(programDataFormBasicItem.getTotalLossesAndAdjustments());
                   rnrLineItem.setStockInHand(programDataFormBasicItem.getStockInHand());
+                  rnrLineItem.setExpirationDate(programDataFormBasicItem.getExpirationDate());
                   return rnrLineItem;
                 }
               }).toList();
