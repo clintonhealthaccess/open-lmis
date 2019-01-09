@@ -63,6 +63,10 @@ public interface ProgramSupportedMapper {
             "WHERE facilityId=#{facilityId} AND programId=#{programId}"})
     void updateStartDate(@Param("facilityId") Long facilityId, @Param("programId") Long programId, @Param("startDate") Date startDate);
 
+    @Update({"UPDATE programs_supported SET reportstartdate=#{startDate}, modifiedDate=now()",
+            "WHERE facilityId=#{facilityId} AND programId=#{programId}"})
+    void updateReportStartDate(@Param("facilityId") Long facilityId, @Param("programId") Long programId, @Param("startDate") Date startDate);
+
     @Select({"SELECT P.code, P.name, P.parentId ,P.isSupportEmergency FROM programs_supported PS INNER JOIN programs P ON P.id = PS.programId ",
             "WHERE PS.facilityId = #{facilityId} AND PS.active = TRUE AND P.active = TRUE"})
     @Results({
@@ -85,4 +89,8 @@ public interface ProgramSupportedMapper {
             "(SELECT id as virtualFacilityId FROM facilities where parentFacilityId=#{id}) AS C",
             "WHERE PS.facilityId = #{id}"})
     void copyToVirtualFacilities(Facility parentFacility);
+
+
+    @Update({"UPDATE programs_supported SET active=#{active}, reportActive=#{active} WHERE programId=#{programId}"})
+    void updateActiveByProgramId(@Param("programId") Long programId, @Param("active") Boolean active);
 }

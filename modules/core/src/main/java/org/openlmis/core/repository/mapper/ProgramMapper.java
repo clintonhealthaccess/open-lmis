@@ -11,13 +11,9 @@
 package org.openlmis.core.repository.mapper;
 
 import org.apache.ibatis.annotations.*;
-import org.openlmis.core.domain.GeographicZone;
-import org.openlmis.core.domain.ProductGroup;
 import org.openlmis.core.domain.Program;
 import org.springframework.stereotype.Repository;
-import reactor.core.dynamic.annotation.On;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -216,4 +212,12 @@ public interface ProgramMapper {
       one = @One(select = "org.openlmis.core.repository.mapper.ProgramMapper.getById")),
   })
   Program getWithParentById(Long programId);
+
+  @Update("UPDATE programs SET " +
+          "name = #{name}, " +
+          "description = #{description}, " +
+          "active = #{active}, " +
+          "modifiedDate = NOW() " +
+          "WHERE code = #{code}")
+  void updateBasicInfo(Program program);
 }

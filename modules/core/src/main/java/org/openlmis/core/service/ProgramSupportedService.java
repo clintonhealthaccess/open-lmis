@@ -15,6 +15,7 @@ import org.ict4h.atomfeed.server.service.EventService;
 import org.openlmis.core.domain.Facility;
 import org.openlmis.core.domain.Program;
 import org.openlmis.core.domain.ProgramSupported;
+import org.openlmis.core.domain.ReportType;
 import org.openlmis.core.dto.ProgramSupportedEventDTO;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.core.repository.ProgramSupportedRepository;
@@ -90,6 +91,32 @@ public class ProgramSupportedService {
         return repository.getByFacilityIdAndProgramId(facilityId, programId);
     }
 
+    public void uploadSupportedProgram(ProgramSupported programSupported, Boolean upload) {
+        if (upload) {
+            ReportType reportType = reportTypeRepository.getByCode(programSupported.getReportType().getCode());
+            programSupported.setReportType(reportType);
+
+            Program program = programService.getByCode(programSupported.getProgram().getCode());
+            programSupported.setProgram(program);
+
+            Facility facility = new Facility();
+            facility.setCode(programSupported.getFacilityCode());
+
+            facility = facilityService.getByCode(facility);
+            programSupported.setFacilityId(facility.getId());
+
+            programSupported.isValid(reportTypeRepository.getAll());
+
+            ProgramSupported exists = repository.getByFacilityIdAndProgramId(facility.getId(), program.getId());
+            if (exists == null) {
+                repository.addSupportedProgram(programSupported);
+            } else {
+                programSupported.setId(exists.getId());
+                repository.updateSupportedProgram(programSupported);
+            }
+        }
+    }
+
     public void uploadSupportedProgram(ProgramSupported programSupported) {
         programSupported.isValid(reportTypeRepository.getAll());
 
@@ -111,6 +138,10 @@ public class ProgramSupportedService {
 
     public void updateProgramSupportedStartDate(Long facilityId, Long programId, Date startDate) {
         repository.updateProgramSupportedStartDate(facilityId, programId, startDate);
+    }
+
+    public void updateProgramSupportedReportStartDate(Long facilityId, Long programId, Date startDate) {
+        repository.updateProgramSupportedReportStartDate(facilityId, programId, startDate);
     }
 
     public ProgramSupported getProgramSupported(ProgramSupported programSupported) {

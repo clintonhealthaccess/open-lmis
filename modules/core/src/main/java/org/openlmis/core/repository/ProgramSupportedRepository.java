@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -37,6 +38,10 @@ public class ProgramSupportedRepository {
 
     public Date getProgramStartDate(Long facilityId, Long programId) {
         return mapper.getBy(facilityId, programId).getStartDate();
+    }
+
+    public Date getReportStartDate(Long facilityId, Long programId) {
+        return mapper.getBy(facilityId, programId).getReportStartDate();
     }
 
     public void deleteSupportedPrograms(Long facilityId, Long programId) {
@@ -111,6 +116,10 @@ public class ProgramSupportedRepository {
         mapper.updateStartDate(facilityId, programId, startDate);
     }
 
+    public void updateProgramSupportedReportStartDate(Long facilityId, Long programId, Date startDate) {
+        mapper.updateReportStartDate(facilityId, programId, startDate);
+    }
+
     public List<ProgramSupported> getActiveByFacilityId(Long facilityId) {
         return mapper.getActiveProgramsByFacilityId(facilityId);
     }
@@ -119,6 +128,14 @@ public class ProgramSupportedRepository {
         mapper.deleteVirtualFacilityProgramSupported(parentFacility);
         mapper.copyToVirtualFacilities(parentFacility);
     }
+
+    @Transactional
+    public void updateFacilitiesSupportedPrograms(List<Facility> facilities){
+        for (Facility facility : facilities) {
+            updateSupportedPrograms(facility);
+        }
+    }
+
 
     private boolean changeInProgramSupported(ProgramSupported ps1, ProgramSupported ps2) {
         if (ps1.getActive() != ps2.getActive()) {

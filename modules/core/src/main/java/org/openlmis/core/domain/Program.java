@@ -11,13 +11,8 @@
 package org.openlmis.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import java.util.List;
+import lombok.*;
 
 import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.NON_EMPTY;
 
@@ -25,6 +20,7 @@ import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.
  * Program represents a Program and its attributes.
  */
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
@@ -86,4 +82,32 @@ public class Program extends BaseModel {
     }
     return false;
   }
+
+  /**
+   *
+   * @param program
+   * @return
+   * 0: The program is existed in the SIGLUS, do not need to Update;
+   * 1: The program is existed in the SIGLUS, need to Update;
+   * 2: The program is existed in the SIGLUS, need to Update Program and ProgramSupported;
+   * -1 : it is not the same Program;
+   */
+  @JsonIgnore
+  public int isEqualForFCProgram(Program program) {
+    if (program == null) return 0;
+    if (!this.code.equals(program.code)) return -1;
+    if (!this.toStringForEqual().equals(program.toStringForEqual())) {
+      if (this.active != program.active) {
+        return 2;
+      } else {
+        return 1;
+      }
+    }
+    return 0;
+  }
+
+  private String toStringForEqual() {
+    return this.name + this.description + this.active;
+  }
+
 }

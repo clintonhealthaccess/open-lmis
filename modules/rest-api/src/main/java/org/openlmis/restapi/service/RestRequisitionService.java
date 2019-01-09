@@ -53,6 +53,8 @@ import static org.openlmis.restapi.domain.ReplenishmentDTO.prepareForREST;
 @NoArgsConstructor
 public class RestRequisitionService {
 
+  private static final String RAPID_TEST_PROGRAM_CODE = "TEST_KIT";
+
   public static final boolean EMERGENCY = false;
   private static final Logger logger = Logger.getLogger(RestRequisitionService.class);
   @Autowired
@@ -82,6 +84,8 @@ public class RestRequisitionService {
   private RegimenService regimenService;
   @Autowired
   private RegimenLineItemMapper regimenLineItemMapper;
+  @Autowired
+  private ProcessingScheduleService processingScheduleService;
 
   @Transactional
   public Rnr submitReport(Report report, Long userId) {
@@ -94,16 +98,21 @@ public class RestRequisitionService {
     Facility reportingFacility = facilityService.getOperativeFacilityByCode(report.getAgentCode());
     Program reportingProgram = programService.getValidatedProgramByCode(report.getProgramCode());
 
+    validReportDate(report.getActualPeriodEndDate(), reportingFacility.getId(), reportingProgram.getId());
+
     if (staticReferenceDataService.getBoolean("toggle.skip.initial.requisition.validation")) {
-      Rnr lastRegularRequisition = requisitionService.getLastRegularRequisition(reportingFacility, reportingProgram);
+      Rnr lastRegularRequisition = requisitionService.getLastRegularRequisitionByReportDate(reportingFacility, reportingProgram);
       if (lastRegularRequisition == null) {
-        programSupportedService.updateProgramSupportedStartDate(reportingFacility.getId(), reportingProgram.getId(), getDateOf21(report.getActualPeriodStartDate()));
+        programSupportedService.updateProgramSupportedReportStartDate(reportingFacility.getId(), reportingProgram.getId(), getDateOf21(report.getActualPeriodStartDate()));
       }
     }
 
-    restRequisitionCalculator.validatePeriod(reportingFacility, reportingProgram, report.getActualPeriodStartDate(), report.getActualPeriodEndDate());
+    if(!report.getProgramCode().equals(RAPID_TEST_PROGRAM_CODE)) {
+      restRequisitionCalculator.validatePeriod(reportingFacility, reportingProgram, report.getActualPeriodStartDate(), report.getActualPeriodEndDate());
+    }
 
-    Rnr rnr = requisitionService.initiate(reportingFacility, reportingProgram, userId, EMERGENCY, null, report.getServiceLineItems());
+    ProcessingPeriod proposedPeriod = report.getProgramCode().equals(RAPID_TEST_PROGRAM_CODE) ? findRapidTestPeriod(report.getActualPeriodStartDate(), report.getActualPeriodEndDate()) : null;
+    Rnr rnr = requisitionService.initiate(reportingFacility, reportingProgram, userId, EMERGENCY, proposedPeriod, report.getServiceLineItems());
 
     restRequisitionCalculator.validateProducts(report.getProducts(), rnr);
 
@@ -135,6 +144,16 @@ public class RestRequisitionService {
     syncUpHashRepository.save(report.getSyncUpHash());
 
     return authorize;
+  }
+
+  private void validReportDate(Date actualPeriodEndDate, Long facilityId, Long programId) {
+    Date reportStartDate = programService.getReportStartDate(facilityId, programId);
+    if(null == reportStartDate) {
+      throw new DataException(String.format("error.facility.supported.report.date.invalid"));
+    }
+    if(actualPeriodEndDate.before(reportStartDate)) {
+      throw new DataException(String.format("error.report.start.date.invalid"));
+    }
   }
 
   public void notifySubmittedEvent(Rnr rnr){
@@ -297,6 +316,14 @@ public class RestRequisitionService {
       }
     }
     return customRegimenItems;
+  }
+
+  private ProcessingPeriod findRapidTestPeriod(Date actualPeriodStartDate, Date actualPeriodEndDate) {
+    ProcessingPeriod processingPeriod = processingScheduleService.getPeriodByDate(actualPeriodStartDate, actualPeriodEndDate);
+    if(null == processingPeriod) {
+      throw new DataException("error.schedule.period.configuration.missing");
+    }
+    return processingPeriod;
   }
 
   private void insertPatientQuantificationLineItems(Report report, Rnr rnr) {

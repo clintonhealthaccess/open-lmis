@@ -163,15 +163,8 @@ public class RequisitionService {
     }
 
     program = programService.getById(program.getId());
-    ProcessingPeriod period = findPeriod(facility, program, emergency);
+    ProcessingPeriod period = null == proposedPeriod ? findPeriod(facility, program, emergency) : proposedPeriod;
 
-    if(proposedPeriod != null){
-      if(proposedPeriod.getId() != period.getId()){
-        // take caution in this case.
-        // todo: log a warning here.
-        period = proposedPeriod;
-      }
-    }
     List<FacilityTypeApprovedProduct> facilityTypeApprovedProducts;
 
     if (!staticReferenceDataService.getBoolean("toggle.rnr.multiple.programs")) {
@@ -451,8 +444,8 @@ public class RequisitionService {
   }
 
   public ProcessingPeriod getPeriodForInitiating(Facility facility, Program program) {
-    Date programStartDate = programService.getProgramStartDate(facility.getId(), program.getId());
-    Rnr lastRegularRequisition = getLastRegularRequisition(facility, program);
+    Date reportStartDate = programService.getReportStartDate(facility.getId(), program.getId());
+    Rnr lastRegularRequisition = getLastRegularRequisitionByReportDate(facility, program);
     Long periodIdForLastRequisition = null;
     if (lastRegularRequisition != null) {
       if (lastRegularRequisition.preAuthorize()) {
@@ -461,7 +454,7 @@ public class RequisitionService {
       periodIdForLastRequisition = lastRegularRequisition.getPeriod().getId();
     }
 
-    List<ProcessingPeriod> periods = processingScheduleService.getAllPeriodsAfterDateAndPeriod(facility.getId(), program.getId(), programStartDate, periodIdForLastRequisition);
+    List<ProcessingPeriod> periods = processingScheduleService.getAllPeriodsAfterDateAndPeriod(facility.getId(), program.getId(), reportStartDate, periodIdForLastRequisition);
 
     if (periods.size() == 0) {
       throw new DataException("error.program.configuration.missing");
@@ -471,6 +464,10 @@ public class RequisitionService {
 
   public Rnr getLastRegularRequisition(Facility facility, Program program) {
     return requisitionRepository.getLastRegularRequisition(facility, program);
+  }
+
+  public Rnr getLastRegularRequisitionByReportDate(Facility facility, Program program) {
+    return requisitionRepository.getLastRegularRequisitionByReportDate(facility, program);
   }
 
   public List<ProcessingPeriod> getAllPeriodsForInitiatingRequisition(Long facilityId, Long programId) {

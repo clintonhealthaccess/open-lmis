@@ -14,10 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.openlmis.core.exception.DataException;
@@ -36,6 +33,7 @@ import java.util.List;
  * whoRatio, packSize etc for a given ProgramSupported.
  */
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
@@ -58,11 +56,14 @@ public class ProgramSupported extends BaseModel implements Importable {
     @JsonDeserialize(using = DateDeserializer.class)
     private Date startDate;
 
+    @ImportField(name = "Report Type Code", nested = "code")
     private ReportType reportType;
 
+    @ImportField(name = "Report Start Date", type = "Date")
     @JsonDeserialize(using = DateDeserializer.class)
     private Date reportStartDate;
 
+    @ImportField(name = "Report Active", type = "boolean")
     private boolean reportActive;
 
     private List<FacilityProgramProduct> programProducts;
