@@ -19,6 +19,7 @@ public class Interceptor extends HandlerInterceptorAdapter {
     private String versionCode;
 
 
+    @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) throws Exception {
@@ -30,17 +31,14 @@ public class Interceptor extends HandlerInterceptorAdapter {
     }
 
     private void validAppVersion(HttpServletRequest request, Date expirationDateOfAndoridApp) {
-        Integer androidVersionCode = Integer.valueOf(versionCode);
-
-        if(null == request.getHeader("VersionCode")
-                && new Date().after(expirationDateOfAndoridApp)) {
-            throw new DataException(String.format("Please upgrade your android version"));
+        Date currentDate = new Date();
+        if (currentDate.before(expirationDateOfAndoridApp)) {
+            return;
         }
-
-        if(null != request.getHeader("VersionCode")
-                && Integer.valueOf(request.getHeader("VersionCode")) < androidVersionCode
-                && new Date().after(expirationDateOfAndoridApp)) {
-            throw new DataException(String.format("Please upgrade your android version"));
+        Integer androidVersionCode = Integer.valueOf(versionCode);
+        String requestAppInfo = request.getHeader("VersionCode");
+        if (null == requestAppInfo || Integer.valueOf(requestAppInfo) < androidVersionCode) {
+            throw new DataException(String.format("Please upgrade your android version %s", requestAppInfo));
         }
     }
 
