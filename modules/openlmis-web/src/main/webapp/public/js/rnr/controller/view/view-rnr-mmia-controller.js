@@ -2,6 +2,19 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
     $scope.rnrLineItems = [];
     $scope.regimens =[];
     $scope.regimeTotal = 0;
+    $scope.therapeuticLines =[{
+        name: '1st Line',
+        patientsOnTreatment: 12,
+        patientsOnComunitary: 20
+    }, {
+        name: '2nd Lines',
+        patientsOnTreatment: 22,
+        patientsOnComunitary: 30
+    }, {
+        name: '3rd lines',
+        patientsOnTreatment: 32,
+        patientsOnComunitary: 40
+    }];
 
     $scope.patient = [];
 

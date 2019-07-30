@@ -97,7 +97,8 @@
                     <th class="banner-text"></th>
                     <th openlmis-message="view.rnr.mmia.regime.code"></th>
                     <th class="col-4" openlmis-message="view.rnr.mmia.regime.therapeutic"></th>
-                    <th openlmis-message="view.rnr.mmia.regime.column.total">Total</th>
+                    <th openlmis-message="view.rnr.mmia.regime.column.total"></th>
+                    <th openlmis-message="view.rnr.mmia.regime.pharmacy"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -112,18 +113,69 @@
                     <td ng-if="item.categoryName === 'Paediatrics'" class="bg-color-yellow align-left">{{item.name}}</td>
 
                     <td>{{item.patientsOnTreatment}}</td>
+                    <td>{{item.patientsOnTreatment}}</td>
                 </tr>
-                </tbody>
-            </table>
-            <table class="total-form">
                 <tr>
-                    <td class="col-2 align-right bg-color-darkgray align-right">
+                    <td class="banner-text blank-cell no-border"></td>
+                    <td class="no-border"></td>
+                    <td class="col-2 bg-color-darkgray">
                         <span openlmis-message="view.rnr.mmia.regime.total"></span>
                         <span> :</span>
                     </td>
                     <td>{{regimeTotal}}</td>
+                    <td>{{regimeTotal}}</td>
                 </tr>
+                <tr class="therapeutic-lines">
+                    <th class="banner-text"></th>
+                    <th></th>
+                    <th openlmis-message="view.rnr.mmia.regime.therapeutic.line"></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr ng-repeat="item in therapeuticLines">
+                    <td class="banner-text">{{$index+1}}</td>
+                    <td class="no-border therapeutic-item"></td>
+                    <td class="no-border therapeutic-item">{{item.name}}</td>
+                    <td>{{item.patientsOnTreatment}}</td>
+                    <td>{{item.patientsOnComunitary}}</td>
+                </tr>
+                <tr>
+                    <td class="banner-text blank-cell no-border"></td>
+                    <td class="no-border"></td>
+                    <td class="col-2 bg-color-darkgray">
+                        <span openlmis-message="view.rnr.mmia.regime.total"></span>
+                        <span> :</span>
+                    </td>
+                    <td>{{regimeTotal}}</td>
+                    <td>{{regimeTotal}}</td>
+                </tr>
+                </tbody>
             </table>
+            <!-- <table class="total-form">
+                <tr>
+                    <td class="col-2 bg-color-darkgray">
+                        <span openlmis-message="view.rnr.mmia.regime.total"></span>
+                        <span> :</span>
+                    </td>
+                    <td>{{regimeTotal}}</td>
+                    <td>{{regimeTotal}}</td>
+                </tr>
+            </table> -->
+            <!-- <table class="therapeutic-lines">
+                <thead>
+                    <tr>
+                        <th colspan="2" class="background-black" openlmis-message="view.rnr.mmia.regime.therapeutic.line"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in therapeuticLines">
+                        <td class="banner-text">{{$index+1}}</td>
+                        <td>{{item.name}}</td>
+                        <td>{{item.patientsOnTreatment}}</td>
+                        <td>{{item.patientsOnComunitary}}</td>
+                    </tr>
+                </tbody>
+            </table> -->
         </div>
 
 
