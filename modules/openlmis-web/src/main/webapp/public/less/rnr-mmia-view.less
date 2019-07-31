@@ -62,7 +62,6 @@
 
     td.align-left {
       text-align: left;
-      padding: 3px;
     }
 
     th, td {
@@ -88,6 +87,7 @@
   }
 
   table.head-section {
+    width: 100%;
     .banner-text {
       margin-top: 94.88px;
     }
@@ -98,7 +98,6 @@
       background-color: #d0d0d0;
       word-break: break-all;
     }
-
     td:nth-child(4) {
       background-color: #f0f0f0;
     }
@@ -112,13 +111,12 @@
           background-color: #f0f0f0;
         }
       }
-
       td.no-border {
         border-left: 0;
         border-right: 0;
       }
 
-      .therapeutic-lines th:not(:first-child) {
+      .therapeutic-lines td:not(:first-child) {
         background-color: #2c2a2a;
         color: white;
       }
@@ -130,10 +128,10 @@
 
     .patient-section {
       flex: 1;
-      margin-left:2px;
+      margin-left:3px;
 
       .patient-form {
-
+        width: 100%;
         thead {
           background-color: #d0d0d0;
           tr {
@@ -141,19 +139,18 @@
           }
         }
 
-        tbody {
-          tr {
-            height: 54px;
-          }
-        }
-
         tr {
           td:first-child {
             background-color: #d0d0d0;
-            width: 100px;
+            text-align: left;
+            padding-left: 8px;
+            width: 120px;
           }
           th {
             height: 18.8px;
+            padding: 3px;
+            font-size: 14px;
+            font-style:italic;
           }
         }
       }
@@ -205,6 +202,14 @@ table.regime-form {
       background-color: black;
       color: white;
     }
+  }
+}
+
+table.regime-form,
+table.second-section,
+table.patient-form {
+  td {
+    padding: 3px;
   }
 }
 
