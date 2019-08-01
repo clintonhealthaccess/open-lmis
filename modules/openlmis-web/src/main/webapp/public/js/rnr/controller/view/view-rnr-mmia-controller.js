@@ -137,15 +137,16 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         };
         var invalideKey = _.keys(openlmisMessageMap);
         var patientQuantifications = _.filter($scope.rnr.patientQuantifications, function(value) {
-            return _.includes(invalideKey, value.category.toLocaleLowerCase());
+            var lowerCategory = value.category && value.category.toLocaleLowerCase()||'';
+            return _.includes(invalideKey, lowerCategory);
         });
         patientQuantifications = _.map(patientQuantifications, function(value) {
             var category = openlmisMessageMap[value.category.toLocaleLowerCase()];
-            var tableName = value.tableName ? value.tableName : category.tableName
+            var tableName = value.tableName ? value.tableName : category.tableName;
             return _.assign({}, value, {
                 header: "view.rnr.mmia.patient.header." + tableMap[tableName],
                 messageName: "view.rnr.mmia.patient." + category.messageName,
-            })
+            });
         });
         patientQuantifications = _.groupBy(patientQuantifications, 'header');
         $scope.rnr.patientQuantifications = patientQuantifications;
