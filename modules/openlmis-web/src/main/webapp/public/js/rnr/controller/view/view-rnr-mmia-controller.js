@@ -137,7 +137,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         };
         var invalideKey = _.keys(openlmisMessageMap);
         var patientQuantifications = _.filter($scope.rnr.patientQuantifications, function(value) {
-            const lowerCategory = value.category && value.category.toLocaleLowerCase()||''
+            var lowerCategory = value.category && value.category.toLocaleLowerCase()||''
             return _.includes(invalideKey, lowerCategory);
         });
         patientQuantifications = _.map(patientQuantifications, function(value) {
