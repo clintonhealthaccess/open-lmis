@@ -58,7 +58,7 @@ public class PatientQuantificationLineItemMapperIT {
     public void shouldInsertPatientQuantificationLineItemToDB() throws SQLException {
         setUpRequisitionData();
 
-        PatientQuantificationLineItem patientQuantificationLineItem = new PatientQuantificationLineItem("adult", 25);
+        PatientQuantificationLineItem patientQuantificationLineItem = new PatientQuantificationLineItem("adult", 25,"age range of TARV patients");
         patientQuantificationLineItem.setRnrId(rnr.getId());
 
         mapper.insert(patientQuantificationLineItem);
@@ -67,6 +67,7 @@ public class PatientQuantificationLineItemMapperIT {
 
         assertThat(lineItemList.get(0).getCategory(), is("adult"));
         assertThat(lineItemList.get(0).getTotal(), is(25));
+        assertThat(lineItemList.get(0).getTableName(), is("age range of TARV patients"));
     }
 
     private void setUpRequisitionData() {

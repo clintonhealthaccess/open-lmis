@@ -15,6 +15,7 @@ public class PatientQuantificationLineItem extends LineItem {
 
     private String category;
     private Integer total;
+    private String tableName;
 
     @Override
     public boolean compareCategory(LineItem lineItem) {

@@ -243,8 +243,8 @@ public class RestRequisitionServiceTest {
 
     setUpRequisitionReportBeforeSubmit();
 
-    List<PatientQuantificationLineItem> patientQuantifications = new PatientQuantificationsBuilder().addLineItem(new PatientQuantificationLineItem("newborn", new Integer(10))).
-            addLineItem(new PatientQuantificationLineItem("adults", new Integer(5))).build();
+    List<PatientQuantificationLineItem> patientQuantifications = new PatientQuantificationsBuilder().addLineItem(new PatientQuantificationLineItem("newborn", new Integer(10),"")).
+            addLineItem(new PatientQuantificationLineItem("adults", new Integer(5), "")).build();
 
     RegimenLineItem reportRegimenLineItem = make(a(defaultRegimenLineItem, with(patientsOnTreatment, 10), with(patientsStoppedTreatment, 5)));
     report.setRegimens(asList(RegimenLineItemForRest.convertFromRegimenLineItem(reportRegimenLineItem)));
