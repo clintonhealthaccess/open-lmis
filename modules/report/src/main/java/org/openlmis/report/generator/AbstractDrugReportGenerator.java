@@ -368,6 +368,26 @@ public abstract class AbstractDrugReportGenerator extends AbstractReportModelGen
             result.add(obj);
         }
 
+        return togetherByDrug(result);
+    }
+
+    // move zhe same  drugs code together
+    private List<Map<String, Object>> togetherByDrug(List<Map<String, Object>> srcList) {
+        List<Map<String, Object>> result = new ArrayList<>(srcList.size());
+        Map<String, List<Map<String, Object>>> drugMap = new HashMap<>();
+        for (Map<String, Object> data : srcList) {
+            String drugCode = (String) data.get("drugCode");
+            List<Map<String, Object>> drugList = drugMap.get(drugCode);
+            if (drugList == null) {
+                drugList = new ArrayList<>();
+                drugMap.put(drugCode, drugList);
+
+            }
+            drugList.add(data);
+        }
+        for (List<Map<String, Object>> drguList : drugMap.values()) {
+            result.addAll(drguList);
+        }
         return result;
     }
 
