@@ -19,18 +19,19 @@ import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.
 public class RegimenLineItemForRest extends RegimenLineItem {
     private String categoryName;
 
-    public RegimenLineItemForRest(String code, String name, Integer patientsOnTreatment, String categoryName, Integer hf, Integer chw) {
+    public RegimenLineItemForRest(String code, String name, Integer patientsOnTreatment, String categoryName, Integer hf, Integer chw, Integer comunitaryPharmacy) {
         this.setCode(code);
         this.setName(name);
         this.setPatientsOnTreatment(patientsOnTreatment);
         this.categoryName = categoryName;
         this.setHf(hf);
         this.setChw(chw);
+        this.setComunitaryPharmacy(comunitaryPharmacy);
     }
 
     public static RegimenLineItemForRest convertFromRegimenLineItem(RegimenLineItem regimenLineItem) {
         return new RegimenLineItemForRest(regimenLineItem.getCode(), regimenLineItem.getName(),
                 regimenLineItem.getPatientsOnTreatment(), regimenLineItem.getCategory().getName(),
-                regimenLineItem.getHf(), regimenLineItem.getChw());
+                regimenLineItem.getHf(), regimenLineItem.getChw(), regimenLineItem.getComunitaryPharmacy());
     }
 }
