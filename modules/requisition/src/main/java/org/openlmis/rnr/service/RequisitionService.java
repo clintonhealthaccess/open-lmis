@@ -750,6 +750,10 @@ public class RequisitionService {
     requisitionRepository.insertPatientQuantificationLineItems(rnr);
   }
 
+  @Transactional
+  public void insertTherapeuticLinesItem(Rnr rnr) {
+    requisitionRepository.insertTherapeuticLinesItem(rnr);
+  }
 
   public List<Rnr> getRequisitionsByFacility(Facility facility) {
     return requisitionRepository.getRequisitionDetailsByFacility(facility);

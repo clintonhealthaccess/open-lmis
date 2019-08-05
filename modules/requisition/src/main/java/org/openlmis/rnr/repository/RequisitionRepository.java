@@ -3,9 +3,9 @@
  * Copyright © 2013 VillageReach
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- *  
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more details.
- * You should have received a copy of the GNU Affero General Public License along with this program.  If not, see http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org. 
+ * You should have received a copy of the GNU Affero General Public License along with this program.  If not, see http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
 package org.openlmis.rnr.repository;
@@ -68,6 +68,9 @@ public class RequisitionRepository {
   private PatientQuantificationLineItemMapper patientQuantificationLineItemMapper;
 
   @Autowired
+  private TherapeuticLinesItemMapper therapeuticLinesItemMapper;
+
+  @Autowired
   private SignatureMapper signatureMapper;
 
   @Autowired
@@ -91,8 +94,8 @@ public class RequisitionRepository {
 
   private void insertServiceLineItems(Rnr requisition) {
     List<ServiceLineItem> serviceLineItems = requisition.getServiceLineItems();
-    if(CollectionUtils.isNotEmpty(serviceLineItems)) {
-      for(ServiceLineItem serviceLineItem : serviceLineItems){
+    if (CollectionUtils.isNotEmpty(serviceLineItems)) {
+      for (ServiceLineItem serviceLineItem : serviceLineItems) {
         serviceLineItem.setRnrId(requisition.getId());
         serviceLineItem.setCreatedBy(requisition.getCreatedBy());
         serviceLineItem.setCreatedDate(requisition.getCreatedDate());
@@ -108,6 +111,15 @@ public class RequisitionRepository {
       patientQuantificationLineItem.setModifiedBy(rnr.getModifiedBy());
       patientQuantificationLineItem.setCreatedBy(rnr.getCreatedBy());
       patientQuantificationLineItemMapper.insert(patientQuantificationLineItem);
+    }
+  }
+
+  public void insertTherapeuticLinesItem(Rnr rnr) {
+    for (TherapeuticLinesItem therapeuticLinesItem : rnr.getTherapeuticLines()) {
+      therapeuticLinesItem.setRnrId(rnr.getId());
+      therapeuticLinesItem.setModifiedBy(rnr.getModifiedBy());
+      therapeuticLinesItem.setCreatedBy(rnr.getCreatedBy());
+      therapeuticLinesItemMapper.insert(therapeuticLinesItem);
     }
   }
 
@@ -158,7 +170,7 @@ public class RequisitionRepository {
   }
 
   private void updateEquipmentLineItems(Rnr rnr) {
-    for(EquipmentLineItem item : rnr.getEquipmentLineItems()){
+    for (EquipmentLineItem item : rnr.getEquipmentLineItems()) {
       equipmentLineItemMapper.update(item);
 
       EquipmentInventoryStatus status = getStatusFromEquipmentLineItem(item);
@@ -204,7 +216,7 @@ public class RequisitionRepository {
       updateLineItem(requisition, lineItem);
       lossesAndAdjustmentsMapper.deleteByLineItemId(lineItem.getId());
       insertLossesAndAdjustmentsForLineItem(lineItem);
-      if(lineItem.getSkipped() != true && null != lineItem.getServiceItems()) {
+      if (lineItem.getSkipped() != true && null != lineItem.getServiceItems()) {
         serviceItemMapper.deleteByLineItemId(lineItem.getId());
         insertServiceItemsForLineItem(lineItem);
       }
@@ -212,9 +224,9 @@ public class RequisitionRepository {
   }
 
   private void insertServiceItemsForLineItem(RnrLineItem lineItem) {
-    for(ServiceItem serviceItem : lineItem.getServiceItems()) {
+    for (ServiceItem serviceItem : lineItem.getServiceItems()) {
       Long serviceId = serviceMapper.getIdByServiceCode(serviceItem.getCode());
-      if(null == serviceId) {
+      if (null == serviceId) {
         throw new DataException("could not find service such service by code %s", serviceItem.getCode());
       }
       serviceItemMapper.insert(lineItem, serviceItem, serviceId);
@@ -267,7 +279,7 @@ public class RequisitionRepository {
     return requisitionMapper.getAuthorizedRequisitions(roleAssignment);
   }
 
-  public List<RnrDTO> getAuthorizedRequisitionsDTOs(RoleAssignment roleAssignment){
+  public List<RnrDTO> getAuthorizedRequisitionsDTOs(RoleAssignment roleAssignment) {
     return requisitionMapper.getAuthorizedRequisitionsDTO(roleAssignment);
   }
 
@@ -308,7 +320,7 @@ public class RequisitionRepository {
                                                                    Integer pageSize, Long userId, String rightName, String sortBy,
                                                                    String sortDirection) {
     return requisitionMapper.getApprovedRequisitionsForCriteriaAndPageNumber(searchType, searchVal, pageNumber, pageSize,
-            userId, rightName, sortBy, sortDirection);
+        userId, rightName, sortBy, sortDirection);
   }
 
   public Integer getCountOfApprovedRequisitionsForCriteria(String searchType, String searchVal, Long userId, String rightName) {
@@ -356,7 +368,7 @@ public class RequisitionRepository {
   }
 
   public void insertRnrSignatures(Rnr rnr) {
-    for (Signature signature: rnr.getRnrSignatures()) {
+    for (Signature signature : rnr.getRnrSignatures()) {
       signatureMapper.insertSignature(signature);
       requisitionMapper.insertRnrSignature(rnr, signature);
     }

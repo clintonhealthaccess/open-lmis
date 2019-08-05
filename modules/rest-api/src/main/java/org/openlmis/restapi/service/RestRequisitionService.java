@@ -3,9 +3,9 @@
  * Copyright © 2013 VillageReach
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- *  
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more details.
- * You should have received a copy of the GNU Affero General Public License along with this program.  If not, see http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org. 
+ * You should have received a copy of the GNU Affero General Public License along with this program.  If not, see http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
 package org.openlmis.restapi.service;
@@ -53,9 +53,8 @@ import static org.openlmis.restapi.domain.ReplenishmentDTO.prepareForREST;
 @NoArgsConstructor
 public class RestRequisitionService {
 
-  private static final String RAPID_TEST_PROGRAM_CODE = "TEST_KIT";
-
   public static final boolean EMERGENCY = false;
+  private static final String RAPID_TEST_PROGRAM_CODE = "TEST_KIT";
   private static final Logger logger = Logger.getLogger(RestRequisitionService.class);
   @Autowired
   private RequisitionService requisitionService;
@@ -107,20 +106,21 @@ public class RestRequisitionService {
       }
     }
 
-    if(!report.getProgramCode().equals(RAPID_TEST_PROGRAM_CODE)) {
+    if (!report.getProgramCode().equals(RAPID_TEST_PROGRAM_CODE)) {
       restRequisitionCalculator.validatePeriod(reportingFacility, reportingProgram, report.getActualPeriodStartDate(), report.getActualPeriodEndDate());
     }
 
     ProcessingPeriod proposedPeriod = report.getProgramCode().equals(RAPID_TEST_PROGRAM_CODE) ?
-            findRapidTestPeriod(report.getActualPeriodStartDate(), report.getActualPeriodEndDate(), reportingFacility.getId(), reportingProgram.getId()) : null;
+        findRapidTestPeriod(report.getActualPeriodStartDate(), report.getActualPeriodEndDate(), reportingFacility.getId(), reportingProgram.getId()) : null;
     Rnr rnr = requisitionService.initiate(reportingFacility, reportingProgram, userId, EMERGENCY, proposedPeriod, report.getServiceLineItems());
 
     restRequisitionCalculator.validateProducts(report.getProducts(), rnr);
 
     markSkippedLineItems(rnr, report);
 
-    if (reportingFacility.getVirtualFacility())
+    if (reportingFacility.getVirtualFacility()) {
       restRequisitionCalculator.setDefaultValues(rnr);
+    }
 
     if (staticReferenceDataService.getBoolean("toggle.mmia.custom.regimen")) {
       List<RegimenLineItem> regimenLineItems = checkAndInsertCustomRegimenItems(report, rnr, userId, reportingProgram.getId());
@@ -134,6 +134,7 @@ public class RestRequisitionService {
 
     updateClientFields(report, rnr);
     insertPatientQuantificationLineItems(report, rnr);
+    insertTherapeuticLinesItem(report, rnr);
 
     insertRnrSignatures(report, rnr, userId);
 
@@ -149,16 +150,16 @@ public class RestRequisitionService {
 
   private void validReportDate(Date actualPeriodEndDate, Long facilityId, Long programId) {
     Date reportStartDate = programService.getReportStartDate(facilityId, programId);
-    if(null == reportStartDate) {
+    if (null == reportStartDate) {
       throw new DataException(String.format("error.facility.supported.report.date.invalid"));
     }
-    if(actualPeriodEndDate.before(reportStartDate)) {
+    if (actualPeriodEndDate.before(reportStartDate)) {
       throw new DataException(String.format("error.report.start.date.invalid"));
     }
   }
 
-  public void notifySubmittedEvent(Rnr rnr){
-    requisitionService.logStatusChangeAndNotify(rnr,true,null);
+  public void notifySubmittedEvent(Rnr rnr) {
+    requisitionService.logStatusChangeAndNotify(rnr, true, null);
   }
 
   private void updateClientFields(Report report, Rnr rnr) {
@@ -170,10 +171,10 @@ public class RestRequisitionService {
 
     requisitionService.updateClientFields(rnr);
 
-    if(staticReferenceDataService.getBoolean("toggle.sync.period.date.for.rnr")){
-        rnr.setActualPeriodStartDate(report.getActualPeriodStartDate());
-        rnr.setActualPeriodEndDate(report.getActualPeriodEndDate());
-        requisitionService.saveClientPeriod(rnr);
+    if (staticReferenceDataService.getBoolean("toggle.sync.period.date.for.rnr")) {
+      rnr.setActualPeriodStartDate(report.getActualPeriodStartDate());
+      rnr.setActualPeriodEndDate(report.getActualPeriodEndDate());
+      requisitionService.saveClientPeriod(rnr);
     }
   }
 
@@ -199,33 +200,33 @@ public class RestRequisitionService {
     searchCriteria.setWithoutLineItems(true);
     searchCriteria.setUserId(userId);
 
-    if(report.getPeriodId() != null) {
+    if (report.getPeriodId() != null) {
       //check if the requisition has already been initiated / submitted / authorized.
       restRequisitionCalculator.validateCustomPeriod(reportingFacility, reportingProgram, period, userId);
       rnrs = requisitionService.getRequisitionsFor(searchCriteria, asList(period));
     }
 
 
-    if(rnrs != null && rnrs.size() > 0){
-      rnr = requisitionService.getFullRequisitionById( rnrs.get(0).getId() );
+    if (rnrs != null && rnrs.size() > 0) {
+      rnr = requisitionService.getFullRequisitionById(rnrs.get(0).getId());
 
-    }else{
+    } else {
       rnr = requisitionService.initiate(reportingFacility, reportingProgram, userId, report.getEmergency(), period, null);
     }
 
     List<RnrLineItem> fullSupplyProducts = new ArrayList<>();
     List<RnrLineItem> nonFullSupplyProducts = new ArrayList<>();
     Iterator<RnrLineItem> iterator = report.getProducts().iterator();
-    nonFullSupplyFacilityApprovedProductByFacilityAndProgram = facilityApprovedProductService.getNonFullSupplyFacilityApprovedProductByFacilityAndProgram( reportingFacility.getId(), reportingProgram.getId() );
+    nonFullSupplyFacilityApprovedProductByFacilityAndProgram = facilityApprovedProductService.getNonFullSupplyFacilityApprovedProductByFacilityAndProgram(reportingFacility.getId(), reportingProgram.getId());
 
     // differentiate between full supply and non full supply products
-    while(iterator.hasNext()){
+    while (iterator.hasNext()) {
       final RnrLineItem lineItem = iterator.next();
 
       //default to full supply products
-      if(lineItem.getFullSupply() == null || lineItem.getFullSupply()){
+      if (lineItem.getFullSupply() == null || lineItem.getFullSupply()) {
         fullSupplyProducts.add(lineItem);
-      }else{
+      } else {
 
         setNonFullSupplyCreatorFields(lineItem);
         nonFullSupplyProducts.add(lineItem);
@@ -264,7 +265,7 @@ public class RestRequisitionService {
         return ((FacilityTypeApprovedProduct) product).getProgramProduct().getProduct().getCode().equals(lineItem.getProductCode());
       }
     });
-    if(p == null){
+    if (p == null) {
       return;
     }
     lineItem.setDispensingUnit(p.getProgramProduct().getProduct().getDispensingUnit());
@@ -321,7 +322,7 @@ public class RestRequisitionService {
 
   private ProcessingPeriod findRapidTestPeriod(Date actualPeriodStartDate, Date actualPeriodEndDate, Long facilityId, Long programId) {
     ProcessingPeriod processingPeriod = processingScheduleService.getPeriodByDate(actualPeriodStartDate, actualPeriodEndDate, facilityId, programId);
-    if(null == processingPeriod) {
+    if (null == processingPeriod) {
       throw new DataException("error.schedule.period.configuration.missing");
     }
     return processingPeriod;
@@ -334,18 +335,25 @@ public class RestRequisitionService {
     }
   }
 
+  private void insertTherapeuticLinesItem(Report report, Rnr rnr) {
+    if (report.getTherapeuticLines() != null) {
+      rnr.setTherapeuticLines(report.getTherapeuticLines());
+      requisitionService.insertTherapeuticLinesItem(rnr);
+    }
+  }
+
   private void insertRnrSignatures(Report report, Rnr rnr, final Long userId) {
     if (report.getRnrSignatures() != null) {
 
       List<Signature> rnrSignatures = new ArrayList(CollectionUtils.collect(report.getRnrSignatures(), new Transformer() {
-            @Override
-            public Object transform(Object input) {
-              ((Signature)input).setCreatedBy(userId);
-              ((Signature)input).setModifiedBy(userId);
-              return input;
-            }
-          }));
-          rnr.setRnrSignatures(rnrSignatures);
+        @Override
+        public Object transform(Object input) {
+          ((Signature) input).setCreatedBy(userId);
+          ((Signature) input).setModifiedBy(userId);
+          return input;
+        }
+      }));
+      rnr.setRnrSignatures(rnrSignatures);
       requisitionService.insertRnrSignatures(rnr);
     }
   }
@@ -397,7 +405,7 @@ public class RestRequisitionService {
 
     savedLineItems = rnr.getNonFullSupplyLineItems();
     reportedProducts = report.getNonFullSupplyProducts();
-    if(reportedProducts != null) {
+    if (reportedProducts != null) {
       for (final RnrLineItem reportedLineItem : reportedProducts) {
         RnrLineItem savedLineItem = (RnrLineItem) find(savedLineItems, new Predicate() {
           @Override
@@ -424,8 +432,9 @@ public class RestRequisitionService {
     savedLineItem.setTotalServiceQuantity(reportedLineItem.getTotalServiceQuantity());
 
     for (Column column : rnrTemplate.getColumns()) {
-      if (!column.getVisible() || !rnrTemplate.columnsUserInput(column.getName()))
+      if (!column.getVisible() || !rnrTemplate.columnsUserInput(column.getName())) {
         continue;
+      }
       try {
         Field field = RnrLineItem.class.getDeclaredField(column.getName());
         field.setAccessible(true);
@@ -458,6 +467,6 @@ public class RestRequisitionService {
   private Date getDateOf21(Date date) {
     final int DAY_OF_PERIOD_START = 21;
     DateTime dateTime = new DateTime(date);
-    return new DateTime(dateTime.getYear(), dateTime.getMonthOfYear(), DAY_OF_PERIOD_START,0 , 0).toDate();
+    return new DateTime(dateTime.getYear(), dateTime.getMonthOfYear(), DAY_OF_PERIOD_START, 0, 0).toDate();
   }
 }
