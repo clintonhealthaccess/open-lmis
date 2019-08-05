@@ -58,7 +58,7 @@ public class PatientQuantificationLineItemMapperIT {
     public void shouldInsertPatientQuantificationLineItemToDB() throws SQLException {
         setUpRequisitionData();
 
-        PatientQuantificationLineItem patientQuantificationLineItem = new PatientQuantificationLineItem("adult", 25);
+        PatientQuantificationLineItem patientQuantificationLineItem = new PatientQuantificationLineItem("adult", 25,"");
         patientQuantificationLineItem.setRnrId(rnr.getId());
 
         mapper.insert(patientQuantificationLineItem);

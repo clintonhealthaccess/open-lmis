@@ -110,6 +110,7 @@ public class RegimenLineItemMapperIT {
     assertThat(returnedRegimenLineItems.get(0).getCategory().getName(), is(regimenLineItem.getCategory().getName()));
     assertThat(returnedRegimenLineItems.get(0).getCategory().getDisplayOrder(), is(regimenLineItem.getCategory().getDisplayOrder()));
     assertThat(returnedRegimenLineItems.get(0).getRegimenDisplayOrder(), is(regimenLineItem.getRegimenDisplayOrder()));
+    assertThat(returnedRegimenLineItems.get(0).getComunitaryPharmacy(), is(regimenLineItem.getComunitaryPharmacy()));
   }
 
   @Test

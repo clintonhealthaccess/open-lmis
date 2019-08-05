@@ -2,6 +2,19 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
     $scope.rnrLineItems = [];
     $scope.regimens =[];
     $scope.regimeTotal = 0;
+    $scope.therapeuticLines =[{
+        name: '1st Line',
+        patientsOnTreatment: 12,
+        patientsOnComunitary: 20
+    }, {
+        name: '2nd Lines',
+        patientsOnTreatment: 22,
+        patientsOnComunitary: 30
+    }, {
+        name: '3rd lines',
+        patientsOnTreatment: 32,
+        patientsOnComunitary: 40
+    }];
 
     $scope.patient = [];
 
@@ -84,26 +97,59 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
     };
 
     $scope.initPatient = function () {
-        var patientQuantifications = $scope.rnr.patientQuantifications;
         var openlmisMessageMap = {
-            "New": "new",
-            "Maintenance": "maintenance",
-            "Alteration": "alteration",
-            "PTV": "ptv",
-            "PPE": "ppe",
-            "Total Dispensed": "dispensed",
-            "Total Patients": "total",
-            "Novos": "new",
-            "Manutenção": "maintenance",
-            "Alteração": "alteration",
-            "Total de Meses dispensados": "dispensed",
-            "Total de pacientes em TARV na US": "total"
+            "new": {messageName:"new", tableName: 'Type of patients in TARV'},
+            "novos": {messageName:"new", tableName: 'Type of patients in TARV'},
+            "maintenance": {messageName:"maintenance", tableName: 'Type of patients in TARV'},
+            "manutenção": {messageName:"maintenance", tableName: 'Type of patients in TARV'},
+            "alteration": {messageName:"alteration", tableName: 'Type of patients in TARV'},
+            "alteração": {messageName:"alteration", tableName: 'Type of patients in TARV'},
+            "transit": {messageName:"transit", tableName: 'Type of patients in TARV'},
+            "trânsito": {messageName:"transit", tableName: 'Type of patients in TARV'},
+            "transfers": {messageName:"transfers", tableName: 'Type of patients in TARV'},
+            "transferências": {messageName:"transfers", tableName: 'Type of patients in TARV'},
+            "3 mopnths dispense (dt)": {messageName:"3dt", tableName: 'Months dispensed'},
+            "dispensa para 3 meses (dt)": {messageName:"3dt", tableName: 'Months dispensed'},
+            "month dispense": {messageName:"md", tableName: 'Months dispensed'},
+            "dispensa mensal (dm)": {messageName:"md", tableName: 'Months dispensed'},
+            "# of therapeutic months dispensed": {messageName:"therapeuticDt", tableName: 'Months dispensed'},
+            "#meses de terapêutica dispensados": {messageName:"therapeuticDt", tableName: 'Months dispensed'},
+            "adults": {messageName:"adults", tableName: 'age range of TARV patients'},
+            "adultos": {messageName:"adults", tableName: 'age range of TARV patients'},
+            "pediatric from 0 to 4 years": {messageName:"4pediatric", tableName: 'age range of TARV patients'},
+            "pediátricos 0 aos 4 anos": {messageName:"4pediatric", tableName: 'age range of TARV patients'},
+            "pediatric from 5 to 9 years": {messageName:"9pediatric", tableName: 'age range of TARV patients'},
+            "pediátricos 5 aos 9 anos": {messageName:"9pediatric", tableName: 'age range of TARV patients'},
+            "pediatric from 10 to 14 years": {messageName:"14pediatric", tableName: 'age range of TARV patients'},
+            "pediátricos 10 aos 14 anos": {messageName:"14pediatric", tableName: 'age range of TARV patients'},
+            "prep": {messageName:"prep", tableName: 'prophylaxis'},
+            "ppe": {messageName:"ppe", tableName: 'prophylaxis'},
+            "exposed child": {messageName:"exposed", tableName: 'prophylaxis'},
+            "criança exposta": {messageName:"exposed", tableName: 'prophylaxis'},
+            "total nr of patients in tarv at hf": {messageName:"totalNr", tableName: 'prophylaxis'},
+            "total de pacientes em tarv na us": {messageName:"totalNr", tableName: 'prophylaxis'},
         };
-
-        for (var i = 0; i < patientQuantifications.length; i++) {
-            var item = patientQuantifications[i];
-            item.category = "view.rnr.mmia.patient." + openlmisMessageMap[item.category];
-        }
+        var tableMap = {
+            'Type of patients in TARV': 'patientsType',
+            'Months dispensed': 'md',
+            'age range of TARV patients': 'TARVPatients',
+            'prophylaxis': 'prophylaxis'
+        };
+        var invalideKey = _.keys(openlmisMessageMap);
+        var patientQuantifications = _.filter($scope.rnr.patientQuantifications, function(value) {
+            var lowerCategory = value.category && value.category.toLocaleLowerCase()||'';
+            return _.includes(invalideKey, lowerCategory);
+        });
+        patientQuantifications = _.map(patientQuantifications, function(value) {
+            var category = openlmisMessageMap[value.category.toLocaleLowerCase()];
+            var tableName = value.tableName ? value.tableName : category.tableName;
+            return _.assign({}, value, {
+                header: "view.rnr.mmia.patient.header." + tableMap[tableName],
+                messageName: "view.rnr.mmia.patient." + category.messageName,
+            });
+        });
+        patientQuantifications = _.groupBy(patientQuantifications, 'header');
+        $scope.rnr.patientQuantifications = patientQuantifications;
     };
 
     var formatExpirationDate = function (theOneItem) {

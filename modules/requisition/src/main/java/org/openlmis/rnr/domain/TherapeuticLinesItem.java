@@ -11,11 +11,10 @@ import java.lang.reflect.Field;
 @JsonDeserialize
 @AllArgsConstructor
 @NoArgsConstructor
-public class PatientQuantificationLineItem extends LineItem {
-
-    private String category;
-    private Integer total;
-    private String tableName;
+public class TherapeuticLinesItem extends LineItem {
+    private String code;
+    private Integer patientsOnTreatment;
+    private Integer comunitaryPharmacy;
 
     @Override
     public boolean compareCategory(LineItem lineItem) {
@@ -24,12 +23,12 @@ public class PatientQuantificationLineItem extends LineItem {
 
     @Override
     public String getCategoryName() {
-        return category;
+        return code;
     }
 
     @Override
     public String getValue(String columnName) throws NoSuchFieldException, IllegalAccessException {
-        Field field = PatientQuantificationLineItem.class.getDeclaredField(columnName);
+        Field field = TherapeuticLinesItem.class.getDeclaredField(columnName);
         field.setAccessible(true);
         Object fieldValue = field.get(this);
         String value = (fieldValue == null) ? "" : fieldValue.toString();
