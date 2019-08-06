@@ -33,7 +33,7 @@ function onLoaded() {
         page.evaluate(function () {
             $('body').css('background', '#FFFFFF');
             $('.btn-download').hide();
-            // $('.patient-section').css('margin-left', '11%');
+            $('.patient-section').css('margin-left', '11%');
             $('.content.rnr-content').css('-webkit-box-shadow', '0 0 0px rgba(255, 255, 255, 0)');
             $('.content.rnr-content').css('-moz-box-shadow', '0 0 0px rgba(255, 255, 255, 0)');
             $('.content.rnr-content').css('box-shadow', '0 0 0px rgba(255, 255, 255, 0)');
@@ -43,7 +43,7 @@ function onLoaded() {
             var rnrItemCount = $('.second-section tbody tr').length - 4;
             var REGIMEN_LIMIT = 20, RNR_ITEM_LIMIT = 26;
 
-            $('.mmia-form').css('width', 1200);
+            $('.mmia-form').css('width', 994);
             $('.mmia-form').css('zoom', 0.50);
             $('.mmia-form td').css('line-height', 1.0);
 
