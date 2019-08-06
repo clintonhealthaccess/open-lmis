@@ -43,7 +43,7 @@ function onLoaded() {
             var rnrItemCount = $('.second-section tbody tr').length - 4;
             var REGIMEN_LIMIT = 20, RNR_ITEM_LIMIT = 26;
 
-            $('.mmia-form').css('width', 994);
+            $('.mmia-form').css('width', 1200);
             $('.mmia-form').css('zoom', 0.50);
             $('.mmia-form td').css('line-height', 1.0);
 
