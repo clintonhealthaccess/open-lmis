@@ -110,9 +110,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
             item.category = "view.rnr.mmia.patient." + openlmisMessageMap[item.category];
         }
         $scope.rnr.reportType="old";
-    }
-
-
+    };
 
     $scope.initPatient = function () {
         var openlmisMessageMap = {
