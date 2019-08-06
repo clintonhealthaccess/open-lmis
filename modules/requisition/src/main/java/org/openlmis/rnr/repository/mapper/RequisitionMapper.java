@@ -58,6 +58,8 @@ public interface RequisitionMapper {
           many = @Many(select = "org.openlmis.rnr.repository.mapper.EquipmentLineItemMapper.getEquipmentLineItemsByRnrId")),
       @Result(property = "patientQuantifications", javaType = List.class, column = "id",
           many = @Many(select = "org.openlmis.rnr.repository.mapper.PatientQuantificationLineItemMapper.getPatientQuantificationLineItemsByRnrId")),
+      @Result(property = "therapeuticLines", javaType = List.class, column = "id",
+          many = @Many(select = "org.openlmis.rnr.repository.mapper.TherapeuticLinesItemMapper.getTherapeuticLinesItemsByRnrId")),
       @Result(property = "rnrSignatures", column = "id", javaType = List.class,
           many = @Many(select = "org.openlmis.rnr.repository.mapper.RequisitionMapper.getRnrSignaturesByRnrId")),
       @Result(property = "actualPeriodStartDate", column = "id", javaType = Date.class,

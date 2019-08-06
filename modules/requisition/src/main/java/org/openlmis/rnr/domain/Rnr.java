@@ -69,7 +69,7 @@ public class Rnr extends BaseModel {
   private List<RnrLineItem> allLineItems = new ArrayList<>();
 
   private Facility supplyingDepot;
-  private Long supplyingDepotId;;
+  private Long supplyingDepotId;
   private Long supervisoryNodeId;
   private Date submittedDate;
   private Date clientSubmittedTime;
