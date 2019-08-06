@@ -23,7 +23,7 @@ public class TherapeuticLinesItem extends LineItem {
 
     @Override
     public String getCategoryName() {
-        return code;
+        return null;
     }
 
     @Override
@@ -37,6 +37,6 @@ public class TherapeuticLinesItem extends LineItem {
 
     @Override
     public boolean isRnrLineItem() {
-        return false;
+        return true;
     }
 }
