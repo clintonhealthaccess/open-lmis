@@ -90,8 +90,7 @@
     <div class="separate"></div>
     <div class="page-break"></div>
     <div class="middle-section">
-        <div class="regime-section">
-            <table class="regime-form">
+        <table class="regime-form">
                 <thead>
                 <tr>
                     <th class="banner-text"></th>
@@ -150,10 +149,7 @@
                     <td>{{regimeTotal}}</td>
                 </tr>
                 </tbody>
-            </table>
-        </div>
-
-
+        </table>
         <div class="patient-section">
 
             <table ng-if="rnr.reportType === 'new'" class="patient-form" ng-repeat="(key, value) in rnr.patientQuantifications">
@@ -191,8 +187,8 @@
             </table>
 
             <div class="comment-wrapper">
-                <table class="background">
-                    <tr>
+                <table class="background class="col-5"">
+                    <tr >
                         <td></td>
                     </tr>
                     <tr>

@@ -33,7 +33,7 @@ function onLoaded() {
         page.evaluate(function () {
             $('body').css('background', '#FFFFFF');
             $('.btn-download').hide();
-            $('.patient-section').css('margin-left', '11%');
+            $('.patient-section').css('margin-left', '5px');
             $('.content.rnr-content').css('-webkit-box-shadow', '0 0 0px rgba(255, 255, 255, 0)');
             $('.content.rnr-content').css('-moz-box-shadow', '0 0 0px rgba(255, 255, 255, 0)');
             $('.content.rnr-content').css('box-shadow', '0 0 0px rgba(255, 255, 255, 0)');
