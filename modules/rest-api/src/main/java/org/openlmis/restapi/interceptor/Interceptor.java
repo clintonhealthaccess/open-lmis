@@ -26,7 +26,7 @@ public class Interceptor extends HandlerInterceptorAdapter {
         Date expirationDateOfAndoridApp = getExpirationDate();
 
         // if the android version is less than 86, the request version vode will be null
-        //validAppVersion(request, expirationDateOfAndoridApp);
+        validAppVersion(request, expirationDateOfAndoridApp);
         return true;
     }
 
