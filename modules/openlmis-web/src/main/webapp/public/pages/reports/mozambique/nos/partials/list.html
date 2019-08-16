@@ -31,13 +31,23 @@
                     class="large-input"
                     name="drug"
                     id="drugDropDown">
-                <option ng-repeat="option in nosDrugList" value="{{option['drug.drug_code']}}">
+                <option  ng-repeat="option in nosDrugList" value="{{option['drug.drug_code']}}">
                     {{option['drug.drug_name'] + '[' + option['drug.drug_code'] + ']'}}
                 </option>
             </select>
         </div>
         <div id="tracer-report"></div>
         <div ng-show="buttonDisplay" ng-include="'/public/pages/reports/mozambique/export-data-button.html'"></div>
+        <div ng-show="exportAllbtnDisplay" ng-include="'/public/pages/reports/mozambique/export-all-data-button.html'">
+        </div>
+        <div class="form-fields">
+            <span style="margin-left: 6%">Drug:</span>
+            <select ui-select2 multiple="multiple" style="width:350px;" class="large-input">
+                <option ng-repeat="option in nosDrugList" value="{{option['drug.drug_code']}}">
+                    {{option['drug.drug_name'] + '[' + option['drug.drug_code'] + ']'}}
+                </option>
+            </select>
+        </div>
     </div>
 
 </div>

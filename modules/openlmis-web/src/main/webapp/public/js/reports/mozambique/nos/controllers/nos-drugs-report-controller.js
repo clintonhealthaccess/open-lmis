@@ -3,6 +3,7 @@ function NosDrugsReportController($scope, $controller, NosDrugsChartService) {
   $scope.reportLoaded = false;
   $scope.selectedDrugCode = '';
   $scope.buttonDisplay = false;
+  $scope.exportAllbtnDisplay = false;
 
   init();
 
@@ -12,6 +13,7 @@ function NosDrugsReportController($scope, $controller, NosDrugsChartService) {
       $scope.reportParams.startTime, $scope.reportParams.endTime, $scope.selectedDrugCode, "nosDrug")
       .$promise.then(function (result) {
       $scope.buttonDisplay = result.data.length > 0;
+      $scope.exportAllbtnDisplay = result.data.length > 0;
       NosDrugsChartService.makeNosDrugHistogram('tracer-report', result.data);
     });
   }
@@ -26,8 +28,20 @@ function NosDrugsReportController($scope, $controller, NosDrugsChartService) {
     NosDrugsChartService.exportXLSX($scope.reportParams.startTime, $scope.reportParams.endTime, getSelectedProvince(), getSelectedDistrict(), "nosDrug");
   };
 
-  $scope.onChangeSelectedDrug = function () {
-    $scope.loadReport();
+
+
+  $scope.exportXLSXAll = function () {
+    console.log("click Export All");
+    // NosDrugsChartService.exportXLSX($scope.reportParams.startTime, $scope.reportParams.endTime, getSelectedProvince(), getSelectedDistrict(), "nosDrug");
+  };
+
+  $scope.exportXLSXAll = function () {
+    console.log("click Export All");
+    // NosDrugsChartService.exportXLSX($scope.reportParams.startTime, $scope.reportParams.endTime, getSelectedProvince(), getSelectedDistrict(), "nosDrug");
+  };
+
+  $scope.onSelectCodeToExport = function () {
+    console.log("onSelectCodeToExport");
   };
 
   function init() {

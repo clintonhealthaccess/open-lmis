@@ -134,9 +134,9 @@
                 <tr ng-repeat="item in therapeuticLines">
                     <td class="banner-text">{{$index+1}}</td>
                     <td class="no-border therapeutic-item"></td>
-                    <td class="no-border therapeutic-item">{{item.name}}</td>
+                    <td class="no-border therapeutic-item">{{item.code}}</td>
                     <td>{{item.patientsOnTreatment}}</td>
-                    <td ng-if="rnr.reportType === 'new'" >{{item.comunitaryPharmacy}}</td>
+                    <td>{{item.comunitaryPharmacy}}</td>
                 </tr>
                 <tr ng-if="rnr.reportType === 'new'">
                     <td class="banner-text blank-cell no-border"></td>
@@ -187,7 +187,7 @@
             </table>
 
             <div class="comment-wrapper">
-                <table class="background class="col-5"">
+                <table class="background class=col-5 ">
                     <tr >
                         <td></td>
                     </tr>
