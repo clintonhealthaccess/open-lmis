@@ -50,7 +50,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
 
     $scope.initTherapeuticLines = function (){
         $scope.therapeuticLines = $scope.rnr.therapeuticLines;
-    }
+    };
 
     $scope.initMonth = function () {
         var month = "month." + $scope.rnr.period.stringEndDate.substr(3, 2);
