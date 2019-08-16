@@ -29,6 +29,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
             } else {
                 $scope.initPatient();
             }
+            $scope.initTherapeuticLines();
             parseSignature($scope.rnr.rnrSignatures);
 
             downloadPdfService.init($scope, $scope.rnr.id);
@@ -44,6 +45,11 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
                 $scope.approverSignature = signature.text;
             }
         });
+    }
+
+
+    $scope.initTherapeuticLines = function (){
+        $scope.therapeuticLines = $scope.rnr.therapeuticLines;
     }
 
     $scope.initMonth = function () {
@@ -146,9 +152,9 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
             "total de pacientes em tarv na us": { messageName: "totalNr", tableName: 'prophylaxis' },
         };
         var tableMap = {
-            'Type of patients in TARV': 'patientsType',
+            'Type of patients in TRAV': 'patientsType',
             'Months dispensed': 'md',
-            'age range of TARV patients': 'TARVPatients',
+            'age range of TRAV patients': 'TARVPatients',
             'prophylaxis': 'prophylaxis'
         };
         var invalideKey = _.keys(openlmisMessageMap);
@@ -212,5 +218,4 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
             $scope.regimeTotal += regimens[i].patientsOnTreatment;
         }
     };
-
 }
