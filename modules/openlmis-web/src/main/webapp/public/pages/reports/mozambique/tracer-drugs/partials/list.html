@@ -21,7 +21,7 @@
 
     <div class="over-flow-hidden" ng-show="reportLoaded">
         <div class="form-fields">
-            <span style="margin-left: 6%">Drug:</span>
+            <span style="margin-left: 6%" openlmis-message="label.list.drug"></span>
             <select ui-select2
                     ng-click="onChangeSelectedDrug()"
                     ng-model="selectedDrugCode"
@@ -30,14 +30,17 @@
                     class="large-input"
                     name="drug"
                     id="drugDropDown">
-                <option ng-repeat="option in tracerDrugList" value="{{option['drug.drug_code']}}">
+                <option ng-repeat="option in drugList" value="{{option['drug.drug_code']}}">
                     {{option['drug.drug_name'] + '[' + option['drug.drug_code'] + ']'}}
                 </option>
             </select>
         </div>
         <div id="tracer-report"></div>
         <div id="legend-div"></div>
-        <div ng-show="buttonDisplay" ng-include="'/public/pages/reports/mozambique/export-data-button.html'"></div>
+        <div ng-show="buttonDisplay" style="margin-top: 40px; height: 350px">
+            <div ng-include="'/public/pages/reports/mozambique/export-drug-selection.html'"></div>
+            <div ng-include="'/public/pages/reports/mozambique/export-drug-data-button.html'"></div>
+        </div>
     </div>
 
 

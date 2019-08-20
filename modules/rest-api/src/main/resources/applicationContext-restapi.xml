@@ -35,9 +35,21 @@
 
     <mvc:interceptors>
         <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+        <!-- Interceptor the app request -->
         <mvc:interceptor>
-            <mvc:mapping path="/rest-api/*"/>
-            <mvc:exclude-mapping path="/rest-api/login"/>
+            <!-- POST AND PUT -->
+            <mvc:mapping path="/rest-api/requisitions"/>
+            <mvc:mapping path="/rest-api/sdp-requisitions"/>
+            <mvc:mapping path="/rest-api/facilities/**"/>
+            <mvc:mapping path="/rest-api/update-app-info"/>
+            <mvc:mapping path="/rest-api/programData"/>
+            <!-- GET  -->
+            <mvc:mapping path="/rest-api/latest-products"/>
+            <mvc:mapping path="/rest-api/temp86-notice-kit-change"/>
+            <mvc:mapping path="/rest-api/programData/facilities/*"/>
+            <mvc:mapping path="/rest-api/report-types/mapping/*"/>
+            <mvc:mapping path="/rest-api/services"/>
+            <mvc:mapping path="/rest-api/programs/*"/>
             <bean class="org.openlmis.restapi.interceptor.Interceptor" />
         </mvc:interceptor>
     </mvc:interceptors>

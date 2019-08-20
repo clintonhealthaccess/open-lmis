@@ -1,6 +1,13 @@
 package org.openlmis.restapi.interceptor;
 
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.PostConstruct;
+import org.apache.commons.lang3.StringUtils;
 import org.openlmis.core.exception.DataException;
+import org.openlmis.restapi.domain.RestAppInfoRequest;
+import org.openlmis.restapi.service.RestAppInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -12,11 +19,26 @@ import java.util.Date;
 
 public class Interceptor extends HandlerInterceptorAdapter {
 
+    @Autowired
+    private RestAppInfoService restAppInfoService;
+
     @Value("${andorid.app.old.version.expiration.date}")
     private String expirationDate;
 
     @Value("${andorid.app.version.code}")
     private String versionCode;
+
+    private Map<String,String> versionCodeMap = new HashMap<>();
+
+    @PostConstruct
+    public void init() {
+        versionCodeMap.put("82", "1.11.82");
+        versionCodeMap.put("83", "1.12.83");
+        versionCodeMap.put("84", "1.12.84");
+        versionCodeMap.put("85", "1.12.85");
+        versionCodeMap.put("86", "1.12.86");
+        versionCodeMap.put("87", "1.12.87");
+    }
 
 
     @Override
@@ -26,8 +48,26 @@ public class Interceptor extends HandlerInterceptorAdapter {
         Date expirationDateOfAndoridApp = getExpirationDate();
 
         // if the android version is less than 86, the request version vode will be null
-        //validAppVersion(request, expirationDateOfAndoridApp);
+        updateAppVersion(request);
+        validAppVersion(request, expirationDateOfAndoridApp);
         return true;
+    }
+
+    private void updateAppVersion(HttpServletRequest request) {
+        String versionCode = request.getHeader("VersionCode");
+        String userName = request.getHeader("UserName");
+        String facilityCode = request.getHeader("FacilityCode");
+        if (StringUtils.isNotBlank(versionCode) && StringUtils.isNotBlank(userName) && StringUtils
+            .isNotBlank(facilityCode)) {
+            versionCode = versionCodeMap.get(versionCode);
+            if (StringUtils.isNotBlank(versionCode)) {
+                RestAppInfoRequest appInfoRequest = new RestAppInfoRequest();
+                appInfoRequest.setFacilityCode(facilityCode);
+                appInfoRequest.setVersion(versionCode);
+                appInfoRequest.setUserName(userName);
+                restAppInfoService.createOrUpdateVersion(appInfoRequest);
+            }
+        }
     }
 
     private void validAppVersion(HttpServletRequest request, Date expirationDateOfAndoridApp) {
