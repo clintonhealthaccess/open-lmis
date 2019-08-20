@@ -63,7 +63,7 @@ public class Rnr extends BaseModel {
     displayOrderMap.put("maintenance", 1);
     displayOrderMap.put("alteration", 2);
     displayOrderMap.put("transit", 3);
-    displayOrderMap.put("Transfers", 4);
+    displayOrderMap.put("transfers", 4);
     displayOrderMap.put("3 mopnths dispense (dt)", 5);
     displayOrderMap.put("month dispense", 6);
     displayOrderMap.put("# of therapeutic months dispensed", 7);
