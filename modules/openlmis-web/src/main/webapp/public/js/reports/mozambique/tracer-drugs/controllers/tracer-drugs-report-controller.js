@@ -1,4 +1,4 @@
-function TracerDrugsReportController($scope, $controller, TracerDrugsChartService, NosDrugsChartService) {
+function TracerDrugsReportController($scope, $controller, TracerDrugsChartService, NosDrugsChartService, messageService) {
   $controller('BaseProductReportController', {$scope: $scope});
   var SELECTION_CHECKBOX_NOT_SELECT_STYLES = 'selection-checkbox__not-select';
   var SELECTION_CHECKBOX_ALL_STYLES = 'selection-checkbox__all';
@@ -10,6 +10,7 @@ function TracerDrugsReportController($scope, $controller, TracerDrugsChartServic
   $scope.selectedDrugAllClass = SELECTION_CHECKBOX_NOT_SELECT_STYLES;
   $scope.selectedDrugNames = [];
   $scope.selectedDrugs = [];
+  $scope.invalidDrug = false;
 
   init();
 
@@ -19,8 +20,15 @@ function TracerDrugsReportController($scope, $controller, TracerDrugsChartServic
     }
   };
 
+  function validateDrugs () {
+    $scope.invalidDrug = _.isEmpty($scope.selectedDrugs);
+    return !$scope.invalidDrug;
+  }
+
   $scope.exportXLSX = function () {
-    NosDrugsChartService.exportXLSX($scope.reportParams.startTime, $scope.reportParams.endTime, getSelectedProvince(), getSelectedDistrict(), "tracerDrug", $scope.selectedDrugs);
+    if (validateDrugs()) {
+      NosDrugsChartService.exportXLSX($scope.reportParams.startTime, $scope.reportParams.endTime, getSelectedProvince(), getSelectedDistrict(), "tracerDrug", $scope.selectedDrugs);
+    }
   };
 
   $scope.onChangeSelectedDrug = function () {
@@ -53,7 +61,7 @@ function TracerDrugsReportController($scope, $controller, TracerDrugsChartServic
       _.forEach($scope.drugList, function(nosDrug) {
         nosDrug.isSelected = true;
         $scope.selectedDrugs.push(nosDrug['drug.drug_code']);
-        $scope.selectedDrugNames.push(nosDrug['drug.drug_name']);
+        $scope.selectedDrugNames = [messageService.get('report.option.all')];
       });
     } else {
       $scope.selectedDrugAllClass = SELECTION_CHECKBOX_NOT_SELECT_STYLES;
@@ -70,9 +78,12 @@ function TracerDrugsReportController($scope, $controller, TracerDrugsChartServic
     _.forEach($scope.drugList, function(nosDrug) {
       if (nosDrug.isSelected) {
         $scope.selectedDrugs.push(nosDrug['drug.drug_code']);
-        $scope.selectedDrugNames.push(nosDrug['drug.drug_name']);
+        $scope.selectedDrugNames.push(nosDrug['drug.drug_name'] + '[' + nosDrug['drug.drug_code'] + ']');
       }
     });
+    if ($scope.selectedDrugNames.length === $scope.drugList.length) {
+      $scope.selectedDrugNames = [messageService.get('report.option.all')];
+    }
   };
 
   function init() {
