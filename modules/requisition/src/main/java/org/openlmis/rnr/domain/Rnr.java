@@ -515,20 +515,20 @@ public class Rnr extends BaseModel {
   public void putDisplayOrderIfNeed() {
     if (CollectionUtils.isNotEmpty(this.getPatientQuantifications())) {
       for (PatientQuantificationLineItem item : this.getPatientQuantifications()) {
-        if (StringUtils.isBlank(item.getTableName())) {
+        if (StringUtils.isBlank(item.getTableName())
+            || displayOrderMap.get(item.getCategory().toLowerCase()) == null) {
           return;
         }
         item.setDisplayOrder(displayOrderMap.get(item.getCategory().toLowerCase()));
       }
+      Collections.sort(this.getPatientQuantifications(),
+          new Comparator<PatientQuantificationLineItem>() {
+            @Override
+            public int compare(PatientQuantificationLineItem o1, PatientQuantificationLineItem o2) {
+              return o1.getDisplayOrder() - o2.getDisplayOrder();
+            }
+          });
     }
-    Collections.sort(this.getPatientQuantifications(),
-        new Comparator<PatientQuantificationLineItem>() {
-          @Override
-          public int compare(PatientQuantificationLineItem o1, PatientQuantificationLineItem o2) {
-            return o1.getDisplayOrder() - o2.getDisplayOrder();
-          }
-        });
-
   }
 }
 
