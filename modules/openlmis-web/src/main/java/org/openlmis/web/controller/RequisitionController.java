@@ -149,6 +149,7 @@ public class RequisitionController extends BaseController {
   public ResponseEntity<OpenLmisResponse> getByIdWithOutSkippedItems(@PathVariable Long id, HttpServletRequest request) {
     try {
       Rnr rnr = requisitionService.getFullRequisitionById(id);
+      rnr.putDisplayOrderIfNeed();
       List<RnrLineItem> allRnrLineItems= rnr.getFullSupplyLineItems();
       CollectionUtils.filter(allRnrLineItems, new Predicate() {
         @Override
