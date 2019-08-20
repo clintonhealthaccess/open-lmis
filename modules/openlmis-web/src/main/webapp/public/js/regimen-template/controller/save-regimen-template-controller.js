@@ -156,8 +156,12 @@ function SaveRegimenTemplateController($scope, program, programRegimens, regimen
 
     var regimenForm = {};
     var regimenListToSave = [];
+    var regimensByCategory = [];
+    $(Object.keys($scope.regimensByCategory)).each(function(index, key) {
+      regimensByCategory = regimensByCategory.concat($scope.regimensByCategory[key])
+    });
 
-    $(_.flatten($scope.regimensByCategory)).each(function (index, regimen) {
+    $(regimensByCategory).each(function (index, regimen) {
       regimen.displayOrder = index + 1;
       regimenListToSave.push(regimen);
     });
