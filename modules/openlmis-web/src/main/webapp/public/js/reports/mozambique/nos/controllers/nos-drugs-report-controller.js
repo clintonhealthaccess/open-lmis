@@ -1,9 +1,15 @@
 function NosDrugsReportController($scope, $controller, NosDrugsChartService) {
   $controller('BaseProductReportController', {$scope: $scope});
+  var SELECTION_CHECKBOX_NOT_SELECT_STYLES = 'selection-checkbox__not-select';
+  var SELECTION_CHECKBOX_ALL_STYLES = 'selection-checkbox__all';
   $scope.reportLoaded = false;
   $scope.selectedDrugCode = '';
   $scope.buttonDisplay = false;
-  $scope.exportAllbtnDisplay = false;
+  $scope.showDrugList = false;
+  $scope.selectedAll = false;
+  $scope.selectedDrugAllClass = SELECTION_CHECKBOX_NOT_SELECT_STYLES;
+  $scope.selectedDrugNames = [];
+  $scope.selectedDrugs = [];
 
   init();
 
@@ -12,8 +18,6 @@ function NosDrugsReportController($scope, $controller, NosDrugsChartService) {
     NosDrugsChartService.getNosDrugItemsPromise(getSelectedProvince(), getSelectedDistrict(),
       $scope.reportParams.startTime, $scope.reportParams.endTime, $scope.selectedDrugCode, "nosDrug")
       .$promise.then(function (result) {
-      $scope.buttonDisplay = result.data.length > 0;
-      $scope.exportAllbtnDisplay = result.data.length > 0;
       NosDrugsChartService.makeNosDrugHistogram('tracer-report', result.data);
     });
   }
@@ -25,30 +29,54 @@ function NosDrugsReportController($scope, $controller, NosDrugsChartService) {
   };
 
   $scope.exportXLSX = function () {
-    NosDrugsChartService.exportXLSX($scope.reportParams.startTime, $scope.reportParams.endTime, getSelectedProvince(), getSelectedDistrict(), "nosDrug");
+    NosDrugsChartService.exportXLSX($scope.reportParams.startTime, $scope.reportParams.endTime, getSelectedProvince(), getSelectedDistrict(), "nosDrug", $scope.selectedDrugs);
   };
 
-
-
-  $scope.exportXLSXAll = function () {
-    console.log("click Export All");
-    // NosDrugsChartService.exportXLSX($scope.reportParams.startTime, $scope.reportParams.endTime, getSelectedProvince(), getSelectedDistrict(), "nosDrug");
+  $scope.clickDrugSelection = function () {
+    $scope.showDrugList = !$scope.showDrugList;
   };
 
-  $scope.exportXLSXAll = function () {
-    console.log("click Export All");
-    // NosDrugsChartService.exportXLSX($scope.reportParams.startTime, $scope.reportParams.endTime, getSelectedProvince(), getSelectedDistrict(), "nosDrug");
+  $scope.closeDrugListDialog = function () {
+    $scope.showDrugList = false;
   };
 
-  $scope.onSelectCodeToExport = function () {
-    console.log("onSelectCodeToExport");
+  $scope.selectALL = function () {
+    $scope.selectedAll = !$scope.selectedAll;
+    $scope.selectedDrugs = [];
+    $scope.selectedDrugNames = [];
+    if ($scope.selectedAll) {
+      $scope.selectedDrugAllClass = SELECTION_CHECKBOX_ALL_STYLES;
+      _.forEach($scope.drugList, function(nosDrug) {
+        nosDrug.isSelected = true;
+        $scope.selectedDrugs.push(nosDrug['drug.drug_code']);
+        $scope.selectedDrugNames.push(nosDrug['drug.drug_name']);
+      });
+    } else {
+      $scope.selectedDrugAllClass = SELECTION_CHECKBOX_NOT_SELECT_STYLES;
+      _.forEach($scope.drugList, function(nosDrug) {
+        nosDrug.isSelected = false;
+      });
+    }
+  };
+
+  $scope.selectDrug = function (nosDrug) {
+    nosDrug.isSelected = !nosDrug.isSelected;
+    $scope.selectedDrugs = [];
+    $scope.selectedDrugNames = [];
+    _.forEach($scope.drugList, function(nosDrug) {
+      if (nosDrug.isSelected) {
+        $scope.selectedDrugs.push(nosDrug['drug.drug_code']);
+        $scope.selectedDrugNames.push(nosDrug['drug.drug_name']);
+      }
+    });
   };
 
   function init() {
     var nosDrugListPromis = NosDrugsChartService.getNosDrugList();
 
     nosDrugListPromis.then(function (nosDrugListResult) {
-      $scope.nosDrugList = nosDrugListResult.data;
+      $scope.drugList = nosDrugListResult.data;
+      $scope.buttonDisplay = nosDrugListResult.data.length > 0;
       $scope.selectedDrugCode = nosDrugListResult.data[0]['drug.drug_code'];
     });
   }
