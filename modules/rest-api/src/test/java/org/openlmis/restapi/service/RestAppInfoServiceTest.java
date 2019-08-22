@@ -62,6 +62,7 @@ public class RestAppInfoServiceTest {
 
         RestAppInfoRequest restAppInfoRequest = mock(RestAppInfoRequest.class);
         when(restAppInfoRequest.getVersion()).thenReturn("1.12.85");
+        when(restAppInfoRequest.getFacilityId()).thenReturn(null);
 
         service.createOrUpdateVersion(restAppInfoRequest);
         verify(appInfoRepository).update(any(AppInfo.class));
@@ -75,6 +76,7 @@ public class RestAppInfoServiceTest {
 
         RestAppInfoRequest restAppInfoRequest = mock(RestAppInfoRequest.class);
         when(restAppInfoRequest.getVersion()).thenReturn("1.12.84");
+        when(restAppInfoRequest.getFacilityId()).thenReturn(null);
 
         int result = service.createOrUpdateVersion(restAppInfoRequest);
         Assert.assertEquals(result, 0);
@@ -88,6 +90,7 @@ public class RestAppInfoServiceTest {
 
         RestAppInfoRequest restAppInfoRequest = mock(RestAppInfoRequest.class);
         when(restAppInfoRequest.getVersion()).thenReturn("1.12.83");
+        when(restAppInfoRequest.getFacilityId()).thenReturn(null);
 
         int result = service.createOrUpdateVersion(restAppInfoRequest);
         Assert.assertEquals(result, -1);

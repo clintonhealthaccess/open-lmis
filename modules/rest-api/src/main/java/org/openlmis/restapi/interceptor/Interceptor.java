@@ -56,13 +56,13 @@ public class Interceptor extends HandlerInterceptorAdapter {
     private void updateAppVersion(HttpServletRequest request) {
         String versionCode = request.getHeader("VersionCode");
         String userName = request.getHeader("UserName");
-        String facilityCode = request.getHeader("FacilityCode");
+        String facilityId = request.getHeader("FacilityId");
         if (StringUtils.isNotBlank(versionCode) && StringUtils.isNotBlank(userName) && StringUtils
-            .isNotBlank(facilityCode)) {
+            .isNotBlank(facilityId)) {
             versionCode = versionCodeMap.get(versionCode);
             if (StringUtils.isNotBlank(versionCode)) {
                 RestAppInfoRequest appInfoRequest = new RestAppInfoRequest();
-                appInfoRequest.setFacilityCode(facilityCode);
+                appInfoRequest.setFacilityId(Long.valueOf(facilityId));
                 appInfoRequest.setVersion(versionCode);
                 appInfoRequest.setUserName(userName);
                 restAppInfoService.createOrUpdateVersion(appInfoRequest);
@@ -77,7 +77,7 @@ public class Interceptor extends HandlerInterceptorAdapter {
         }
         Integer androidVersionCode = Integer.valueOf(versionCode);
         String requestAppInfo = request.getHeader("VersionCode");
-        if (null == requestAppInfo || Integer.valueOf(requestAppInfo) < androidVersionCode) {
+        if (StringUtils.isBlank(requestAppInfo) || Integer.valueOf(requestAppInfo) < androidVersionCode) {
             throw new DataException(String.format("Please upgrade your android version %s", requestAppInfo));
         }
     }

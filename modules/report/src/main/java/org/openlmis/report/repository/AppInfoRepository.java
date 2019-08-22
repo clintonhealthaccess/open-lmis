@@ -31,4 +31,8 @@ public class AppInfoRepository {
     public AppInfo getAppInfoByFacilityCode(String facilityCode) {
         return appInfoMapper.queryByFacilityCode(facilityCode);
     }
+
+    public AppInfo getAppInfoByFacilityId(Long facilityId) {
+        return appInfoMapper.queryByFacilityId(facilityId);
+    }
 }

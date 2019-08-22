@@ -37,4 +37,7 @@ public interface AppInfoMapper {
             "LEFT JOIN geographic_zones as zone ON facilities.geographiczoneid = zone.id " +
             "LEFT JOIN geographic_zones as parent_zone ON zone.parentid = parent_zone.id"})
     List<AppInfo> queryAll();
+
+    @Select("SELECT * FROM moz_app_info WHERE facilityId = #{facilityId}")
+    AppInfo queryByFacilityId(Long facilityId);
 }

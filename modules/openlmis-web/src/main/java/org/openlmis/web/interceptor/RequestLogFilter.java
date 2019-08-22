@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 public class RequestLogFilter extends AbstractRequestLoggingFilter {
 
   private Logger logger = Logger.getLogger(getClass());
-  private static final String TEMPLATE = "User is %s, FacilityName is %s, Device is %s, Unique Device id is %s, VersionCode is %s, message is %s";
+  private static final String TEMPLATE = "User is %s, FacilityName is %s, facilityId is %s, Unique Device id is %s, VersionCode is %s, message is %s";
 
   @Override
   protected void beforeRequest(HttpServletRequest request, String message) {
@@ -19,7 +19,7 @@ public class RequestLogFilter extends AbstractRequestLoggingFilter {
   protected void afterRequest(HttpServletRequest request, String message) {
     String userName = request.getHeader("UserName");
     String facilityName = request.getHeader("FacilityName");
-    String device = request.getHeader("DeviceInfo");
+    String facilityId = request.getHeader("FacilityId");
     String uniqueId = request.getHeader("UniqueId");
     String versionCode = request.getHeader("VersionCode");
     String info;
@@ -29,6 +29,6 @@ public class RequestLogFilter extends AbstractRequestLoggingFilter {
       info = "request body contains sensitive data, skipping";
     }
     logger
-        .info(String.format(TEMPLATE, userName, facilityName, device, uniqueId, versionCode, info));
+        .info(String.format(TEMPLATE, userName, facilityName, facilityId, uniqueId, versionCode, info));
   }
 }

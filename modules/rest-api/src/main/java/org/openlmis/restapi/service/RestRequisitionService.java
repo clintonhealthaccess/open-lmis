@@ -87,7 +87,7 @@ public class RestRequisitionService {
   private ProcessingScheduleService processingScheduleService;
 
   @Transactional
-  public Rnr submitReport(Report report, Long userId) {
+  public Rnr submitReport(Report report, Long userId, String versionCode) {
     if (syncUpHashRepository.hashExists(report.getSyncUpHash())) {
       return null;
     }
@@ -112,7 +112,7 @@ public class RestRequisitionService {
 
     ProcessingPeriod proposedPeriod = report.getProgramCode().equals(RAPID_TEST_PROGRAM_CODE) ?
         findRapidTestPeriod(report.getActualPeriodStartDate(), report.getActualPeriodEndDate(), reportingFacility.getId(), reportingProgram.getId()) : null;
-    Rnr rnr = requisitionService.initiate(reportingFacility, reportingProgram, userId, EMERGENCY, proposedPeriod, report.getServiceLineItems());
+    Rnr rnr = requisitionService.initiate(reportingFacility, reportingProgram, userId, EMERGENCY, proposedPeriod, report.getServiceLineItems(), versionCode);
 
     restRequisitionCalculator.validateProducts(report.getProducts(), rnr);
 
@@ -179,7 +179,7 @@ public class RestRequisitionService {
   }
 
   @Transactional
-  public Rnr submitSdpReport(Report report, Long userId) {
+  public Rnr submitSdpReport(Report report, Long userId, String versionCode) {
     if (syncUpHashRepository.hashExists(report.getSyncUpHash())) {
       return null;
     }
@@ -211,7 +211,7 @@ public class RestRequisitionService {
       rnr = requisitionService.getFullRequisitionById(rnrs.get(0).getId());
 
     } else {
-      rnr = requisitionService.initiate(reportingFacility, reportingProgram, userId, report.getEmergency(), period, null);
+      rnr = requisitionService.initiate(reportingFacility, reportingProgram, userId, report.getEmergency(), period, null, versionCode);
     }
 
     List<RnrLineItem> fullSupplyProducts = new ArrayList<>();

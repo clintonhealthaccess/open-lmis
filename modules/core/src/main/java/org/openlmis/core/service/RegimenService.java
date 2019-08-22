@@ -64,7 +64,8 @@ public class RegimenService {
      return repository.getAllRegimens();
   }
 
-  public List<Regimen> getRegimensByProgramAndIsCustom(Long programId, boolean isCustom) {
-    return repository.getRegimensByProgramAndIsCustom(programId, isCustom);
+  public List<Regimen> getRegimensByProgramAndIsCustom(Long programId, boolean isCustom,
+      String versionCode) {
+    return repository.getRegimensByProgramAndIsCustom(programId, isCustom, versionCode);
   }
 }
