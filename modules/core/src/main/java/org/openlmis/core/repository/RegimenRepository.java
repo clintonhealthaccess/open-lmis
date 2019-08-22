@@ -383,7 +383,7 @@ public class RegimenRepository {
     newRegimen1.setCategory(adultCategory);
     newRegimen1.setCode("002");
     newRegimen1.setProgramId(1L);
-    newRegimen1.setName("TDF+3TC+DTG");
+    newRegimen1.setName("TDF+3TC+EFV");
     newRegimen1.setDisplayOrder(1);
     newRegimen1.setCustom(false);
     newRegimen1.setActive(true);
@@ -462,7 +462,7 @@ public class RegimenRepository {
     newRegimen8.setSkipped(false);
 
     Regimen newRegimen9 = new Regimen();
-    newRegimen9.setCategory(childCategory);
+    newRegimen9.setCategory(adultCategory);
     newRegimen9.setCode("007");
     newRegimen9.setId(27L);
     newRegimen9.setProgramId(1L);
@@ -473,7 +473,7 @@ public class RegimenRepository {
     newRegimen9.setSkipped(false);
 
     Regimen newRegimen10 = new Regimen();
-    newRegimen10.setCategory(childCategory);
+    newRegimen10.setCategory(adultCategory);
     newRegimen10.setCode("008");
     newRegimen10.setId(28L);
     newRegimen10.setProgramId(1L);
