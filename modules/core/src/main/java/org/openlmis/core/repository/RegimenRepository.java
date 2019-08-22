@@ -271,7 +271,7 @@ public class RegimenRepository {
     oldRegimen11.setCode("011");
     oldRegimen11.setId(29L);
     oldRegimen11.setProgramId(1L);
-    oldRegimen11.setName("Ad4T+3TC+ABC(2DFC Baby + ABC)");
+    oldRegimen11.setName("d4T+3TC+ABC(2DFC Baby + ABC)");
     oldRegimen11.setDisplayOrder(3);
     oldRegimen11.setCustom(false);
     oldRegimen11.setActive(true);
