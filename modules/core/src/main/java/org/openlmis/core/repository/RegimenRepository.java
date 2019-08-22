@@ -234,8 +234,8 @@ public class RegimenRepository {
 
     Regimen oldRegimen8 = new Regimen();
     oldRegimen8.setCategory(adultCategory);
-    oldRegimen8.setCode("001");
-    oldRegimen8.setId(19L);
+    oldRegimen8.setCode("008");
+    oldRegimen8.setId(26L);
     oldRegimen8.setProgramId(1L);
     oldRegimen8.setName("ABC+3TC+LPV/r");
     oldRegimen1.setDisplayOrder(3);
@@ -323,10 +323,10 @@ public class RegimenRepository {
 
     Regimen oldRegimen16 = new Regimen();
     oldRegimen16.setCategory(childCategory);
-    oldRegimen16.setCode("016");
-    oldRegimen16.setId(34L);
+    oldRegimen16.setCode("017");
+    oldRegimen16.setId(35L);
     oldRegimen16.setProgramId(1L);
-    oldRegimen16.setName("AZT60+3TC+LPV/r(2DFC + LPV/r)");
+    oldRegimen16.setName("ABC+3TC+LPV/r");
     oldRegimen16.setDisplayOrder(3);
     oldRegimen16.setCustom(false);
     oldRegimen16.setActive(true);
@@ -345,7 +345,7 @@ public class RegimenRepository {
 
     Regimen oldRegimen18 = new Regimen();
     oldRegimen18.setCategory(childCategory);
-    oldRegimen18.setCode("017");
+    oldRegimen18.setCode("014");
     oldRegimen18.setId(32L);
     oldRegimen18.setProgramId(1L);
     oldRegimen18.setName("AZT60+3TC+EFV(2DFC + EFV)");
@@ -402,7 +402,7 @@ public class RegimenRepository {
 
     Regimen newRegimen3 = new Regimen();
     newRegimen3.setCategory(adultCategory);
-    newRegimen3.setCode("TO83");
+    newRegimen3.setCode("001");
     newRegimen3.setProgramId(1L);
     newRegimen3.setName("AZT+3TC+NVP");
     newRegimen3.setDisplayOrder(3);
@@ -453,7 +453,6 @@ public class RegimenRepository {
     Regimen newRegimen8 = new Regimen();
     newRegimen8.setCategory(adultCategory);
     newRegimen8.setCode("006");
-    newRegimen8.setId(19L);
     newRegimen8.setProgramId(1L);
     newRegimen8.setName("AZT+3TC+LPV/r");
     newRegimen1.setDisplayOrder(8);
@@ -464,7 +463,6 @@ public class RegimenRepository {
     Regimen newRegimen9 = new Regimen();
     newRegimen9.setCategory(adultCategory);
     newRegimen9.setCode("007");
-    newRegimen9.setId(27L);
     newRegimen9.setProgramId(1L);
     newRegimen9.setName("TDF+3TC+LPV/r");
     newRegimen9.setDisplayOrder(9);
@@ -475,7 +473,6 @@ public class RegimenRepository {
     Regimen newRegimen10 = new Regimen();
     newRegimen10.setCategory(adultCategory);
     newRegimen10.setCode("008");
-    newRegimen10.setId(28L);
     newRegimen10.setProgramId(1L);
     newRegimen10.setName("ABC+3TC+LPV/r");
     newRegimen10.setDisplayOrder(10);
@@ -487,7 +484,6 @@ public class RegimenRepository {
     Regimen newRegimen11 = new Regimen();
     newRegimen11.setCategory(childCategory);
     newRegimen11.setCode("TO811");
-    newRegimen11.setId(29L);
     newRegimen11.setProgramId(1L);
     newRegimen11.setName("ABC+3TC+LPV/r (2DFC ped + LPV/r 100/25)");
     newRegimen11.setDisplayOrder(11);
@@ -498,7 +494,6 @@ public class RegimenRepository {
     Regimen newRegimen12 = new Regimen();
     newRegimen12.setCategory(childCategory);
     newRegimen12.setCode("TO812");
-    newRegimen12.setId(30L);
     newRegimen12.setProgramId(1L);
     newRegimen12.setName("ABC+3TC+LPV/r (2DFC ped + LPV/r 80/20)");
     newRegimen12.setDisplayOrder(12);
@@ -509,7 +504,6 @@ public class RegimenRepository {
     Regimen newRegimen13 = new Regimen();
     newRegimen13.setCategory(childCategory);
     newRegimen13.setCode("TO813");
-    newRegimen13.setId(31L);
     newRegimen13.setProgramId(1L);
     newRegimen13.setName("ABC+3TC+LPV/r (2DFC ped + LPV/r 40/10)");
     newRegimen13.setDisplayOrder(13);
@@ -520,7 +514,6 @@ public class RegimenRepository {
     Regimen newRegimen14 = new Regimen();
     newRegimen14.setCategory(childCategory);
     newRegimen14.setCode("TO814");
-    newRegimen14.setId(33L);
     newRegimen14.setProgramId(1L);
     newRegimen14.setName("ABC+3TC+EFV (2DFC ped + EFV200)");
     newRegimen14.setDisplayOrder(14);
