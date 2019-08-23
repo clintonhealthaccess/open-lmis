@@ -45,7 +45,7 @@ function onLoaded() {
 
             $('.mmia-form').css('width', 994);
             $('.mmia-form').css('zoom', 0.50);
-            $('.mmia-form td').css('line-height', 0.8);
+            $('.mmia-form td').css('line-height', 1.0);
 
             // if (regimenCount > REGIMEN_LIMIT || rnrItemCount > RNR_ITEM_LIMIT) {
             //     $('.mmia-form').css('zoom', 0.7);
