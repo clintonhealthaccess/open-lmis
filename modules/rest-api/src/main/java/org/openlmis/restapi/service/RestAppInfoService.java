@@ -59,11 +59,16 @@ public class RestAppInfoService {
                 .getAppInfoByFacilityCode(appInfoRequest.getFacilityCode());
         }
         if (logedAppInfo == null) {
-            logedAppInfo = new AppInfo(facilityRepository.getIdForCode(appInfoRequest.getFacilityCode()), appInfoRequest.getUserName(), appInfoRequest.getVersion());
+            Long facilityId =
+                appInfoRequest.getFacilityId() != null ? appInfoRequest.getFacilityId()
+                    : facilityRepository.getIdForCode(appInfoRequest.getFacilityCode());
+            logedAppInfo = new AppInfo(facilityId, appInfoRequest.getUserName(),
+                appInfoRequest.getVersion());
             appInfoRepository.create(logedAppInfo);
             return VERSION_UPGRADE;
         }
-        int appUpgradeStatus = getAppUpgradeStatus(logedAppInfo.getAppVersion(), appInfoRequest.getVersion());
+        int appUpgradeStatus = getAppUpgradeStatus(logedAppInfo.getAppVersion(),
+            appInfoRequest.getVersion());
         if (appUpgradeStatus == VERSION_UPGRADE) {
             logedAppInfo.setAppVersion(appInfoRequest.getVersion());
             appInfoRepository.update(logedAppInfo);
