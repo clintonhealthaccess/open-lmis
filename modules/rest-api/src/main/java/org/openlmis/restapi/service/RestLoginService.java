@@ -60,6 +60,9 @@ public class RestLoginService {
 
     private LoginInformation getLoginInformation(String username) {
         User user = userService.getByUserName(username);
+        if (!user.isMobileUser()) {
+            throw new DataException("error.invalid.user");
+        }
         Long facilityId = user.getFacilityId();
         List<String> programs = FluentIterable.from(getProgramsSupportedByFacilityId(facilityId)).transform(new Function<ProgramSupported, String>() {
             @Override
