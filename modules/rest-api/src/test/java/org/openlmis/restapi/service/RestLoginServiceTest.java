@@ -69,6 +69,7 @@ public class RestLoginServiceTest {
         user.setFacilityId(123L);
         user.setFirstName("Charles");
         user.setLastName("Xavier");
+        user.setIsMobileUser(true);
 
         Facility facility = new Facility();
         facility.setCode("123");

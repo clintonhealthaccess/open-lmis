@@ -27,10 +27,18 @@ import java.util.List;
 public interface FacilityLookupReportMapper {
 
     @Select("SELECT *" +
-            "   FROM " +
-            "       facilities order by name")
+        "   FROM " +
+        "       facilities order by name")
     @Options(resultSetType = ResultSetType.SCROLL_SENSITIVE, fetchSize=10,timeout=0,useCache=true,flushCache = Options.FlushCachePolicy.TRUE)
     List<Facility> getAll(@Param("RowBounds") RowBounds rowBounds);
+
+    @Select("SELECT * FROM facilities where geographiczoneid = #{zoneId} order by name")
+    List<Facility> getFacilityByDistrict(Long zoneId);
+
+    @Select("SELECT * FROM facilities as f where f.geographiczoneid in "
+        + "(select id from geographic_zones as g WHERE g.id=#{geographiczoneid} OR g.parentid=#{geographiczoneid})"
+        + "order by name")
+    List<Facility> getFacilityByProvince(Long zoneId);
 
     @Select("SELECT * " +
             "   FROM " +
