@@ -38,7 +38,7 @@ public class RestStockCardController extends BaseController {
                                     @RequestBody List<StockEvent> events,
                                     Principal principal) {
 
-    // FIXME: 2019-04-17 remove dirty data ,fixme after app version over than 86
+    // FIXME: 2019-04-17 remove dirty data
     List<StockEvent> filterStockEvents;
     if (isVersionCodeMoreThanFilterThresholdVersion(versionCode)) {
       filterStockEvents = restStockCardService.filterStockEventsList(events, WRONG_KIT_PRODUCTS_SET);
