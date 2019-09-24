@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class FilterProductConfig {
-  public static final Integer FILTER_THRESHOLD_VERSION = 86;
+  public static final Integer FILTER_THRESHOLD_VERSION = 87;
   /**
    * filter wrong kit product
    */
