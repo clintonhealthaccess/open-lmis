@@ -10,6 +10,7 @@ import org.openlmis.core.domain.ProgramSupported;
 import org.openlmis.core.service.*;
 import org.openlmis.restapi.domain.ProductResponse;
 import org.openlmis.restapi.domain.ProgramProductResponse;
+import org.openlmis.restapi.utils.KitProductFilterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.openlmis.restapi.config.FilterProductConfig.*;
+import static org.openlmis.restapi.utils.KitProductFilterUtils.*;
 
 @Service
 public class RestProductService {
@@ -113,7 +114,7 @@ public class RestProductService {
       }).toList();
     } else {
       List<Product> products = productService.getProductsAfterUpdatedDate(afterUpdatedTime);
-      if (isVersionCodeMoreThanFilterThresholdVersion(versionCode)) {
+      if (KitProductFilterUtils.isBiggerThanThresholdVersion(versionCode, KIT_CODE_CHANGE_VERSION)) {
         return filterProductFromGetProductsAfterUpdatedDate(products);
       }
       return products;

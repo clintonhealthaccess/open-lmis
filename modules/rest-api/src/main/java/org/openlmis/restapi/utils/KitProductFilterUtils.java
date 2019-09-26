@@ -1,4 +1,4 @@
-package org.openlmis.restapi.config;
+package org.openlmis.restapi.utils;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -6,8 +6,9 @@ import org.apache.commons.lang.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FilterProductConfig {
+public class KitProductFilterUtils {
   public static final Integer FILTER_THRESHOLD_VERSION = 87;
+  public static final Integer KIT_CODE_CHANGE_VERSION = 86;
   /**
    * filter wrong kit product
    */
@@ -29,7 +30,8 @@ public class FilterProductConfig {
     return hashSets;
   }
 
-  public static boolean isVersionCodeMoreThanFilterThresholdVersion(String versionCode) {
-    return (!StringUtils.isEmpty(versionCode) && Integer.valueOf(versionCode) >= FILTER_THRESHOLD_VERSION);
+  public static boolean isBiggerThanThresholdVersion(String currentVersion, Integer thresholdVersion) {
+    return StringUtils.isNumeric(currentVersion)
+        && Integer.valueOf(currentVersion) >= thresholdVersion;
   }
 }

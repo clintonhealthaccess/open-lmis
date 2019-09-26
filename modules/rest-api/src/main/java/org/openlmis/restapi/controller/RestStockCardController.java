@@ -6,6 +6,7 @@ import org.openlmis.core.exception.DataException;
 import org.openlmis.restapi.domain.StockCardDTO;
 import org.openlmis.restapi.response.RestResponse;
 import org.openlmis.restapi.service.RestStockCardService;
+import org.openlmis.restapi.utils.KitProductFilterUtils;
 import org.openlmis.stockmanagement.dto.StockEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,7 +18,7 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 
-import static org.openlmis.restapi.config.FilterProductConfig.*;
+import static org.openlmis.restapi.utils.KitProductFilterUtils.*;
 import static org.openlmis.restapi.response.RestResponse.error;
 import static org.openlmis.restapi.response.RestResponse.response;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -40,10 +41,12 @@ public class RestStockCardController extends BaseController {
 
     // FIXME: 2019-04-17 remove dirty data
     List<StockEvent> filterStockEvents;
-    if (isVersionCodeMoreThanFilterThresholdVersion(versionCode)) {
-      filterStockEvents = restStockCardService.filterStockEventsList(events, WRONG_KIT_PRODUCTS_SET);
+    if (KitProductFilterUtils.isBiggerThanThresholdVersion(versionCode, FILTER_THRESHOLD_VERSION)) {
+      filterStockEvents = restStockCardService
+          .filterStockEventsList(events, WRONG_KIT_PRODUCTS_SET);
     } else {
-      filterStockEvents = restStockCardService.filterStockEventsList(events, ALL_FILTER_KIT_PRODUCTS_SET);
+      filterStockEvents = restStockCardService
+          .filterStockEventsList(events, ALL_FILTER_KIT_PRODUCTS_SET);
     }
 
     try {
