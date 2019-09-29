@@ -78,7 +78,7 @@ public class Interceptor extends HandlerInterceptorAdapter {
         Integer androidVersionCode = Integer.valueOf(versionCode);
         String requestAppInfo = request.getHeader("VersionCode");
         if (StringUtils.isBlank(requestAppInfo) || Integer.valueOf(requestAppInfo) < androidVersionCode) {
-            throw new DataException(String.format("Please upgrade your android version %s", requestAppInfo));
+            throw new DataException("Please upgrade your android version");
         }
     }
 

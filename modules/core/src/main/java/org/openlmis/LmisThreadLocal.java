@@ -10,22 +10,39 @@
 
 package org.openlmis;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * LmisThreadLocal is used to get/set/remove current thread's value of a thread-local
  */
 public class LmisThreadLocal {
 
-    public static final ThreadLocal<String> lmisThreadLocal = new ThreadLocal<>();
+    public static final ThreadLocal<Map<String, String>> lmisThreadLocal = new ThreadLocal<>();
 
-    public static void set(String userName) {
-        lmisThreadLocal.set(userName);
+    public static final String KEY_USER_NAME = "userName";
+    public static final String KEY_FACILITY_ID = "facilityId";
+    public static final String KEY_VERSION_CODE  = "versionCode";
+    public static final String KEY_UNIQUE_ID = "UniqueId";
+
+    public static void set(String key, String userName) {
+        Map<String, String> map = lmisThreadLocal.get();
+        if (map == null) {
+            map = new HashMap<>();
+            map.put(key, userName);
+        }
+        lmisThreadLocal.set(map);
     }
 
-    public static void unset() {
+    public static void remove() {
         lmisThreadLocal.remove();
     }
 
-    public static String get() {
-        return lmisThreadLocal.get();
+    public static String get(String key) {
+        Map<String, String> map = lmisThreadLocal.get();
+        if (map == null) {
+            return null;
+        }
+        return map.get(key);
     }
 }

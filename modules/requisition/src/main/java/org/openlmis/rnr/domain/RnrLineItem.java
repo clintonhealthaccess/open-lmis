@@ -32,8 +32,9 @@ import static java.math.RoundingMode.HALF_UP;
 import static org.apache.commons.collections.CollectionUtils.find;
 import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.NON_EMPTY;
 import static org.openlmis.rnr.domain.ProgramRnrTemplate.*;
-import static org.openlmis.rnr.domain.Rnr.RNR_VALIDATION_ERROR;
 import static org.openlmis.rnr.domain.RnrStatus.AUTHORIZED;
+import static org.openlmis.rnr.utils.MessageKeyUtils.RNR_FIELD_MANDATORY_NEGATIVE;
+import static org.openlmis.rnr.utils.MessageKeyUtils.RNR_VALIDATION_ERROR;
 
 /**
  * This class represents the data captured against a product for each Requisition and contains methods to determine
@@ -196,8 +197,7 @@ public class RnrLineItem extends LineItem {
       if (template.columnsVisible(fieldName) &&
         !template.columnsCalculated(fieldName) &&
         (getValueFor(fieldName) == null || (Integer) getValueFor(fieldName) < 0)) {
-        LOGGER.error(String.format("field name is %s, productcode is %s", fieldName, productCode));
-        throw new DataException(RNR_VALIDATION_ERROR);
+        throw new DataException(RNR_FIELD_MANDATORY_NEGATIVE, product,productCode,fieldName);
       }
     }
     requestedQuantityConditionalValidation(template);
@@ -221,7 +221,6 @@ public class RnrLineItem extends LineItem {
       boolean valid = quantityDispensed >= 0 && stockInHand >= 0 && validQuantityDispensed;
 
       if (!valid) {
-        LOGGER.error(String.format("invalid productcode is %s", productCode));
         throw new DataException(RNR_VALIDATION_ERROR);
       }
     }
