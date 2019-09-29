@@ -90,14 +90,14 @@
     <div class="separate"></div>
     <div class="page-break"></div>
     <div class="middle-section">
-        <div class="regime-section">
-            <table class="regime-form">
+        <table class="regime-form">
                 <thead>
                 <tr>
                     <th class="banner-text"></th>
                     <th openlmis-message="view.rnr.mmia.regime.code"></th>
                     <th class="col-4" openlmis-message="view.rnr.mmia.regime.therapeutic"></th>
-                    <th openlmis-message="view.rnr.mmia.regime.column.total">Total</th>
+                    <th openlmis-message="view.rnr.mmia.regime.column.total"></th>
+                    <th ng-if="rnr.reportType === 'new'" openlmis-message="view.rnr.mmia.regime.pharmacy"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -112,45 +112,125 @@
                     <td ng-if="item.categoryName === 'Paediatrics'" class="bg-color-yellow align-left">{{item.name}}</td>
 
                     <td>{{item.patientsOnTreatment}}</td>
+                    <td ng-if="rnr.reportType === 'new'" >{{item.comunitaryPharmacy}}</td>
                 </tr>
-                </tbody>
-            </table>
-            <table class="total-form">
                 <tr>
-                    <td class="col-2 align-right bg-color-darkgray align-right">
+                    <td class="banner-text blank-cell no-border"></td>
+                    <td class="no-border"></td>
+                    <td class="col-2 bg-color-darkgray">
                         <span openlmis-message="view.rnr.mmia.regime.total"></span>
                         <span> :</span>
                     </td>
                     <td>{{regimeTotal}}</td>
+                    <td ng-if="rnr.reportType === 'new'">{{regimeTotal}}</td>
                 </tr>
-            </table>
-        </div>
-
-
+                <tr ng-if="rnr.reportType === 'new'" class="therapeutic-lines">
+                    <td class="banner-text"></td>
+                    <td></td>
+                    <td openlmis-message="view.rnr.mmia.regime.therapeutic.line"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr ng-repeat="item in therapeuticLines">
+                    <td class="banner-text">{{$index+1}}</td>
+                    <td class="no-border therapeutic-item"></td>
+                    <td class="no-border therapeutic-item">{{item.code}}</td>
+                    <td>{{item.patientsOnTreatment}}</td>
+                    <td>{{item.comunitaryPharmacy}}</td>
+                </tr>
+                <tr ng-if="rnr.reportType === 'new'">
+                    <td class="banner-text blank-cell no-border"></td>
+                    <td class="no-border"></td>
+                    <td class="col-2 bg-color-darkgray">
+                        <span openlmis-message="view.rnr.mmia.regime.total"></span>
+                        <span> :</span>
+                    </td>
+                    <td>{{regimeTotal}}</td>
+                    <td>{{regimeTotal}}</td>
+                </tr>
+                </tbody>
+        </table>
         <div class="patient-section">
 
-            <table class="patient-form">
+            <table ng-if="rnr.reportType === 'new' && rnr.patientQuantifications['view.rnr.mmia.patient.header.patientsType']" class="patient-form">
                 <thead>
                 <tr>
-                    <th colspan="2" class="background-black" openlmis-message="view.rnr.mmia.patient.header"></th>
-                </tr>
-                <tr>
-                    <th class="col-2" openlmis-message="view.rnr.mmia.patient.type"></th>
-                    <th class="col-3" openlmis-message="view.rnr.mmia.patient.title.total"></th>
+                    <th colspan="2" class="background-black" openlmis-message="view.rnr.mmia.patient.header.patientsType"></th>
                 </tr>
                 </thead>
 
                 <tbody>
-                <tr ng-repeat="item in rnr.patientQuantifications">
-                    <td openlmis-message={{item.category}}></td>
+                <tr ng-repeat="item in rnr.patientQuantifications['view.rnr.mmia.patient.header.patientsType']">
+                    <td openlmis-message={{item.messageName}}></td>
+                    <td>{{item.total}}</td>
+                </tr>
+                </tbody>
+            </table>
+            <table ng-if="rnr.reportType === 'new' && rnr.patientQuantifications['view.rnr.mmia.patient.header.md']" class="patient-form">
+                <thead>
+                <tr>
+                    <th colspan="2" class="background-black" openlmis-message="view.rnr.mmia.patient.header.md"></th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr ng-repeat="item in rnr.patientQuantifications['view.rnr.mmia.patient.header.md']">
+                    <td openlmis-message={{item.messageName}}></td>
+                    <td>{{item.total}}</td>
+                </tr>
+                </tbody>
+            </table>
+            <table ng-if="rnr.reportType === 'new' && rnr.patientQuantifications['view.rnr.mmia.patient.header.TARVPatients']" class="patient-form">
+                <thead>
+                <tr>
+                    <th colspan="2" class="background-black" openlmis-message="view.rnr.mmia.patient.header.TARVPatients"></th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr ng-repeat="item in rnr.patientQuantifications['view.rnr.mmia.patient.header.TARVPatients']">
+                    <td openlmis-message={{item.messageName}}></td>
+                    <td>{{item.total}}</td>
+                </tr>
+                </tbody>
+            </table>
+            <table ng-if="rnr.reportType === 'new' && rnr.patientQuantifications['view.rnr.mmia.patient.header.prophylaxis']" class="patient-form">
+                <thead>
+                <tr>
+                    <th colspan="2" class="background-black" openlmis-message="view.rnr.mmia.patient.header.prophylaxis"></th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr ng-repeat="item in rnr.patientQuantifications['view.rnr.mmia.patient.header.prophylaxis']">
+                    <td openlmis-message={{item.messageName}}></td>
                     <td>{{item.total}}</td>
                 </tr>
                 </tbody>
             </table>
 
-            <div class="comment-wrapper">
-                <table class="background">
+            <table ng-if="rnr.reportType === 'old'" class="patient-form">
+                <thread>
                     <tr>
+                        <th colspan="2" class="background-black" openlmis-message="view.rnr.mmia.patient.header"></th>
+                    </tr>
+                    <tr>
+                        <th class="col-2" openlmis-message="view.rnr.mmia.patient.type"></th>
+                        <th class="col-3" openlmis-message="view.rnr.mmia.patient.title.total"></th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr ng-repeat="item in rnr.patientQuantifications">
+                        <td openlmis-message={{item.category}}></td>
+                        <td>{{item.total}}</td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+            <div class="comment-wrapper">
+                <table class="background class=col-5 ">
+                    <tr >
                         <td></td>
                     </tr>
                     <tr>

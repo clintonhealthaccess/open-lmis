@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -49,11 +50,13 @@ public class RestRequisitionController extends BaseController {
   private RestRequisitionService restRequisitionService;
 
   @RequestMapping(value = "/rest-api/requisitions", method = POST, headers = ACCEPT_JSON)
-  public ResponseEntity<RestResponse> submitRequisition(@RequestBody Report report, Principal principal) {
+  public ResponseEntity<RestResponse> submitRequisition(@RequestBody Report report,
+      Principal principal,
+      @RequestHeader(value = "VersionCode", required = false) String versionCode) {
     Rnr requisition;
 
     try {
-      requisition = restRequisitionService.submitReport(report, loggedInUserId(principal));
+      requisition = restRequisitionService.submitReport(report, loggedInUserId(principal), versionCode);
     } catch (DataException e) {
       return error(e.getOpenLmisMessage(), BAD_REQUEST);
     }
@@ -65,10 +68,13 @@ public class RestRequisitionController extends BaseController {
   }
 
   @RequestMapping(value = "/rest-api/sdp-requisitions", method = POST, headers = ACCEPT_JSON)
-  public ResponseEntity<RestResponse> submitSDPRequisition(@RequestBody Report report, Principal principal) {
+  public ResponseEntity<RestResponse> submitSDPRequisition(@RequestBody Report report,
+      Principal principal,
+      @RequestHeader(value = "VersionCode", required = false) String versionCode) {
     Rnr requisition;
     try {
-      requisition = restRequisitionService.submitSdpReport(report, loggedInUserId(principal));
+      requisition = restRequisitionService
+          .submitSdpReport(report, loggedInUserId(principal), versionCode);
     } catch (DataException e) {
       return error(e.getOpenLmisMessage(), BAD_REQUEST);
     }

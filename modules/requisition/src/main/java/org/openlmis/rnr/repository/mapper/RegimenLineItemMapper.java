@@ -23,8 +23,8 @@ import java.util.List;
 @Repository
 public interface RegimenLineItemMapper {
 
-  @Insert({"INSERT INTO regimen_line_items(code, name, regimenDisplayOrder, regimenCategory, regimenCategoryDisplayOrder, rnrId, skipped, modifiedBy, createdBy, patientsontreatment, hf, chw) values " +
-    "(#{code}, #{name}, #{regimenDisplayOrder}, #{category.name}, #{category.displayOrder}, #{rnrId}, #{skipped}, #{modifiedBy}, #{createdBy}, #{patientsOnTreatment},#{hf},#{chw})"})
+  @Insert({"INSERT INTO regimen_line_items(code, name, regimenDisplayOrder, regimenCategory, regimenCategoryDisplayOrder, rnrId, skipped, modifiedBy, createdBy, patientsontreatment, hf, chw, comunitarypharmacy) values " +
+    "(#{code}, #{name}, #{regimenDisplayOrder}, #{category.name}, #{category.displayOrder}, #{rnrId}, #{skipped}, #{modifiedBy}, #{createdBy}, #{patientsOnTreatment},#{hf},#{chw},#{comunitaryPharmacy})"})
   @Options(useGeneratedKeys = true)
    void insert(RegimenLineItem regimenLineItem);
 
@@ -51,7 +51,8 @@ public interface RegimenLineItemMapper {
     @Result(property = "category.name", column = "regimenCategory"),
     @Result(property = "category.displayOrder", column = "regimenCategoryDisplayOrder"),
     @Result(property = "hf", column = "hf"),
-    @Result(property = "chw", column = "chw")
+    @Result(property = "chw", column = "chw"),
+    @Result(property = "comunitaryPharmacy", column = "comunitarypharmacy")
   })
    List<RegimenLineItem> getRegimenLineItemsByRnrId(Long rnrId);
 
@@ -68,7 +69,7 @@ public interface RegimenLineItemMapper {
     "patientsOnTreatmentChildren = #{patientsOnTreatmentChildren}, " +
     "patientsToInitiateTreatmentChildren = #{patientsToInitiateTreatmentChildren}, " +
     "patientsStoppedTreatmentChildren = #{patientsStoppedTreatmentChildren} ," +
-    "hf = #{hf}, chw = #{chw}," +
+    "hf = #{hf}, chw = #{chw}, comunitarypharmacy = #{comunitaryPharmacy}, " +
     "remarks = #{remarks},modifiedBy = #{modifiedBy}, modifiedDate =CURRENT_TIMESTAMP where id=#{id}")
   void update(RegimenLineItem regimenLineItem);
 }

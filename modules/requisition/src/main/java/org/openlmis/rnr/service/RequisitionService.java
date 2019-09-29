@@ -151,7 +151,8 @@ public class RequisitionService {
   }
 
   @Transactional
-  public Rnr initiate(Facility facility, Program program, Long modifiedBy, Boolean emergency, ProcessingPeriod proposedPeriod, List<ServiceLineItem> serviceLineItems) {
+  public Rnr initiate(Facility facility, Program program, Long modifiedBy, Boolean emergency,
+      ProcessingPeriod proposedPeriod, List<ServiceLineItem> serviceLineItems, String versionCode) {
 
     if (!requisitionPermissionService.hasPermission(modifiedBy, facility, program, CREATE_REQUISITION)) {
       throw new DataException(RNR_OPERATION_UNAUTHORIZED);
@@ -190,7 +191,7 @@ public class RequisitionService {
 
     List<Regimen> regimens;
     if (staticReferenceDataService.getBoolean("toggle.mmia.custom.regimen")) {
-      regimens = regimenService.getRegimensByProgramAndIsCustom(program.getId(), false);
+      regimens = regimenService.getRegimensByProgramAndIsCustom(program.getId(), false, versionCode);
     } else {
       regimens = regimenService.getByProgram(program.getId());
     }
@@ -750,6 +751,10 @@ public class RequisitionService {
     requisitionRepository.insertPatientQuantificationLineItems(rnr);
   }
 
+  @Transactional
+  public void insertTherapeuticLinesItem(Rnr rnr) {
+    requisitionRepository.insertTherapeuticLinesItem(rnr);
+  }
 
   public List<Rnr> getRequisitionsByFacility(Facility facility) {
     return requisitionRepository.getRequisitionDetailsByFacility(facility);

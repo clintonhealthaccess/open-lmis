@@ -11,5 +11,6 @@ public class RestAppInfoRequest {
     private String facilityCode;
     private String userName;
     private String version;
+    private Long facilityId;
 
 }

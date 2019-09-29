@@ -62,7 +62,6 @@
 
     td.align-left {
       text-align: left;
-      padding: 3px;
     }
 
     th, td {
@@ -88,6 +87,7 @@
   }
 
   table.head-section {
+    width: 100%;
     .banner-text {
       margin-top: 94.88px;
     }
@@ -98,46 +98,40 @@
       background-color: #d0d0d0;
       word-break: break-all;
     }
-
     td:nth-child(4) {
       background-color: #f0f0f0;
     }
   }
 
   .middle-section {
-
-    .regime-section {
-      display: block;
-      float: left;
-
+    width: 100%;
+    display: -webkit-inline-box;
       .regime-form {
+        width: 60%;
         thead {
           background-color: #f0f0f0;
         }
       }
-
-      .total-form {
-        margin-right: 0;
-        margin-left: auto;
-        border-top: 0;
-
-        td {
-          border-top: 0;
-        }
-        td.align-right {
-          text-align: right;
-        }
+      td.no-border {
+        border-left: 0;
+        border-right: 0;
       }
-    }
+
+      .therapeutic-lines td:not(:first-child) {
+        background-color: #2c2a2a;
+        color: white;
+      }
+      .therapeutic-item {
+        background-color: #cdd4dd;
+        text-align: right;
+      }
 
     .patient-section {
-      display: block;
-      float: left;
-      width: 372px;
-      margin-left:115px;
+      width: calc(40% - 4px);
+      margin-left:3px;
 
       .patient-form {
-
+        width: 100%;
         thead {
           background-color: #d0d0d0;
           tr {
@@ -145,19 +139,18 @@
           }
         }
 
-        tbody {
-          tr {
-            height: 54px;
-          }
-        }
-
         tr {
           td:first-child {
             background-color: #d0d0d0;
-            width: 100px;
+            text-align: left;
+            padding-left: 8px;
+            width: 120px;
           }
           th {
             height: 18.8px;
+            padding: 3px;
+            font-size: 14px;
+            font-style:italic;
           }
         }
       }
@@ -205,10 +198,18 @@
 table.second-section,
 table.regime-form {
   tr {
-    th:first-child, td:first-child {
+    th:first-child, td:first-child:not(.blank-cell) {
       background-color: black;
       color: white;
     }
+  }
+}
+
+table.regime-form,
+table.second-section,
+table.patient-form {
+  td {
+    padding: 3px;
   }
 }
 

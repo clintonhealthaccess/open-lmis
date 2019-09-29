@@ -10,6 +10,7 @@ describe("nos drugs chart service test", function () {
     scope.provinces = [{provinceId: 1, name: 'province1'}, {provinceId: 2, name: 'province2'}];
     scope.districts = [{districtId: 1, name: 'district1'}, {districtId: 2, name: 'district2'}];
     scope.selectedDrugCode = ['08A06'];
+    scope.selectedDrugs = ['08A06'];
     scope.reportParams = {
       provinceId: 1,
       districtId: 2,
@@ -25,7 +26,7 @@ describe("nos drugs chart service test", function () {
     spyOn(nosDrugsChartService, 'exportXLSX');
     scope.exportXLSX();
     expect(nosDrugsChartService.exportXLSX).toHaveBeenCalledWith(scope.reportParams.startTime, scope.reportParams.endTime,
-      scope.provinces[0].name, scope.districts[0].name, "nosDrug");
+      scope.provinces[0].name, scope.districts[0].name, "nosDrug", scope.selectedDrugs);
   });
 
   describe('#loadReport', function() {

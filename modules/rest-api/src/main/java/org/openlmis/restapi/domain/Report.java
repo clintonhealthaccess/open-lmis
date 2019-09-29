@@ -3,9 +3,9 @@
  * Copyright © 2013 VillageReach
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- *  
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more details.
- * You should have received a copy of the GNU Affero General Public License along with this program.  If not, see http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org. 
+ * You should have received a copy of the GNU Affero General Public License along with this program.  If not, see http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
 package org.openlmis.restapi.domain;
@@ -46,6 +46,7 @@ public class Report {
   private List<RnrLineItem> nonFullSupplyProducts;
   private List<RegimenLineItemForRest> regimens;
   private List<PatientQuantificationLineItem> patientQuantifications;
+  private List<TherapeuticLinesItem> therapeuticLines;
 
   private String agentCode;
   private String programCode;
@@ -69,6 +70,67 @@ public class Report {
   private Long programDataFormId;
 
   private List<ServiceLineItem> serviceLineItems;
+
+  public static Report prepareForREST(final Rnr rnr) {
+    Report report = new Report();
+    report.setAgentCode(rnr.getFacility().getCode());
+    report.setProgramCode(rnr.getProgram().getCode());
+
+    ArrayList<RnrLineItem> nonFullSupplyProducts = new ArrayList<RnrLineItem>() {{
+      addAll(rnr.getNonFullSupplyLineItems());
+    }};
+    report.setNonFullSupplyProducts(nonFullSupplyProducts);
+
+    ArrayList<RnrLineItem> fullSupplyProducts = new ArrayList<RnrLineItem>() {{
+      addAll(rnr.getFullSupplyLineItems());
+    }};
+    report.setProducts(fullSupplyProducts);
+
+    ArrayList<RegimenLineItemForRest> regimenLineItems = new ArrayList<RegimenLineItemForRest>() {{
+    }};
+
+    for (RegimenLineItem regimenLineItem : rnr.getRegimenLineItems()) {
+      regimenLineItems.add(RegimenLineItemForRest.convertFromRegimenLineItem(regimenLineItem));
+    }
+    report.setRegimens(regimenLineItems);
+
+    ArrayList<PatientQuantificationLineItem> patientQuantificationLineItems = new ArrayList<PatientQuantificationLineItem>() {{
+      addAll(rnr.getPatientQuantifications());
+    }};
+    report.setPatientQuantifications(patientQuantificationLineItems);
+
+    final List<TherapeuticLinesItem> therapeuticLinesFromRnr = rnr.getTherapeuticLines();
+    ArrayList<TherapeuticLinesItem> therapeuticLinesItems = (therapeuticLinesFromRnr == null || therapeuticLinesFromRnr.isEmpty()) ?
+        new ArrayList<TherapeuticLinesItem>() : new ArrayList<TherapeuticLinesItem>() {{
+      addAll(therapeuticLinesFromRnr);
+    }};
+    report.setTherapeuticLines(therapeuticLinesItems);
+
+    report.setEmergency(rnr.isEmergency());
+
+    if (rnr.getClientSubmittedTime() != null) {
+      report.setClientSubmittedTime(DateUtil.formatDate(rnr.getClientSubmittedTime()));
+    }
+
+    report.setClientSubmittedNotes(rnr.getClientSubmittedNotes());
+    report.setPeriodStartDate(rnr.getPeriod().getStartDate());
+    report.setRnrSignatures(rnr.getRnrSignatures());
+
+    if (rnr.getActualPeriodStartDate() != null) {
+      report.setActualPeriodStartDate(DateUtil.formatDate(rnr.getActualPeriodStartDate()));
+    } else {
+      report.setActualPeriodStartDate(DateUtil.formatDate(rnr.getPeriod().getStartDate()));
+    }
+
+    if (rnr.getActualPeriodEndDate() != null) {
+      report.setActualPeriodEndDate(DateUtil.formatDate(rnr.getActualPeriodEndDate()));
+    } else {
+      report.setActualPeriodEndDate(DateUtil.formatDate(rnr.getPeriod().getEndDate()));
+
+    }
+
+    return report;
+  }
 
   public void validate() {
     if (isEmpty(agentCode) || isEmpty(programCode)) {
@@ -107,60 +169,6 @@ public class Report {
       if (rnrLineItem.getQuantityApproved() < 0)
         throw new DataException("error.restapi.quantity.approved.negative");
     }
-  }
-
-  public static Report prepareForREST(final Rnr rnr) {
-    Report report = new Report();
-    report.setAgentCode(rnr.getFacility().getCode());
-    report.setProgramCode(rnr.getProgram().getCode());
-
-    ArrayList<RnrLineItem> nonFullSupplyProducts = new ArrayList<RnrLineItem>() {{
-      addAll(rnr.getNonFullSupplyLineItems());
-    }};
-    report.setNonFullSupplyProducts(nonFullSupplyProducts);
-
-    ArrayList<RnrLineItem> fullSupplyProducts = new ArrayList<RnrLineItem>() {{
-      addAll(rnr.getFullSupplyLineItems());
-    }};
-    report.setProducts(fullSupplyProducts);
-
-    ArrayList<RegimenLineItemForRest> regimenLineItems = new ArrayList<RegimenLineItemForRest>() {{
-    }};
-
-    for(RegimenLineItem regimenLineItem : rnr.getRegimenLineItems()) {
-      regimenLineItems.add(RegimenLineItemForRest.convertFromRegimenLineItem(regimenLineItem));
-    }
-    report.setRegimens(regimenLineItems);
-
-    ArrayList<PatientQuantificationLineItem> patientQuantificationLineItems = new ArrayList<PatientQuantificationLineItem>() {{
-      addAll(rnr.getPatientQuantifications());
-    }};
-    report.setPatientQuantifications(patientQuantificationLineItems);
-
-    report.setEmergency(rnr.isEmergency());
-
-    if (rnr.getClientSubmittedTime() != null) {
-      report.setClientSubmittedTime(DateUtil.formatDate(rnr.getClientSubmittedTime()));
-    }
-
-    report.setClientSubmittedNotes(rnr.getClientSubmittedNotes());
-    report.setPeriodStartDate(rnr.getPeriod().getStartDate());
-    report.setRnrSignatures(rnr.getRnrSignatures());
-
-    if (rnr.getActualPeriodStartDate() != null) {
-      report.setActualPeriodStartDate(DateUtil.formatDate(rnr.getActualPeriodStartDate()));
-    } else {
-      report.setActualPeriodStartDate(DateUtil.formatDate(rnr.getPeriod().getStartDate()));
-    }
-
-    if (rnr.getActualPeriodEndDate() != null) {
-      report.setActualPeriodEndDate(DateUtil.formatDate(rnr.getActualPeriodEndDate()));
-    } else {
-      report.setActualPeriodEndDate(DateUtil.formatDate(rnr.getPeriod().getEndDate()));
-
-    }
-
-    return report;
   }
 
   public String getSyncUpHash() {

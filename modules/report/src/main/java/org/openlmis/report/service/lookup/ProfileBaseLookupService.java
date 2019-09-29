@@ -49,6 +49,12 @@ public class ProfileBaseLookupService extends ReportLookupService {
 
         if (facilityType.is(CSRUR_I.toString()) || facilityType.is(CSRUR_II.toString())) {
             return singletonList(facilityReportMapper.getFacilityByCode(facility.getCode()));
+        } else if (facility.getFacilityType().is(DDM.toString())) {
+            Long districtZoneId = facility.getGeographicZone().getId();
+            return facilityReportMapper.getFacilityByDistrict(districtZoneId);
+        } else if (facility.getFacilityType().is(DPM.toString())) {
+            Long provinceZoneId = facility.getGeographicZone().getParent().getId();
+            return facilityReportMapper.getFacilityByProvince(provinceZoneId);
         } else {
             return super.getAllFacilities(bounds);
         }

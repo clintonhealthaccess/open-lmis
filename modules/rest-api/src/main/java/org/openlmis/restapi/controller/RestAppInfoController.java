@@ -35,9 +35,11 @@ public class RestAppInfoController extends BaseController {
     public ResponseEntity<RestResponse> updateAppInfo(@RequestBody RestAppInfoRequest restAppInfoRequest) {
         int result = restAppInfoService.createOrUpdateVersion(restAppInfoRequest);
         if (result > 0) {
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity("Upgrade success", HttpStatus.OK);
+        } else if (result == 0) {
+            return new ResponseEntity("", HttpStatus.OK);
         } else {
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity("User can't allow to degrade", HttpStatus.OK);
         }
     }
 }

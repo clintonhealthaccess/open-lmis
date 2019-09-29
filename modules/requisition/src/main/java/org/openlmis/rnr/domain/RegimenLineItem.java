@@ -43,6 +43,7 @@ public class RegimenLineItem extends LineItem {
   private String code;
   private String name;
   private Integer patientsOnTreatment;
+  private Integer comunitaryPharmacy;
   private Integer patientsToInitiateTreatment;
   private Integer patientsStoppedTreatment;
 
@@ -151,6 +152,7 @@ public class RegimenLineItem extends LineItem {
 
   public void populate(RegimenLineItem regimenLineItem) {
     this.patientsOnTreatment = regimenLineItem.patientsOnTreatment;
+    this.comunitaryPharmacy = regimenLineItem.comunitaryPharmacy;
     this.patientsToInitiateTreatment = regimenLineItem.patientsToInitiateTreatment;
     this.patientsStoppedTreatment = regimenLineItem.patientsStoppedTreatment;
     this.hf = regimenLineItem.hf;
