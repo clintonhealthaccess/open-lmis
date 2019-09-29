@@ -23,6 +23,7 @@ public class LmisThreadLocal {
     public static final String KEY_USER_NAME = "userName";
     public static final String KEY_FACILITY_ID = "facilityId";
     public static final String KEY_VERSION_CODE  = "versionCode";
+    public static final String KEY_UNIQUE_ID = "UniqueId";
 
     public static void set(String key, String userName) {
         Map<String, String> map = lmisThreadLocal.get();
