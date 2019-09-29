@@ -221,8 +221,9 @@ public class RnrLineItem extends LineItem {
       boolean valid = quantityDispensed >= 0 && stockInHand >= 0 && validQuantityDispensed;
 
       if (!valid) {
-        LOGGER.error(String.format("invalid productcode is %s", productCode));
-        throw new DataException(RNR_VALIDATION_ERROR);
+        String errorMsg = String.format("%s[%s]'s quantity does't match", product,productCode);
+        LOGGER.error(errorMsg);
+        throw new DataException(RNR_VALIDATION_ERROR, errorMsg);
       }
     }
   }

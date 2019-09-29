@@ -26,8 +26,9 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
   protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
     Object userName;
     if ((userName = request.getSession().getAttribute(USER)) != null) {
-      LmisThreadLocal.set(userName.toString());
+      LmisThreadLocal.set(LmisThreadLocal.KEY_USER_NAME, userName.toString());
     }
     super.doService(request, response);
+    LmisThreadLocal.remove();
   }
 }
