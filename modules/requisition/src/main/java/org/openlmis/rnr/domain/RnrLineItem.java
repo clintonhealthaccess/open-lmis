@@ -33,7 +33,7 @@ import static org.apache.commons.collections.CollectionUtils.find;
 import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.NON_EMPTY;
 import static org.openlmis.rnr.domain.ProgramRnrTemplate.*;
 import static org.openlmis.rnr.domain.RnrStatus.AUTHORIZED;
-import static org.openlmis.rnr.utils.MessageKeyUtils.RNR_FIELD_MANDATORY_NEGATIVE;
+import static org.openlmis.rnr.utils.MessageKeyUtils.RNR_FIELD_MANDATORY_NEGATIVE_OR_NULL;
 import static org.openlmis.rnr.utils.MessageKeyUtils.RNR_VALIDATION_ERROR;
 
 /**
@@ -197,7 +197,8 @@ public class RnrLineItem extends LineItem {
       if (template.columnsVisible(fieldName) &&
         !template.columnsCalculated(fieldName) &&
         (getValueFor(fieldName) == null || (Integer) getValueFor(fieldName) < 0)) {
-        throw new DataException(RNR_FIELD_MANDATORY_NEGATIVE, product,productCode,fieldName);
+        throw new DataException(RNR_FIELD_MANDATORY_NEGATIVE_OR_NULL, productCode,
+            fieldName);
       }
     }
     requestedQuantityConditionalValidation(template);

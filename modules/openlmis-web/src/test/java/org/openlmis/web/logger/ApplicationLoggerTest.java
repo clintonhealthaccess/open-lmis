@@ -47,7 +47,7 @@ public class ApplicationLoggerTest {
         outputStream = new ByteArrayOutputStream();
         logger.addAppender(new WriterAppender(new SimpleLayout(), outputStream));
         applicationLogger = new ApplicationLogger();
-        LmisThreadLocal.set("TEST_USER");
+        LmisThreadLocal.set(LmisThreadLocal.KEY_USER_NAME,"TEST_USER");
     }
 
     @Test
