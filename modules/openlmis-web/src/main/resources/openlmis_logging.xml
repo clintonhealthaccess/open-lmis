@@ -62,8 +62,8 @@
   </logger>
 
 
-  <logger name="org.openlmis">
-    <level value="ERROR"/>
+  <logger name="org.openlmis" additivity="false">
+    <level value="INFO"/>
     <appender-ref ref="logFileAppender"/>
   </logger>
 
@@ -73,11 +73,6 @@
   </logger>
 
   <logger name="org.springframework.integration">
-    <level value="INFO"/>
-    <appender-ref ref="logFileAppender"/>
-  </logger>
-
-  <logger name="org.openlmis.restapi">
     <level value="INFO"/>
     <appender-ref ref="logFileAppender"/>
   </logger>

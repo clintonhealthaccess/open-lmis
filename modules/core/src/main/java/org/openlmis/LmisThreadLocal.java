@@ -45,4 +45,20 @@ public class LmisThreadLocal {
         }
         return map.get(key);
     }
+
+    public static String getUserName() {
+        return LmisThreadLocal.get(LmisThreadLocal.KEY_USER_NAME);
+    }
+
+    public static String getFacilityId() {
+        return LmisThreadLocal.get(LmisThreadLocal.KEY_FACILITY_ID);
+    }
+
+    public static String getVersionCode() {
+        return LmisThreadLocal.get(LmisThreadLocal.KEY_VERSION_CODE);
+    }
+
+    public static String getUniqueId() {
+        return LmisThreadLocal.get(LmisThreadLocal.KEY_UNIQUE_ID);
+    }
 }
