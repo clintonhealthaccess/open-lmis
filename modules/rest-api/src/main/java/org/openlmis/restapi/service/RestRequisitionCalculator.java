@@ -12,6 +12,7 @@ package org.openlmis.restapi.service;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.openlmis.LmisThreadLocal;
 import org.openlmis.core.domain.Facility;
 import org.openlmis.core.domain.ProcessingPeriod;
 import org.openlmis.core.domain.Program;
@@ -84,12 +85,22 @@ public class RestRequisitionCalculator {
     if (rnrs != null && !rnrs.isEmpty()) {
       throw new DataException("error.rnr.period.duplicate");
     }
-
-    if (periodStartDate != null
-        && new DateTime(periodForInitialize.getStartDate()).getMonthOfYear() != new DateTime(periodStartDate).getMonthOfYear()
-        && new DateTime(periodForInitialize.getEndDate()).getMonthOfYear() != new DateTime(periodEndDate).getMonthOfYear()) {
-      throw new DataException("error.rnr.period.invalid");
+    if (periodStartDate != null) {
+      DateTime initStart = new DateTime(periodForInitialize.getStartDate());
+      DateTime initEnd = new DateTime(periodForInitialize.getEndDate());
+      DateTime actualStart = new DateTime(periodStartDate);
+      DateTime actualEnd = new DateTime(periodEndDate);
+      if (initStart.getMonthOfYear() != actualStart.getMonthOfYear()
+          && initEnd.getMonthOfYear() != actualEnd.getMonthOfYear()) {
+        LOGGER.error(String.format(
+            "expected period is %s-%s, but submit is %s-%s, facilityId is %s, programId is %s",
+            initStart.toString("yyyy-MM"), initEnd.toString("yyyy-MM"),
+            actualStart.toString("yyyy-MM"), actualEnd.toString("yyyy-MM"),
+            LmisThreadLocal.getFacilityId(), reportingProgram.getId()));
+        throw new DataException("error.rnr.period.invalid");
+      }
     }
+
   }
 
   public void validateCustomPeriod(Facility reportingFacility, Program reportingProgram, ProcessingPeriod period, Long userId) {
@@ -126,7 +137,7 @@ public class RestRequisitionCalculator {
       }
     }
     if (!invalidProductCodes.isEmpty()) {
-      LOGGER.info(String.format("invalid product code : %s", invalidProductCodes.toString()));
+      LOGGER.error(String.format("invalid product code : %s", invalidProductCodes.toString()));
 //      throw new DataException("invalid.product.codes", invalidProductCodes.toString());
     }
   }
