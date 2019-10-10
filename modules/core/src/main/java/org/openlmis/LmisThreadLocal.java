@@ -18,12 +18,13 @@ import java.util.Map;
  */
 public class LmisThreadLocal {
 
-    public static final ThreadLocal<Map<String, String>> lmisThreadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<Map<String, String>> lmisThreadLocal = new ThreadLocal<>();
 
     public static final String KEY_USER_NAME = "userName";
     public static final String KEY_FACILITY_ID = "facilityId";
     public static final String KEY_VERSION_CODE  = "versionCode";
-    public static final String KEY_UNIQUE_ID = "UniqueId";
+    public static final String KEY_UNIQUE_ID = "uniqueId";
+    public static final String KEY_DEVICE_INFO = "deviceInfo";
 
     public static void set(String key, String userName) {
         Map<String, String> map = lmisThreadLocal.get();
@@ -60,5 +61,9 @@ public class LmisThreadLocal {
 
     public static String getUniqueId() {
         return LmisThreadLocal.get(LmisThreadLocal.KEY_UNIQUE_ID);
+    }
+
+    public static String getDeviceInfo() {
+        return LmisThreadLocal.get(LmisThreadLocal.KEY_DEVICE_INFO);
     }
 }

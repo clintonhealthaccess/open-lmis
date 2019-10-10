@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class RestReSyncController {
 
   private static final Logger LOG = LoggerFactory.getLogger(RestReSyncController.class);
-  private static final String template = "facility re-sycn data from the web server, facilityId is %s";
+  private static final String TEMPLATE = "facility re-sycn data from the web server, facilityId is %s, version code is %s";
 
   @RequestMapping("/rest-api/re-sync")
   public ResponseEntity reSync() {
-    LOG.warn(String.format(template, LmisThreadLocal.getFacilityId()));
+    LOG.warn(
+        String.format(TEMPLATE, LmisThreadLocal.getFacilityId(), LmisThreadLocal.getVersionCode()));
     return ResponseEntity.ok(null);
   }
 
