@@ -15,7 +15,6 @@ import org.openlmis.LmisThreadLocal;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpHeaders;
 
 import static org.openlmis.authentication.web.UserAuthenticationSuccessHandler.USER;
 
@@ -41,6 +40,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
     String facilityId = request.getHeader("FacilityId");
     String uniqueId = request.getHeader("UniqueId");
     String versionCode = request.getHeader("VersionCode");
+    String deviceInfo = request.getHeader("DeviceInfo");
     if (userName != null) {
       LmisThreadLocal.set(LmisThreadLocal.KEY_USER_NAME, userName.toString());
     }
@@ -50,8 +50,11 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
     if (StringUtils.isNotBlank(uniqueId)) {
       LmisThreadLocal.set(LmisThreadLocal.KEY_UNIQUE_ID, uniqueId);
     }
-    if (StringUtils.isNotBlank(facilityId)) {
+    if (StringUtils.isNotBlank(versionCode)) {
       LmisThreadLocal.set(LmisThreadLocal.KEY_VERSION_CODE, versionCode);
+    }
+    if (StringUtils.isNotBlank(deviceInfo)) {
+      LmisThreadLocal.set(LmisThreadLocal.KEY_DEVICE_INFO, deviceInfo);
     }
   }
 }
