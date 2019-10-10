@@ -31,7 +31,7 @@ public class ApplicationLogger {
   @AfterThrowing(pointcut = "execution(* org.openlmis..*(..))", throwing = "e")
   public void logException(JoinPoint joinPoint, Throwable e) {
     Signature signature = joinPoint.getSignature();
-    String message = String.format("%s | %s.%s(%s) | Exception", LmisThreadLocal.get(LmisThreadLocal.KEY_USER_NAME), signature.getDeclaringTypeName(), signature.getName(), joinPoint.getArgs() == null ? "" : joinPoint.getArgs());
+    String message = String.format("%s | %s.%s(%s) | Exception", LmisThreadLocal.getUserName(), signature.getDeclaringTypeName(), signature.getName(), joinPoint.getArgs() == null ? "" : joinPoint.getArgs());
     logException(message, e);
   }
 
