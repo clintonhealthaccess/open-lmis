@@ -47,7 +47,7 @@ public class RestAppInfoServiceTest {
 
     @Test
     public void shouldCreateAppInfo() {
-        when(appInfoRepository.getAppInfoByFacilityCode(anyString())).thenReturn(null);
+        when(appInfoRepository.getAppInfoByFacilityId(anyLong())).thenReturn(null);
         when(facilityRepository.getIdForCode(anyString())).thenReturn(1L);
         service.createOrUpdateVersion(new RestAppInfoRequest());
 
@@ -58,24 +58,24 @@ public class RestAppInfoServiceTest {
     public void shouldUpdateAppInfo() {
         AppInfo logedAppInfo = mock(AppInfo.class);
         when(logedAppInfo.getAppVersion()).thenReturn("1.12.84");
-        when(appInfoRepository.getAppInfoByFacilityCode(anyString())).thenReturn(logedAppInfo);
+        when(appInfoRepository.getAppInfoByFacilityId(anyLong())).thenReturn(logedAppInfo);
 
         RestAppInfoRequest restAppInfoRequest = mock(RestAppInfoRequest.class);
-        when(restAppInfoRequest.getVersion()).thenReturn("1.12.85");
+        when(restAppInfoRequest.getAppVersion()).thenReturn("1.12.85");
         when(restAppInfoRequest.getFacilityId()).thenReturn(null);
 
         service.createOrUpdateVersion(restAppInfoRequest);
-        verify(appInfoRepository).update(any(AppInfo.class));
+        verify(appInfoRepository).updateAppVersion(any(AppInfo.class));
     }
 
     @Test
     public void shouldNotUpdateAppInfo() {
         AppInfo logedAppInfo = mock(AppInfo.class);
         when(logedAppInfo.getAppVersion()).thenReturn("1.12.84");
-        when(appInfoRepository.getAppInfoByFacilityCode(anyString())).thenReturn(logedAppInfo);
+        when(appInfoRepository.getAppInfoByFacilityId(anyLong())).thenReturn(logedAppInfo);
 
         RestAppInfoRequest restAppInfoRequest = mock(RestAppInfoRequest.class);
-        when(restAppInfoRequest.getVersion()).thenReturn("1.12.84");
+        when(restAppInfoRequest.getAppVersion()).thenReturn("1.12.84");
         when(restAppInfoRequest.getFacilityId()).thenReturn(null);
 
         int result = service.createOrUpdateVersion(restAppInfoRequest);
@@ -86,10 +86,10 @@ public class RestAppInfoServiceTest {
     public void shouldNotUpdateAppInfoWithReduceVersion() {
         AppInfo logedAppInfo = mock(AppInfo.class);
         when(logedAppInfo.getAppVersion()).thenReturn("1.12.84");
-        when(appInfoRepository.getAppInfoByFacilityCode(anyString())).thenReturn(logedAppInfo);
+        when(appInfoRepository.getAppInfoByFacilityId(anyLong())).thenReturn(logedAppInfo);
 
         RestAppInfoRequest restAppInfoRequest = mock(RestAppInfoRequest.class);
-        when(restAppInfoRequest.getVersion()).thenReturn("1.12.83");
+        when(restAppInfoRequest.getAppVersion()).thenReturn("1.12.83");
         when(restAppInfoRequest.getFacilityId()).thenReturn(null);
 
         int result = service.createOrUpdateVersion(restAppInfoRequest);

@@ -8,9 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonDeserialize
 public class RestAppInfoRequest {
-    private String facilityCode;
     private String userName;
-    private String version;
+    private String versionCode; //86
+    private String appVersion; //1.12.86
     private Long facilityId;
+    private String androidVersion;
+    private String deviceInfo;
 
 }

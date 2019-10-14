@@ -1,0 +1,1 @@
+alter table moz_app_info add column androidVersion timestamp , add column deviceInfo varchar(64);
