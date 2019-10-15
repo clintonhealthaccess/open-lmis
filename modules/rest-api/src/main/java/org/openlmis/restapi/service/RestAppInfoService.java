@@ -20,6 +20,7 @@ import org.openlmis.restapi.domain.RestAppInfoRequest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RestAppInfoService {
@@ -45,9 +46,10 @@ public class RestAppInfoService {
 
     private int getAppVersionUpdateStatus(String oldAppVersion, String currentVersionCode) {
         String oldVersionCode = oldAppVersion.substring(oldAppVersion.lastIndexOf(".") + 1);
-        return Integer.compare(Integer.parseInt(oldVersionCode), Integer.parseInt(currentVersionCode));
+        return Integer.compare(Integer.parseInt(currentVersionCode), Integer.parseInt(oldVersionCode));
     }
 
+    @Transactional
     public int createOrUpdateVersion(RestAppInfoRequest appInfoRequest) {
         appInfoRequest
             .setAppVersion(versionCodeMap.get(appInfoRequest.getVersionCode()));
@@ -57,11 +59,13 @@ public class RestAppInfoService {
             BeanUtils.copyProperties(appInfoRequest, appInfo);
             return appInfoRepository.create(appInfo);
         }
+        appInfo.setAndroidVersion(appInfoRequest.getAndroidVersion());
+        appInfo.setDeviceInfo(appInfoRequest.getDeviceInfo());
         appInfoRepository.updateInfo(appInfo);
         int updateStatus = getAppVersionUpdateStatus(appInfo.getAppVersion(),
             appInfoRequest.getVersionCode());
         if (updateStatus == 1) {
-            return appInfoRepository.updateAppVersion(appInfo);
+            appInfoRepository.updateAppVersion(appInfo);
         }
         return updateStatus;
     }
