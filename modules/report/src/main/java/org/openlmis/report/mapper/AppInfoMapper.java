@@ -21,23 +21,23 @@ import java.util.List;
 @Repository
 public interface AppInfoMapper {
 
-    @Insert("INSERT INTO moz_app_info (facilityId, userName, appVersion) VALUES(#{facilityId}, #{userName}, #{appVersion})")
+    @Insert("INSERT INTO moz_app_info (facilityId, userName, appVersion, createdDate, upgradetime) VALUES(#{facilityId}, #{userName}, #{appVersion}, NOW(), NOW())")
     @Options(useGeneratedKeys = true)
     int insert(AppInfo appInfo);
 
     @Update("UPDATE moz_app_info SET appVersion = #{appVersion}, upgradetime = NOW() WHERE id = #{id}")
-    int update(AppInfo appInfo);
-
-    @Select("SELECT * FROM moz_app_info, facilities WHERE facilities.code = #{facilityCode} AND facilities.id = moz_app_info.facilityId")
-    AppInfo queryByFacilityCode(String facilityCode);
+    int updateAppVersion(AppInfo appInfo);
 
     @Select({"SELECT info.*, facilities.name AS facilityName, zone.name AS districtName, parent_zone.name AS provinceName " +
             "FROM moz_app_info AS info " +
             "JOIN facilities as facilities ON info.facilityid = facilities.id " +
             "LEFT JOIN geographic_zones as zone ON facilities.geographiczoneid = zone.id " +
-            "LEFT JOIN geographic_zones as parent_zone ON zone.parentid = parent_zone.id"})
+            "LEFT JOIN geographic_zones as parent_zone ON zone.parentid = parent_zone.id WHERE facilities.typeid in(1,2)"})
     List<AppInfo> queryAll();
 
     @Select("SELECT * FROM moz_app_info WHERE facilityId = #{facilityId}")
     AppInfo queryByFacilityId(Long facilityId);
+
+    @Update("UPDATE moz_app_info SET androidVersion = #{androidVersion}, deviceInfo = #{deviceInfo} WHERE id = #{id}")
+    int updateInfo(AppInfo appInfo);
 }

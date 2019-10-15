@@ -24,15 +24,15 @@ public class AppInfoRepository {
         return appInfoMapper.insert(appInfo);
     }
 
-    public int update(AppInfo appInfo) {
-        return appInfoMapper.update(appInfo);
-    }
-
-    public AppInfo getAppInfoByFacilityCode(String facilityCode) {
-        return appInfoMapper.queryByFacilityCode(facilityCode);
+    public int updateAppVersion(AppInfo appInfo) {
+        return appInfoMapper.updateAppVersion(appInfo);
     }
 
     public AppInfo getAppInfoByFacilityId(Long facilityId) {
         return appInfoMapper.queryByFacilityId(facilityId);
+    }
+
+    public int updateInfo(AppInfo appInfo) {
+        return appInfoMapper.updateInfo(appInfo);
     }
 }

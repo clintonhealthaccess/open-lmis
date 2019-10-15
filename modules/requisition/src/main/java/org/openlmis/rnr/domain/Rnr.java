@@ -28,6 +28,7 @@ import org.openlmis.core.exception.DataException;
 import org.openlmis.rnr.dto.ProgramDataColumnDTO;
 import org.openlmis.rnr.dto.ServiceDTO;
 import org.openlmis.rnr.dto.ServiceLineItemDTO;
+import org.openlmis.rnr.utils.MessageKeyUtils;
 import org.springframework.beans.BeanUtils;
 
 import javax.persistence.Transient;
@@ -54,7 +55,6 @@ import static org.openlmis.rnr.domain.RnrStatus.*;
 @EqualsAndHashCode(callSuper = false)
 public class Rnr extends BaseModel {
 
-  public static final String RNR_VALIDATION_ERROR = "error.rnr.validation";
 
   private static final Map<String, Integer> displayOrderMap = new HashMap<>();
 
@@ -435,7 +435,7 @@ public class Rnr extends BaseModel {
           regimenLineItem.validate(regimenTemplate);
         }
       } catch (NoSuchFieldException | IllegalAccessException e) {
-        throw new DataException(RNR_VALIDATION_ERROR);
+        throw new DataException(MessageKeyUtils.RNR_VALIDATION_ERROR);
       }
     }
   }

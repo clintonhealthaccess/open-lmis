@@ -7,6 +7,7 @@ import org.openlmis.core.exception.DataException;
 import org.openlmis.restapi.domain.ProductResponse;
 import org.openlmis.restapi.response.RestResponse;
 import org.openlmis.restapi.service.RestProductService;
+import org.openlmis.restapi.utils.KitProductFilterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,6 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 
-import static org.openlmis.restapi.config.FilterProductConfig.isVersionCodeMoreThanFilterThresholdVersion;
 import static org.openlmis.restapi.response.RestResponse.error;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
@@ -56,8 +56,10 @@ public class RestProductController extends BaseController {
 
   @RequestMapping(value = "/rest-api/temp86-notice-kit-change")
   public ResponseEntity<RestResponse> getTemp86FilterProduct(@RequestHeader(value = "VersionCode",required = false) String versionCode, Principal principal) {
-    if (isVersionCodeMoreThanFilterThresholdVersion(versionCode)) {
-      List<ProductResponse> products = restProductService.getTemp86KitChangeProducts(loggedInUserId(principal));
+    if (KitProductFilterUtils
+        .isBiggerThanThresholdVersion(versionCode, KitProductFilterUtils.KIT_CODE_CHANGE_VERSION)) {
+      List<ProductResponse> products = restProductService
+          .getTemp86KitChangeProducts(loggedInUserId(principal));
       RestResponse restResponse = new RestResponse("kitChangeProducts", products);
       return new ResponseEntity<>(restResponse, HttpStatus.OK);
     }
