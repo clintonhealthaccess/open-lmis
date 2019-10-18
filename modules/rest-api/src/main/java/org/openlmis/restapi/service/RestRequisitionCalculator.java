@@ -98,7 +98,7 @@ public class RestRequisitionCalculator {
             actualStart.toString("yyyy-MM"), actualEnd.toString("yyyy-MM"),
             LmisThreadLocal.getFacilityId(), reportingProgram.getId()));
         throw new DataException("error.rnr.period.invalid", initStart.toString("yyyy-MM"),
-            initStart.toString("yyyy-MM"));
+            initEnd.toString("yyyy-MM"));
       }
     }
 
