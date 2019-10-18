@@ -31,16 +31,20 @@ import static org.springframework.http.HttpStatus.*;
 
 public class BaseController {
   public static final String ACCEPT_JSON = "Accept=application/json";
-  public static final String UNEXPECTED_EXCEPTION = "unexpected.exception";
-  public static final String FORBIDDEN_EXCEPTION = "error.authorisation";
+  static final String UNEXPECTED_EXCEPTION = "unexpected.exception";
+  private static final String FORBIDDEN_EXCEPTION = "error.authorisation";
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<RestResponse> handleException(Exception ex) {
     if (ex instanceof AccessDeniedException) {
       return error(FORBIDDEN_EXCEPTION, FORBIDDEN);
     }
-    if (ex instanceof MissingServletRequestParameterException || ex instanceof HttpMessageNotReadableException || ex instanceof DataException) {
+    if (ex instanceof MissingServletRequestParameterException
+        || ex instanceof HttpMessageNotReadableException) {
       return error(ex.getMessage(), BAD_REQUEST);
+    }
+    if (ex instanceof DataException) {
+      return error(((DataException) ex).getOpenLmisMessage(), BAD_REQUEST);
     }
     return error(UNEXPECTED_EXCEPTION, INTERNAL_SERVER_ERROR);
   }
