@@ -197,7 +197,7 @@ public class RnrLineItem extends LineItem {
       if (template.columnsVisible(fieldName) &&
         !template.columnsCalculated(fieldName) &&
         (getValueFor(fieldName) == null || (Integer) getValueFor(fieldName) < 0)) {
-        throw new DataException(RNR_FIELD_MANDATORY_NEGATIVE_OR_NULL, productPrimaryName,
+        throw new DataException(RNR_FIELD_MANDATORY_NEGATIVE_OR_NULL, productCode,
             fieldName);
       }
     }
