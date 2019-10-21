@@ -12,7 +12,6 @@ package org.openlmis.restapi.service;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import org.apache.commons.lang3.StringUtils;
 import org.openlmis.core.repository.FacilityRepository;
 import org.openlmis.report.model.dto.AppInfo;
 import org.openlmis.report.repository.AppInfoRepository;
@@ -51,22 +50,20 @@ public class RestAppInfoService {
 
     @Transactional
     public int createOrUpdateVersion(RestAppInfoRequest appInfoRequest) {
-        appInfoRequest
-            .setAppVersion(versionCodeMap.get(appInfoRequest.getVersionCode()));
+        appInfoRequest.setAppVersion(versionCodeMap.get(appInfoRequest.getVersionCode()));
         AppInfo appInfo = appInfoRepository.getAppInfoByFacilityId(appInfoRequest.getFacilityId());
         if (appInfo == null) {
             appInfo = new AppInfo();
             BeanUtils.copyProperties(appInfoRequest, appInfo);
             return appInfoRepository.create(appInfo);
         }
-        appInfo.setAndroidVersion(appInfoRequest.getAndroidVersion());
-        appInfo.setDeviceInfo(appInfoRequest.getDeviceInfo());
-        appInfoRepository.updateInfo(appInfo);
         int updateStatus = getAppVersionUpdateStatus(appInfo.getAppVersion(),
             appInfoRequest.getVersionCode());
+        BeanUtils.copyProperties(appInfoRequest, appInfo);
         if (updateStatus == 1) {
             appInfoRepository.updateAppVersion(appInfo);
         }
+        appInfoRepository.updateInfo(appInfo);
         return updateStatus;
     }
 }

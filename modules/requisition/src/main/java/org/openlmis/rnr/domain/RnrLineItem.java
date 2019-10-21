@@ -219,9 +219,7 @@ public class RnrLineItem extends LineItem {
       if (rnrColumn.isFormulaValidationRequired()) {
         validQuantityDispensed = (quantityDispensed == (beginningBalance + quantityReceived + totalLossesAndAdjustments - stockInHand));
       }
-      boolean valid = quantityDispensed >= 0 && stockInHand >= 0 && validQuantityDispensed;
-
-      if (!valid) {
+      if (!validQuantityDispensed) {
         throw new DataException(RNR_VALIDATION_ERROR);
       }
     }
