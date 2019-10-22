@@ -34,6 +34,7 @@ import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.
 import static org.openlmis.rnr.domain.ProgramRnrTemplate.*;
 import static org.openlmis.rnr.domain.RnrStatus.AUTHORIZED;
 import static org.openlmis.rnr.utils.MessageKeyUtils.RNR_FIELD_MANDATORY_NEGATIVE_OR_NULL;
+import static org.openlmis.rnr.utils.MessageKeyUtils.RNR_VALIDATION_EQUATION_NOT_EQUAL;
 import static org.openlmis.rnr.utils.MessageKeyUtils.RNR_VALIDATION_ERROR;
 
 /**
@@ -220,7 +221,7 @@ public class RnrLineItem extends LineItem {
         validQuantityDispensed = (quantityDispensed == (beginningBalance + quantityReceived + totalLossesAndAdjustments - stockInHand));
       }
       if (!validQuantityDispensed) {
-        throw new DataException(RNR_VALIDATION_ERROR);
+        throw new DataException(RNR_VALIDATION_EQUATION_NOT_EQUAL, productCode);
       }
     }
   }
