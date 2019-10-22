@@ -256,7 +256,7 @@ public class RnrLineItemTest {
     program.setId(999L);
     lineItem.setProgram(program);
     expectedException.expect(DataException.class);
-    expectedException.expectMessage(MessageKeyUtils.RNR_VALIDATION_ERROR);
+    expectedException.expectMessage(MessageKeyUtils.RNR_VALIDATION_EQUATION_NOT_EQUAL);
     lineItem.validateCalculatedFields(template);
   }
 
