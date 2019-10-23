@@ -221,6 +221,7 @@ public class RnrLineItem extends LineItem {
         validQuantityDispensed = (quantityDispensed == (beginningBalance + quantityReceived + totalLossesAndAdjustments - stockInHand));
       }
       if (!validQuantityDispensed) {
+        LOGGER.error(String.format("product is not match code is %s", productCode));
         throw new DataException(RNR_VALIDATION_EQUATION_NOT_EQUAL, productCode);
       }
     }
