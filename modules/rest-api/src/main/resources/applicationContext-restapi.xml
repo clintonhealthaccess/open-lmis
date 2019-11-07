@@ -35,6 +35,7 @@
 
     <mvc:interceptors>
         <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+        <!-- Interceptor the app request -->
         <mvc:interceptor>
             <!-- POST AND PUT -->
             <mvc:mapping path="/rest-api/requisitions"/>

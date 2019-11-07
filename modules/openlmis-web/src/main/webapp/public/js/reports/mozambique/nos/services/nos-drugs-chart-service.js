@@ -436,7 +436,7 @@ services.factory('NosDrugsChartService', function ($http, $filter, $q, $timeout,
     }
   }
 
-  function exportXLSX(startTime, endTime, province, district, reportType) {
+  function exportXLSX(startTime, endTime, province, district, reportType, selectedDrugs) {
     var allNosCodes = _.map(allNosDrugs, function (drug) {
       return drug['drug.drug_code'];
     });

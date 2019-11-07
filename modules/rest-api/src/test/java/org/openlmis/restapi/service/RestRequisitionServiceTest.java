@@ -149,10 +149,10 @@ public class RestRequisitionServiceTest {
 
     RegimenLineItem reportRegimenLineItem = make(a(defaultRegimenLineItem, with(patientsOnTreatment, 10), with(patientsStoppedTreatment, 5)));
     report.setRegimens(asList(RegimenLineItemForRest.convertFromRegimenLineItem(reportRegimenLineItem)));
-    service.submitReport(report, 1L);
+    service.submitReport(report, 1L, null);
     verify(facilityService).getOperativeFacilityByCode(DEFAULT_AGENT_CODE);
     verify(programService).getValidatedProgramByCode(DEFAULT_PROGRAM_CODE);
-    verify(requisitionService).initiate(facility, new Program(PROGRAM_ID), 1L, false, null, null);
+    verify(requisitionService).initiate(facility, new Program(PROGRAM_ID), 1L, false, null, null, null);
     verify(requisitionService).submit(requisition);
     assertThat(requisition.getRegimenLineItems().get(0).getPatientsOnTreatment(), is(10));
   }
@@ -163,7 +163,7 @@ public class RestRequisitionServiceTest {
     setUpRequisitionReportBeforeSubmit();
 
     report.setClientSubmittedNotes("xyz");
-    service.submitReport(report, 1L);
+    service.submitReport(report, 1L, null);
 
     verify(requisitionService).updateClientFields(requisition);
     assertEquals("xyz", requisition.getClientSubmittedNotes());
@@ -175,7 +175,7 @@ public class RestRequisitionServiceTest {
     setUpRequisitionReportBeforeSubmit();
 
     report.setClientSubmittedTime("2015-09-10 12:00:00");
-    service.submitReport(report, 1L);
+    service.submitReport(report, 1L, null);
     verify(requisitionService, times(1)).updateClientFields(requisition);
   }
 
@@ -189,7 +189,7 @@ public class RestRequisitionServiceTest {
     report.setActualPeriodStartDate(DateUtil.formatDate(actualPeriodDate));
     report.setActualPeriodEndDate(DateUtil.formatDate(actualPeriodDate));
 
-    service.submitReport(report, 1L);
+    service.submitReport(report, 1L, null);
 
     verify(requisitionService, times(1)).saveClientPeriod(requisition);
   }
@@ -201,7 +201,7 @@ public class RestRequisitionServiceTest {
 
     setUpRequisitionReportBeforeSubmit();
 
-    service.submitReport(report, 1L);
+    service.submitReport(report, 1L, null);
 
     verify(requisitionService, times(0)).saveClientPeriod(requisition);
   }
@@ -227,7 +227,7 @@ public class RestRequisitionServiceTest {
 
     when(facilityService.getOperativeFacilityByCode(DEFAULT_AGENT_CODE)).thenReturn(facility);
     when(programService.getValidatedProgramByCode(DEFAULT_PROGRAM_CODE)).thenReturn(program);
-    when(requisitionService.initiate(facility, new Program(PROGRAM_ID), user.getId(), false, null, null)).thenReturn(requisition);
+    when(requisitionService.initiate(facility, new Program(PROGRAM_ID), user.getId(), false, null, null, null)).thenReturn(requisition);
     when(requisitionService.save(requisition)).thenReturn(requisition);
     when(productService.getByCode(validProductCode)).thenReturn(new Product());
     Rnr reportedRequisition = mock(Rnr.class);
@@ -243,8 +243,8 @@ public class RestRequisitionServiceTest {
 
     setUpRequisitionReportBeforeSubmit();
 
-    List<PatientQuantificationLineItem> patientQuantifications = new PatientQuantificationsBuilder().addLineItem(new PatientQuantificationLineItem("newborn", new Integer(10))).
-            addLineItem(new PatientQuantificationLineItem("adults", new Integer(5))).build();
+    List<PatientQuantificationLineItem> patientQuantifications = new PatientQuantificationsBuilder().addLineItem(new PatientQuantificationLineItem("newborn", new Integer(10),"", null)).
+            addLineItem(new PatientQuantificationLineItem("adults", new Integer(5), "",null)).build();
 
     RegimenLineItem reportRegimenLineItem = make(a(defaultRegimenLineItem, with(patientsOnTreatment, 10), with(patientsStoppedTreatment, 5)));
     report.setRegimens(asList(RegimenLineItemForRest.convertFromRegimenLineItem(reportRegimenLineItem)));
@@ -253,7 +253,7 @@ public class RestRequisitionServiceTest {
     RegimenCategory category = reportRegimenLineItem.getCategory();
     when(regimenService.queryRegimenCategoryByName(reportRegimenLineItem.getCategoryName())).thenReturn(category);
     when(regimenService.getRegimensByCategory(category)).thenReturn(asList(category));
-    service.submitReport(report, 1L);
+    service.submitReport(report, 1L, null);
 
     assertThat(requisition.getPatientQuantifications().get(0).getTotal(), is(10));
     assertThat(requisition.getPatientQuantifications().get(1).getTotal(), is(5));
@@ -264,11 +264,11 @@ public class RestRequisitionServiceTest {
   public void sdpShouldCreateAndSubmitARequisition() throws Exception{
     Facility facility = setupSDPrequisition();
 
-    service.submitSdpReport(report, 1L);
+    service.submitSdpReport(report, 1L, null);
 
     verify(facilityService).getOperativeFacilityByCode(DEFAULT_AGENT_CODE);
     verify(programService).getValidatedProgramByCode(DEFAULT_PROGRAM_CODE);
-    verify(requisitionService).initiate(facility, new Program(PROGRAM_ID), 1L, false, null, null);
+    verify(requisitionService).initiate(facility, new Program(PROGRAM_ID), 1L, false, null, null, null);
     verify(requisitionService).submit(requisition);
     assertThat(requisition.getRegimenLineItems().get(0).getPatientsOnTreatment(), is(10));
   }
@@ -295,7 +295,7 @@ public class RestRequisitionServiceTest {
 
     when(facilityService.getOperativeFacilityByCode(DEFAULT_AGENT_CODE)).thenReturn(facility);
     when(programService.getValidatedProgramByCode(DEFAULT_PROGRAM_CODE)).thenReturn(new Program(PROGRAM_ID));
-    when(requisitionService.initiate(facility, new Program(PROGRAM_ID), user.getId(), false, null, null)).thenReturn(requisition);
+    when(requisitionService.initiate(facility, new Program(PROGRAM_ID), user.getId(), false, null, null, null)).thenReturn(requisition);
     when(requisitionService.save(requisition)).thenReturn(requisition);
     when(productService.getByCode(validProductCode)).thenReturn(new Product());
     Rnr reportedRequisition = mock(Rnr.class);
@@ -338,8 +338,8 @@ public class RestRequisitionServiceTest {
     ArrayList<ProcessingPeriod> array = new ArrayList<>();
     when(requisitionService.getRequisitionsFor(any(RequisitionSearchCriteria.class), any(array.getClass()))).thenReturn(asList(new Rnr()));
 
-    service.submitSdpReport(report, 1L);
-    verify(requisitionService, never()).initiate(any(Facility.class), any(Program.class), any(Long.class), any(Boolean.class), any(ProcessingPeriod.class), any(List.class));
+    service.submitSdpReport(report, 1L, null);
+    verify(requisitionService, never()).initiate(any(Facility.class), any(Program.class), any(Long.class), any(Boolean.class), any(ProcessingPeriod.class), any(List.class), null);
 
   }
 
@@ -351,9 +351,9 @@ public class RestRequisitionServiceTest {
     when(facilityService.getOperativeFacilityByCode(anyString())).thenReturn(new Facility());
     when(requisitionService.getLastRegularRequisitionByReportDate(any(Facility.class), any(Program.class))).thenReturn(new Rnr());
     doThrow(new DataException("rnr.error")).when(restRequisitionCalculator).validatePeriod(any(Facility.class), any(Program.class), any(Date.class), any(Date.class));
-    service.submitReport(report, 1l);
+    service.submitReport(report, 1l, null);
 
-    verify(requisitionService, never()).initiate(any(Facility.class), any(Program.class), any(Long.class), any(Boolean.class),any(ProcessingPeriod.class), any(List.class));
+    verify(requisitionService, never()).initiate(any(Facility.class), any(Program.class), any(Long.class), any(Boolean.class),any(ProcessingPeriod.class), any(List.class), null);
     verify(requisitionService, never()).save(any(Rnr.class));
     verify(requisitionService, never()).submit(any(Rnr.class));
   }
@@ -367,9 +367,9 @@ public class RestRequisitionServiceTest {
     when(facilityService.getOperativeFacilityByCode(anyString())).thenReturn(new Facility());
     doThrow(new DataException("rnr.error")).when(restRequisitionCalculator).validateCustomPeriod(any(Facility.class), any(Program.class), any(ProcessingPeriod.class), any(Long.class));
 
-    service.submitSdpReport(report, 1l);
+    service.submitSdpReport(report, 1l, null);
 
-    verify(requisitionService, never()).initiate(any(Facility.class), any(Program.class), any(Long.class), any(Boolean.class), any(ProcessingPeriod.class), any(List.class));
+    verify(requisitionService, never()).initiate(any(Facility.class), any(Program.class), any(Long.class), any(Boolean.class), any(ProcessingPeriod.class), any(List.class), null);
     verify(requisitionService, never()).save(any(Rnr.class));
     verify(requisitionService, never()).submit(any(Rnr.class));
   }
@@ -384,7 +384,7 @@ public class RestRequisitionServiceTest {
 
     doThrow(new DataException("rnr.error")).when(restRequisitionCalculator).validateProducts(any(List.class), any(Rnr.class));
 
-    service.submitReport(report, 1L);
+    service.submitReport(report, 1L, null);
 
     verify(requisitionService, never()).save(any(Rnr.class));
     verify(requisitionService, never()).submit(any(Rnr.class));
@@ -458,9 +458,9 @@ public class RestRequisitionServiceTest {
 
     Rnr rnr = new Rnr();
     rnr.setProgram(program);
-    when(requisitionService.initiate(facility, program, 3l, false, null, null)).thenReturn(rnr);
+    when(requisitionService.initiate(facility, program, 3l, false, null, null, null)).thenReturn(rnr);
     when(rnrTemplateService.fetchProgramTemplateForRequisition(any(Long.class))).thenReturn(new ProgramRnrTemplate(new ArrayList<RnrColumn>()));
-    service.submitReport(report, 3l);
+    service.submitReport(report, 3l, null);
 
     verify(requisitionService).save(rnr);
 
@@ -490,10 +490,10 @@ public class RestRequisitionServiceTest {
     rnr.setProgram(program);
     reportRegimenLineItem.setCode("001");
     rnr.setRegimenLineItems(asList(reportRegimenLineItem));
-    when(requisitionService.initiate(facility, program, 3l, false, null, null)).thenReturn(rnr);
+    when(requisitionService.initiate(facility, program, 3l, false, null, null, null)).thenReturn(rnr);
     when(rnrTemplateService.fetchProgramTemplateForRequisition(any(Long.class))).thenReturn(new ProgramRnrTemplate(new ArrayList<RnrColumn>()));
 
-    service.submitReport(report, 3l);
+    service.submitReport(report, 3l, null);
 
     ArgumentCaptor<Regimen> argument = ArgumentCaptor.forClass(Regimen.class);
     verify(regimenService).save(argument.capture(), anyLong());
@@ -523,10 +523,10 @@ public class RestRequisitionServiceTest {
 
     Rnr rnr = new Rnr();
     rnr.setProgram(program);
-    when(requisitionService.initiate(facility, program, 3l, false, null, null)).thenReturn(rnr);
+    when(requisitionService.initiate(facility, program, 3l, false, null, null, null)).thenReturn(rnr);
     when(rnrTemplateService.fetchProgramTemplateForRequisition(any(Long.class))).thenReturn(new ProgramRnrTemplate(new ArrayList<RnrColumn>()));
 
-    service.submitReport(report, 3l);
+    service.submitReport(report, 3l, null);
     verify(regimenService, never()).save(any(Regimen.class), anyLong());
     verify(regimenLineItemMapper).insert(any(RegimenLineItem.class));
     assertThat(rnr.getRegimenLineItems().size(), is(1));
@@ -549,13 +549,13 @@ public class RestRequisitionServiceTest {
 
     Rnr rnr = new Rnr();
     rnr.setProgram(program);
-    when(requisitionService.initiate(facility, program, 3l, false, null, null)).thenReturn(rnr);
+    when(requisitionService.initiate(facility, program, 3l, false, null, null, null)).thenReturn(rnr);
     when(rnrTemplateService.fetchProgramTemplateForRequisition(any(Long.class))).thenReturn(new ProgramRnrTemplate(new ArrayList<RnrColumn>()));
 
     expectedException.expect(DataException.class);
     expectedException.expectMessage("error.invalid.regimen");
 
-    service.submitReport(report, 3l);
+    service.submitReport(report, 3l, null);
 
   }
 
@@ -608,13 +608,13 @@ public class RestRequisitionServiceTest {
     rnr.setFullSupplyLineItems(asList(make(a(defaultRnrLineItem, with(productCode, "P10"))), make(a(defaultRnrLineItem, with(productCode, "P11")))));
     when(programService.getValidatedProgramByCode(report.getProgramCode())).thenReturn(program);
     when(facilityService.getOperativeFacilityByCode(report.getAgentCode())).thenReturn(facility);
-    when(requisitionService.initiate(facility, program, userId, false, null, null)).thenReturn(rnr);
+    when(requisitionService.initiate(facility, program, userId, false, null, null, null)).thenReturn(rnr);
     doThrow(new DataException("invalid product codes")).when(restRequisitionCalculator).validateProducts(productList, rnr);
 
     expectedException.expect(DataException.class);
     expectedException.expectMessage("invalid product codes");
 
-    service.submitReport(report, userId);
+    service.submitReport(report, userId, null);
   }
 
   @Test
@@ -638,11 +638,11 @@ public class RestRequisitionServiceTest {
                     reportFacility)));
     rnr.setFullSupplyLineItems(asList(rnrLineItem1, rnrLineItem2));
 
-    when(requisitionService.initiate(reportFacility, program, 3l, false, null, null)).thenReturn(rnr);
+    when(requisitionService.initiate(reportFacility, program, 3l, false, null, null, null)).thenReturn(rnr);
     when(rnrTemplateService.fetchProgramTemplateForRequisition(any(Long.class))).thenReturn(new ProgramRnrTemplate(new ArrayList<RnrColumn>()));
 
 
-    service.submitReport(report, 3l);
+    service.submitReport(report, 3l, null);
 
     assertThat(rnr.getFullSupplyLineItems().get(0).getSkipped(), is(false));
     assertThat(rnr.getFullSupplyLineItems().get(1).getSkipped(), is(true));
@@ -670,9 +670,9 @@ public class RestRequisitionServiceTest {
                     reportFacility), with(RequisitionBuilder.program, rnrProgram)));
     rnr.setFullSupplyLineItems(asList(initiatedLineItem));
 
-    when(requisitionService.initiate(reportFacility, rnrProgram, 3l, false, null, null)).thenReturn(rnr);
+    when(requisitionService.initiate(reportFacility, rnrProgram, 3l, false, null, null, null)).thenReturn(rnr);
 
-    service.submitReport(report, 3l);
+    service.submitReport(report, 3l, null);
 
     assertThat(rnr.getFullSupplyLineItems().get(0).getStockInHand(), is(100));
 
@@ -708,9 +708,9 @@ public class RestRequisitionServiceTest {
                     reportFacility), with(RequisitionBuilder.program, rnrProgram)));
     rnr.setFullSupplyLineItems(asList(initiatedLineItem));
 
-    when(requisitionService.initiate(reportFacility, rnrProgram, 3l, false, null, null)).thenReturn(rnr);
+    when(requisitionService.initiate(reportFacility, rnrProgram, 3l, false, null, null, null)).thenReturn(rnr);
 
-    service.submitReport(report, 3l);
+    service.submitReport(report, 3l, null);
 
     RnrLineItem rnrLineItem = rnr.getFullSupplyLineItems().get(0);
     assertThat(rnrLineItem.getStockInHand(), is(nullValue()));
@@ -736,11 +736,11 @@ public class RestRequisitionServiceTest {
     when(facilityService.getOperativeFacilityByCode(facilityCode)).thenReturn(facility);
     when(programService.getValidatedProgramByCode(programCode)).thenReturn(program);
     Rnr rnr = new Rnr(facility, program, new ProcessingPeriod());
-    when(requisitionService.initiate(facility, program, 3l, false, null, null)).thenReturn(rnr);
+    when(requisitionService.initiate(facility, program, 3l, false, null, null, null)).thenReturn(rnr);
     when(requisitionService.submit(rnr)).thenReturn(rnr);
     when(requisitionService.authorize(rnr)).thenReturn(rnr);
 
-    Rnr authorizedRequisition = service.submitReport(report, 3l);
+    Rnr authorizedRequisition = service.submitReport(report, 3l, null);
 
     verify(requisitionService).authorize(rnr);
     assertThat(authorizedRequisition, is(rnr));
@@ -757,11 +757,11 @@ public class RestRequisitionServiceTest {
     when(facilityService.getOperativeFacilityByCode(facilityCode)).thenReturn(facility);
     when(programService.getValidatedProgramByCode(programCode)).thenReturn(program);
     Rnr initiatedRnr = mock(Rnr.class);
-    when(requisitionService.initiate(facility, program, 3l, false, null, null)).thenReturn(initiatedRnr);
+    when(requisitionService.initiate(facility, program, 3l, false, null, null, null)).thenReturn(initiatedRnr);
     when(initiatedRnr.getFullSupplyLineItems()).thenReturn(new ArrayList<RnrLineItem>());
     when(initiatedRnr.getProgram()).thenReturn(program);
 
-    service.submitReport(report, 3L);
+    service.submitReport(report, 3L, null);
 
     verify(restRequisitionCalculator).setDefaultValues(initiatedRnr);
   }
@@ -793,7 +793,7 @@ public class RestRequisitionServiceTest {
     Signature approverSignature = new Signature(Signature.Type.APPROVER, "Magneto");
     report.setRnrSignatures(asList(submitterSignature, approverSignature));
 
-    service.submitReport(report, 1L);
+    service.submitReport(report, 1L, null);
 
     assertThat(requisition.getRnrSignatures().get(0).getText(), is("Mystique"));
     assertThat(requisition.getRnrSignatures().get(1).getText(), is("Magneto"));
@@ -811,7 +811,7 @@ public class RestRequisitionServiceTest {
     Mockito.when(syncUpHashRepository.hashExists(anyString())).thenReturn(false);
 
     //when
-    service.submitReport(report, 1L);
+    service.submitReport(report, 1L, null);
 
     //then
     verify(syncUpHashRepository, times(1)).save(anyString());
@@ -824,7 +824,7 @@ public class RestRequisitionServiceTest {
     Mockito.when(syncUpHashRepository.hashExists(anyString())).thenReturn(false);
 
     //when
-    service.submitSdpReport(report, 1L);
+    service.submitSdpReport(report, 1L, null);
 
     //then
     verify(syncUpHashRepository, times(1)).save(anyString());
@@ -837,7 +837,7 @@ public class RestRequisitionServiceTest {
     Mockito.when(syncUpHashRepository.hashExists(anyString())).thenReturn(true);
 
     //when
-    service.submitSdpReport(report, 1L);
+    service.submitSdpReport(report, 1L, null);
 
     //then
     verify(syncUpHashRepository, never()).save(anyString());
@@ -851,7 +851,7 @@ public class RestRequisitionServiceTest {
     Mockito.when(syncUpHashRepository.hashExists(anyString())).thenReturn(true);
 
     //when
-    service.submitReport(report, 1L);
+    service.submitReport(report, 1L, null);
 
     //then
     verify(syncUpHashRepository, never()).save(anyString());
@@ -863,7 +863,7 @@ public class RestRequisitionServiceTest {
     for (RnrLineItem rnrLineItem: report.getProducts()) {
       rnrLineItem.setFullSupply(null);
     }
-    service.submitSdpReport(report, 1L);
+    service.submitSdpReport(report, 1L, null);
     //No exception
   }
 
@@ -875,7 +875,7 @@ public class RestRequisitionServiceTest {
     when(requisitionService.getLastRegularRequisition(facility, program)).thenReturn(null);
     report.setActualPeriodStartDate("2016-05-17 09:00:00");
 
-    service.submitReport(report, 1L);
+    service.submitReport(report, 1L, null);
 
     ArgumentCaptor<Date> updateTimeCapture = ArgumentCaptor.forClass(Date.class);
     verify(programSupportedService).updateProgramSupportedReportStartDate(eq(facility.getId()), eq(program.getId()), updateTimeCapture.capture());

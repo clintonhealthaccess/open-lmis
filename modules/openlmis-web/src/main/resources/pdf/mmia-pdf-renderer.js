@@ -33,25 +33,25 @@ function onLoaded() {
         page.evaluate(function () {
             $('body').css('background', '#FFFFFF');
             $('.btn-download').hide();
-            $('.patient-section').css('margin-left', '11%');
+            $('.patient-section').css('margin-left', '5px');
             $('.content.rnr-content').css('-webkit-box-shadow', '0 0 0px rgba(255, 255, 255, 0)');
             $('.content.rnr-content').css('-moz-box-shadow', '0 0 0px rgba(255, 255, 255, 0)');
             $('.content.rnr-content').css('box-shadow', '0 0 0px rgba(255, 255, 255, 0)');
 
             // The tricky pagination logic
-            var regimenCount = $('.regime-form tbody tr').length - 4;
-            var rnrItemCount = $('.second-section tbody tr').length - 4;
-            var REGIMEN_LIMIT = 20, RNR_ITEM_LIMIT = 26;
+            // var regimenCount = $('.regime-form tbody tr').length - 4;
+            // var rnrItemCount = $('.second-section tbody tr').length - 4;
+            // var REGIMEN_LIMIT = 20, RNR_ITEM_LIMIT = 26;
 
             $('.mmia-form').css('width', 994);
             $('.mmia-form').css('zoom', 0.50);
             $('.mmia-form td').css('line-height', 1.0);
 
-            if (regimenCount > REGIMEN_LIMIT || rnrItemCount > RNR_ITEM_LIMIT) {
-                $('.mmia-form').css('zoom', 0.7);
-                $('.page-break').css('page-break-after', 'always');
-                $('.mmia-form td').css('line-height', 1.3);
-            }
+            // if (regimenCount > REGIMEN_LIMIT || rnrItemCount > RNR_ITEM_LIMIT) {
+            //     $('.mmia-form').css('zoom', 0.7);
+            //     $('.page-break').css('page-break-after', 'always');
+            //     $('.mmia-form td').css('line-height', 1.3);
+            // }
         });
         page.render(output);
         phantom.exit();

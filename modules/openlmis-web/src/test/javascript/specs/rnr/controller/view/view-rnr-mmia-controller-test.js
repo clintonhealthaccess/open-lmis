@@ -65,13 +65,10 @@ describe('ViewRnrViaDetailController', function () {
         {id: 56, categoryName: "Paediatrics", patientsOnTreatment: 1},
         {id: 57, categoryName: "Paediatrics", patientsOnTreatment: 1}],
       patientQuantifications: [
-        {id: 1, total: 1},
-        {id: 2, total: 1},
-        {id: 3, total: 1},
-        {id: 4, total: 1},
-        {id: 5, total: 1},
-        {id: 6, total: 1},
-        {id: 7, total: 1}
+        {id: 1, total: 1, category: 'new'},
+        {id: 2, total: 1, category: 'maintenance'},
+        {id: 3, total: 1, category: 'alteration'},
+        {id: 4, total: 1, category: 'PPE'},
       ],
       rnrSignatures: [{type: "SUBMITTER",text: submitterText},{type: "APPROVER",text: approverText}]
     }
@@ -98,7 +95,7 @@ describe('ViewRnrViaDetailController', function () {
 
     expect(scope.rnr.fullSupplyLineItems.length).toBe(24);
     expect(scope.rnr.regimenLineItems.length).toBe(19);
-    expect(scope.rnr.patientQuantifications.length).toBe(7);
+    expect(Object.keys(scope.rnr.patientQuantifications).length).toBe(2);
   });
 
   it('should format year and month',function(){

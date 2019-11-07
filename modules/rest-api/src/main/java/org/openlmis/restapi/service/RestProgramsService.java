@@ -40,20 +40,20 @@ public class RestProgramsService {
   }
 
   @Transactional
-  public List<ProgramWithRegimens> getAllProgramWithRegimenByFacilityId(Long facilityId) {
+  public List<ProgramWithRegimens> getAllProgramWithRegimenByFacilityId(Long facilityId, String versionCode) {
     List<ProgramWithRegimens> programWithRegimensList = new ArrayList<>();
 
     List<ProgramSupported> programSupporteds = programSupportedRepository.getAllByFacilityId(facilityId);
 
     for (ProgramSupported programSupported: programSupporteds) {
       Program program = programRepository.getProgramWithParentById(programSupported.getProgram().getId());
-      ProgramWithRegimens programWithRegimens = createProgramWithRegimens(program);
+      ProgramWithRegimens programWithRegimens = createProgramWithRegimens(program, versionCode);
       programWithRegimensList.add(programWithRegimens);
     }
     return programWithRegimensList;
   }
 
-  private ProgramWithRegimens createProgramWithRegimens(Program program) {
+  private ProgramWithRegimens createProgramWithRegimens(Program program,String versionCode) {
     ProgramWithRegimens programWithRegimens = new ProgramWithRegimens();
 
     programWithRegimens.setId(program.getId());
@@ -61,14 +61,14 @@ public class RestProgramsService {
     programWithRegimens.setName(program.getName());
     programWithRegimens.setParentCode(program.getParent() != null ? program.getParent().getCode() : null);
     programWithRegimens.setIsSupportEmergency(program.getIsSupportEmergency());
-    programWithRegimens.setRegimens(getRegimensByProgramAndIsCustom(program));
+    programWithRegimens.setRegimens(getRegimensByProgramAndIsCustom(program, versionCode));
 
     return programWithRegimens;
   }
 
-  private List<RegimenForRest> getRegimensByProgramAndIsCustom(Program program) {
+  private List<RegimenForRest> getRegimensByProgramAndIsCustom(Program program, String versionCode) {
     List<RegimenForRest> result = new ArrayList<>();
-    List<Regimen> regimenList = regimenRepository.getRegimensByProgramAndIsCustom(program.getId(), false);
+    List<Regimen> regimenList = regimenRepository.getRegimensByProgramAndIsCustom(program.getId(), false, versionCode);
     for (Regimen regimen: regimenList) {
       result.add(RegimenForRest.convertFromRegimenLineItem(regimen));
     }
