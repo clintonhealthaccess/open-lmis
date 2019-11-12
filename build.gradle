@@ -62,7 +62,6 @@ subprojects {
 
     repositories {
         maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
-        mavenLocal()
         maven {
             url "http://repo.springsource.org/plugins-release/"
         }
