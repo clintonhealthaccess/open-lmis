@@ -94,7 +94,7 @@ def boolean closeActiveConnections(String pid) {
 }
 
 jar.doFirst {
-    tasks.migrateDB.execute()
+//    tasks.migrateDB.execute()
 }
 
 task migrateDB() << {
