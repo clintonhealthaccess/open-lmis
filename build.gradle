@@ -22,9 +22,8 @@ repositories {
 }
 buildscript {
     repositories {
-        mavenCentral()
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
         mavenLocal()
-        jcenter()
     }
     dependencies {
         classpath "net.saliman:gradle-cobertura-plugin:2.2.7"
@@ -62,7 +61,7 @@ subprojects {
     [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
     repositories {
-        mavenCentral()
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
         mavenLocal()
         maven {
             url "http://repo.springsource.org/plugins-release/"
