@@ -9,19 +9,18 @@
  */
 package org.openlmis.report.model.dto;
 
+import java.util.Date;
 import lombok.Data;
 import org.openlmis.core.domain.BaseModel;
 
 @Data
 public class AppInfo extends BaseModel {
     private Long facilityId;
-    private String facilityCode;
-    private String provinceName;
-    private String districtName;
-    private String facilityName;
     private String userName;
     private String appVersion;
-    private String upgradeTime;
+    private String androidVersion;
+    private String deviceInfo;
+    private Date upgradeTime;
 
     public AppInfo() {
     }

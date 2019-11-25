@@ -59,6 +59,10 @@
             <param-value>true</param-value>
         </init-param>
         <init-param>
+            <param-name>includeQueryString</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
             <param-name>maxPayloadLength</param-name>
             <param-value>99999</param-value>
         </init-param>

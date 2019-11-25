@@ -9,70 +9,61 @@
  */
 package org.openlmis.restapi.service;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.PostConstruct;
 import org.openlmis.core.repository.FacilityRepository;
 import org.openlmis.report.model.dto.AppInfo;
 import org.openlmis.report.repository.AppInfoRepository;
 import org.openlmis.restapi.domain.RestAppInfoRequest;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RestAppInfoService {
-    private final static int VERSION_UPGRADE = 1;
-    private final static int VERSION_NOCHANGE = 0;
-    private final static int VERSION_DEGRADE = -1;
+    private Map<String,String> versionCodeMap = new HashMap<>();
+
+    @PostConstruct
+    public void init() {
+        versionCodeMap.put("82", "1.11.82");
+        versionCodeMap.put("83", "1.12.83");
+        versionCodeMap.put("84", "1.12.84");
+        versionCodeMap.put("85", "1.12.85");
+        versionCodeMap.put("86", "1.12.86");
+        versionCodeMap.put("87", "1.12.87");
+        versionCodeMap.put("88", "1.12.88");
+        versionCodeMap.put("89", "1.12.89");
+
+    }
 
     @Autowired
     AppInfoRepository appInfoRepository;
     @Autowired
     FacilityRepository facilityRepository;
 
-    public static int getAppUpgradeStatus(String beforeVersion, String currentVersion) {
-        if (StringUtils.isEmpty(beforeVersion) || StringUtils.isEmpty(currentVersion)) {
-            return VERSION_NOCHANGE;
-        }
-        char[] beforeChars = beforeVersion.toCharArray(), afterChars = currentVersion.toCharArray();
-        int minLength = Math.min(beforeChars.length, afterChars.length);
-        for (int i = 0; i < minLength; i++) {
-            if (beforeChars[i] < afterChars[i]) {
-                return VERSION_UPGRADE;
-            }
-            if (beforeChars[i] > afterChars[i]) {
-                return VERSION_DEGRADE;
-            }
-        }
-        if (afterChars.length - minLength > 0) {
-            return VERSION_UPGRADE;
-        } else if (beforeChars.length - minLength > 0) {
-            return VERSION_DEGRADE;
-        }
-        return VERSION_NOCHANGE;
+    private int getAppVersionUpdateStatus(String oldAppVersion, String currentVersionCode) {
+        String oldVersionCode = oldAppVersion.substring(oldAppVersion.lastIndexOf(".") + 1);
+        return Integer.compare(Integer.parseInt(currentVersionCode), Integer.parseInt(oldVersionCode));
     }
 
+    @Transactional
     public int createOrUpdateVersion(RestAppInfoRequest appInfoRequest) {
-        AppInfo logedAppInfo;
-        if (appInfoRequest.getFacilityId() != null) {
-            logedAppInfo = appInfoRepository.getAppInfoByFacilityId(appInfoRequest.getFacilityId());
-        } else {
-            logedAppInfo = appInfoRepository
-                .getAppInfoByFacilityCode(appInfoRequest.getFacilityCode());
+        appInfoRequest.setAppVersion(versionCodeMap.get(appInfoRequest.getVersionCode()));
+        AppInfo appInfo = appInfoRepository.getAppInfoByFacilityId(appInfoRequest.getFacilityId());
+        if (appInfo == null) {
+            appInfo = new AppInfo();
+            BeanUtils.copyProperties(appInfoRequest, appInfo);
+            return appInfoRepository.create(appInfo);
         }
-        if (logedAppInfo == null) {
-            Long facilityId =
-                appInfoRequest.getFacilityId() != null ? appInfoRequest.getFacilityId()
-                    : facilityRepository.getIdForCode(appInfoRequest.getFacilityCode());
-            logedAppInfo = new AppInfo(facilityId, appInfoRequest.getUserName(),
-                appInfoRequest.getVersion());
-            appInfoRepository.create(logedAppInfo);
-            return VERSION_UPGRADE;
+        int updateStatus = getAppVersionUpdateStatus(appInfo.getAppVersion(),
+            appInfoRequest.getVersionCode());
+        BeanUtils.copyProperties(appInfoRequest, appInfo);
+        if (updateStatus == 1) {
+            appInfoRepository.updateAppVersion(appInfo);
         }
-        int appUpgradeStatus = getAppUpgradeStatus(logedAppInfo.getAppVersion(),
-            appInfoRequest.getVersion());
-        if (appUpgradeStatus == VERSION_UPGRADE) {
-            logedAppInfo.setAppVersion(appInfoRequest.getVersion());
-            appInfoRepository.update(logedAppInfo);
-        }
-        return appUpgradeStatus;
+        appInfoRepository.updateInfo(appInfo);
+        return updateStatus;
     }
 }

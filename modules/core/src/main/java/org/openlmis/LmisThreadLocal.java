@@ -10,22 +10,60 @@
 
 package org.openlmis;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * LmisThreadLocal is used to get/set/remove current thread's value of a thread-local
  */
 public class LmisThreadLocal {
 
-    public static final ThreadLocal<String> lmisThreadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<Map<String, String>> lmisThreadLocal = new ThreadLocal<>();
 
-    public static void set(String userName) {
-        lmisThreadLocal.set(userName);
+    public static final String KEY_USER_NAME = "userName";
+    public static final String KEY_FACILITY_ID = "facilityId";
+    public static final String KEY_VERSION_CODE  = "versionCode";
+    public static final String KEY_UNIQUE_ID = "uniqueId";
+    public static final String KEY_DEVICE_INFO = "deviceInfo";
+
+    public static void set(String key, String userName) {
+        Map<String, String> map = lmisThreadLocal.get();
+        if (map == null) {
+            map = new HashMap<>();
+            map.put(key, userName);
+        }
+        lmisThreadLocal.set(map);
     }
 
-    public static void unset() {
+    public static void remove() {
         lmisThreadLocal.remove();
     }
 
-    public static String get() {
-        return lmisThreadLocal.get();
+    public static String get(String key) {
+        Map<String, String> map = lmisThreadLocal.get();
+        if (map == null) {
+            return null;
+        }
+        return map.get(key);
+    }
+
+    public static String getUserName() {
+        return LmisThreadLocal.get(LmisThreadLocal.KEY_USER_NAME);
+    }
+
+    public static String getFacilityId() {
+        return LmisThreadLocal.get(LmisThreadLocal.KEY_FACILITY_ID);
+    }
+
+    public static String getVersionCode() {
+        return LmisThreadLocal.get(LmisThreadLocal.KEY_VERSION_CODE);
+    }
+
+    public static String getUniqueId() {
+        return LmisThreadLocal.get(LmisThreadLocal.KEY_UNIQUE_ID);
+    }
+
+    public static String getDeviceInfo() {
+        return LmisThreadLocal.get(LmisThreadLocal.KEY_DEVICE_INFO);
     }
 }

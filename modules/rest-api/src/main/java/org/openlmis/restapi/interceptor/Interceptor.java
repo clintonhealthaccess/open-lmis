@@ -1,8 +1,5 @@
 package org.openlmis.restapi.interceptor;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.restapi.domain.RestAppInfoRequest;
@@ -28,17 +25,7 @@ public class Interceptor extends HandlerInterceptorAdapter {
     @Value("${andorid.app.version.code}")
     private String versionCode;
 
-    private Map<String,String> versionCodeMap = new HashMap<>();
 
-    @PostConstruct
-    public void init() {
-        versionCodeMap.put("82", "1.11.82");
-        versionCodeMap.put("83", "1.12.83");
-        versionCodeMap.put("84", "1.12.84");
-        versionCodeMap.put("85", "1.12.85");
-        versionCodeMap.put("86", "1.12.86");
-        versionCodeMap.put("87", "1.12.87");
-    }
 
 
     @Override
@@ -48,25 +35,25 @@ public class Interceptor extends HandlerInterceptorAdapter {
         Date expirationDateOfAndoridApp = getExpirationDate();
 
         // if the android version is less than 86, the request version vode will be null
-        updateAppVersion(request);
         validAppVersion(request, expirationDateOfAndoridApp);
+        updateAppInfo(request);
         return true;
     }
 
-    private void updateAppVersion(HttpServletRequest request) {
+    private void updateAppInfo(HttpServletRequest request) {
         String versionCode = request.getHeader("VersionCode");
         String userName = request.getHeader("UserName");
         String facilityId = request.getHeader("FacilityId");
-        if (StringUtils.isNotBlank(versionCode) && StringUtils.isNotBlank(userName) && StringUtils
-            .isNotBlank(facilityId)) {
-            versionCode = versionCodeMap.get(versionCode);
-            if (StringUtils.isNotBlank(versionCode)) {
-                RestAppInfoRequest appInfoRequest = new RestAppInfoRequest();
-                appInfoRequest.setFacilityId(Long.valueOf(facilityId));
-                appInfoRequest.setVersion(versionCode);
-                appInfoRequest.setUserName(userName);
-                restAppInfoService.createOrUpdateVersion(appInfoRequest);
-            }
+        String androidVersion = request.getHeader("AndroidVersion");
+        String deviceInfo = request.getHeader("DeviceInfo");
+        if (StringUtils.isNotBlank(facilityId) && StringUtils.isNotBlank(versionCode)) {
+            RestAppInfoRequest appInfoRequest = new RestAppInfoRequest();
+            appInfoRequest.setFacilityId(Long.valueOf(facilityId));
+            appInfoRequest.setUserName(userName);
+            appInfoRequest.setVersionCode(versionCode);
+            appInfoRequest.setAndroidVersion(androidVersion);
+            appInfoRequest.setDeviceInfo(deviceInfo);
+            restAppInfoService.createOrUpdateVersion(appInfoRequest);
         }
     }
 
@@ -78,7 +65,7 @@ public class Interceptor extends HandlerInterceptorAdapter {
         Integer androidVersionCode = Integer.valueOf(versionCode);
         String requestAppInfo = request.getHeader("VersionCode");
         if (StringUtils.isBlank(requestAppInfo) || Integer.valueOf(requestAppInfo) < androidVersionCode) {
-            throw new DataException(String.format("Please upgrade your android version %s", requestAppInfo));
+            throw new DataException("Please upgrade your android version");
         }
     }
 
