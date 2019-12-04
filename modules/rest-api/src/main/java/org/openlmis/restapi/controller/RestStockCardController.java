@@ -1,7 +1,10 @@
 package org.openlmis.restapi.controller;
 
 import com.wordnik.swagger.annotations.Api;
+import java.util.ArrayList;
+import java.util.Map;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.restapi.domain.StockCardDTO;
 import org.openlmis.restapi.response.RestResponse;
@@ -10,6 +13,7 @@ import org.openlmis.restapi.utils.KitProductFilterUtils;
 import org.openlmis.stockmanagement.dto.StockEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +43,9 @@ public class RestStockCardController extends BaseController {
                                     @RequestBody List<StockEvent> events,
                                     Principal principal) {
 
-    // FIXME: 2019-04-17 remove dirty data
+    if (!restStockCardService.validFacility(facilityId)) {
+      throw new DataException("error.facility.unknown");
+    }
     List<StockEvent> filterStockEvents;
     if (KitProductFilterUtils.isBiggerThanThresholdVersion(versionCode, FILTER_THRESHOLD_VERSION)) {
       filterStockEvents = restStockCardService
@@ -56,6 +62,30 @@ public class RestStockCardController extends BaseController {
     }
 
     return RestResponse.success("msg.stockmanagement.adjuststocksuccess");
+  }
+
+  @RequestMapping(value = "/rest-api/facilities/split/{facilityId}/stockCards", method = POST, headers = ACCEPT_JSON)
+  public ResponseEntity adjustStock(@PathVariable long facilityId,
+      @RequestBody List<StockEvent> events, Principal principal) {
+    if (!restStockCardService.validFacility(facilityId)) {
+      throw new DataException("error.facility.unknown");
+    }
+    List<StockEvent> filterStockEvents;
+    filterStockEvents = restStockCardService.filterStockEventsList(events, WRONG_KIT_PRODUCTS_SET);
+    Map<String, List<StockEvent>> productStockEventMap = restStockCardService
+        .groupByProduct(filterStockEvents);
+    List<String> errorProductCode = new ArrayList<>();
+    for (Map.Entry<String, List<StockEvent>> entry : productStockEventMap.entrySet()) {
+      try {
+        restStockCardService.adjustStock(facilityId, entry.getValue(), loggedInUserId(principal));
+        if (StringUtils.equalsIgnoreCase(entry.getKey(), "08s10z")) {
+          throw new DataException("test");
+        }
+      } catch (Exception e) {
+        errorProductCode.add(entry.getKey());
+      }
+    }
+    return new ResponseEntity<>(errorProductCode, HttpStatus.OK);
   }
 
   @RequestMapping(value = "/rest-api/facilities/{facilityId}/stockCards", method = GET, headers = ACCEPT_JSON)
