@@ -42,10 +42,6 @@ public class RestStockCardController extends BaseController {
                                     @RequestHeader(value = "VersionCode", required = false) String versionCode,
                                     @RequestBody List<StockEvent> events,
                                     Principal principal) {
-
-    if (!restStockCardService.validFacility(facilityId)) {
-      throw new DataException("error.facility.unknown");
-    }
     List<StockEvent> filterStockEvents;
     if (KitProductFilterUtils.isBiggerThanThresholdVersion(versionCode, FILTER_THRESHOLD_VERSION)) {
       filterStockEvents = restStockCardService
@@ -67,9 +63,6 @@ public class RestStockCardController extends BaseController {
   @RequestMapping(value = "/rest-api/facilities/split/{facilityId}/stockCards", method = POST, headers = ACCEPT_JSON)
   public ResponseEntity adjustStock(@PathVariable long facilityId,
       @RequestBody List<StockEvent> events, Principal principal) {
-    if (!restStockCardService.validFacility(facilityId)) {
-      throw new DataException("error.facility.unknown");
-    }
     List<StockEvent> filterStockEvents;
     filterStockEvents = restStockCardService.filterStockEventsList(events, WRONG_KIT_PRODUCTS_SET);
     Map<String, List<StockEvent>> productStockEventMap = restStockCardService
