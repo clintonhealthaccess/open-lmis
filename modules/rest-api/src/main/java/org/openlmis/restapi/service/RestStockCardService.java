@@ -1,6 +1,7 @@
 package org.openlmis.restapi.service;
 
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
 import org.openlmis.core.domain.Product;
 import org.openlmis.core.domain.StockAdjustmentReason;
 import org.openlmis.core.exception.DataException;
@@ -45,10 +46,6 @@ public class RestStockCardService {
 
   @Transactional
   public List<StockCardEntry> adjustStock(Long facilityId, List<StockEvent> stockEvents, Long userId) {
-    if (!validFacility(facilityId)) {
-      throw new DataException("error.facility.unknown");
-    }
-
     List<StockCardEntry> entries = createStockCardEntries(stockEvents, facilityId, userId);
     stockCardService.addStockCardEntries(entries);
     stockCardService.updateAllStockCardSyncTimeForFacilityToNow(facilityId);
@@ -188,7 +185,7 @@ public class RestStockCardService {
     return lot;
   }
 
-  private boolean validFacility(Long facilityId) {
+  public boolean validFacility(Long facilityId) {
     return facilityRepository.getById(facilityId) != null;
   }
 
@@ -223,5 +220,19 @@ public class RestStockCardService {
       stockCardMovementDTOs.add(new StockCardMovementDTO(stockCardEntry));
     }
     return stockCardMovementDTOs;
+  }
+
+
+  public Map<String, List<StockEvent>> groupByProduct(List<StockEvent> stockEvents) {
+    Map<String, List<StockEvent>> productStockEventMap = new HashMap<>();
+    for (StockEvent stockEvent : stockEvents) {
+      List<StockEvent> stockEventList = productStockEventMap.get(stockEvent.getProductCode());
+      if (CollectionUtils.isEmpty(stockEventList)) {
+        stockEventList = new ArrayList<>();
+        productStockEventMap.put(stockEvent.getProductCode(), stockEventList);
+      }
+      stockEventList.add(stockEvent);
+    }
+    return productStockEventMap;
   }
 }
