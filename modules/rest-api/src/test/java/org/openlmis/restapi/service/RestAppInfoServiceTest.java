@@ -49,9 +49,9 @@ public class RestAppInfoServiceTest {
     public void shouldCreateAppInfo() {
         when(appInfoRepository.getAppInfoByFacilityId(anyLong())).thenReturn(null);
         when(facilityRepository.getIdForCode(anyString())).thenReturn(1L);
-        service.createOrUpdateVersion(new RestAppInfoRequest());
+        service.insertOrUpdateAppInfo(new RestAppInfoRequest());
 
-        verify(appInfoRepository).create(any(AppInfo.class));
+        verify(appInfoRepository).insert(any(AppInfo.class));
     }
 
     @Test
@@ -64,7 +64,7 @@ public class RestAppInfoServiceTest {
         when(restAppInfoRequest.getVersionCode()).thenReturn("85");
         when(restAppInfoRequest.getFacilityId()).thenReturn(0L);
 
-        int result = service.createOrUpdateVersion(restAppInfoRequest);
+        int result = service.insertOrUpdateAppInfo(restAppInfoRequest);
         Assert.assertEquals(result, 1);
     }
 
@@ -78,7 +78,7 @@ public class RestAppInfoServiceTest {
         when(restAppInfoRequest.getVersionCode()).thenReturn("84");
         when(restAppInfoRequest.getFacilityId()).thenReturn(0L);
 
-        int result = service.createOrUpdateVersion(restAppInfoRequest);
+        int result = service.insertOrUpdateAppInfo(restAppInfoRequest);
         Assert.assertEquals(result, 0);
     }
 
@@ -92,7 +92,7 @@ public class RestAppInfoServiceTest {
         when(restAppInfoRequest.getVersionCode()).thenReturn("83");
         when(restAppInfoRequest.getFacilityId()).thenReturn(0L);
 
-        int result = service.createOrUpdateVersion(restAppInfoRequest);
+        int result = service.insertOrUpdateAppInfo(restAppInfoRequest);
         Assert.assertEquals(result, -1);
     }
 }

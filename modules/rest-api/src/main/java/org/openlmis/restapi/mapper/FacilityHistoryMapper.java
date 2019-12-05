@@ -7,28 +7,17 @@
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more details.
  * You should have received a copy of the GNU Affero General Public License along with this program.  If not, see http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
-package org.openlmis.report.model.dto;
+package org.openlmis.restapi.mapper;
 
-import java.util.Date;
-import lombok.Data;
-import org.openlmis.core.domain.BaseModel;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
+import org.openlmis.restapi.domain.FacilityHistoryModel;
+import org.springframework.stereotype.Repository;
 
-@Data
-public class AppInfo extends BaseModel {
-    private Long facilityId;
-    private String userName;
-    private String appVersion;
-    private String androidVersion;
-    private String deviceInfo;
-    private Date upgradeTime;
-    private String uniqueId;
+@Repository
+public interface FacilityHistoryMapper {
 
-    public AppInfo() {
-    }
-
-    public AppInfo(Long facilityId, String userName, String appVersion) {
-        this.facilityId = facilityId;
-        this.userName = userName;
-        this.appVersion = appVersion;
-    }
+    @Insert("INSERT INTO facility_tablet_history (facilityId, userName, androidVersion, deviceInfo, uniqueId) VALUES(#{facilityId}, #{userName}, #{androidVersion}, #{deviceInfo}, #{uniqueId})")
+    @Options(useGeneratedKeys = true)
+    int insert(FacilityHistoryModel facilityHistoryModel);
 }

@@ -56,7 +56,7 @@ public class AppInfoMapperTest {
         mapper.insert(appInfo);
 
         appInfo.setAppVersion("2.0");
-        mapper.updateAppVersion(appInfo);
+        mapper.updateAppVersion(appInfo.getFacilityId(), appInfo.getAppVersion());
 
         AppInfo queryAppInfo = mapper.queryByFacilityId(facility.getId());
 
