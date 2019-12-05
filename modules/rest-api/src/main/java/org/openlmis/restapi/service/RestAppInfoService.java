@@ -64,14 +64,13 @@ public class RestAppInfoService {
         }
         int updateStatus = getAppVersionUpdateStatus(appInfo.getAppVersion(),
             appInfoRequest.getVersionCode());
+        if (updateStatus == 1) {
+            appInfoRepository.updateAppVersion(appInfo.getId(), appInfoRequest.getAppVersion());
+        }
         if (!StringUtils.equals(appInfoRequest.getUniqueId(), appInfo.getUniqueId())) {
             facilityHistoryMapper.insert(FacilityHistoryModel.from(appInfo));
             BeanUtils.copyProperties(appInfoRequest, appInfo);
             appInfoRepository.updateInfo(appInfo);
-        }
-        if (updateStatus == 1) {
-            appInfoRepository
-                .updateAppVersion(appInfoRequest.getFacilityId(), appInfoRequest.getAppVersion());
         }
         return updateStatus;
     }

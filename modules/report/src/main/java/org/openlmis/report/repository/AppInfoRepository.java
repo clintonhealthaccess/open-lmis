@@ -24,8 +24,8 @@ public class AppInfoRepository {
         return appInfoMapper.insert(appInfo);
     }
 
-    public int updateAppVersion(Long facilityId, String appVersion) {
-        return appInfoMapper.updateAppVersion(facilityId, appVersion);
+    public int updateAppVersion(Long id, String appVersion) {
+        return appInfoMapper.updateAppVersion(id, appVersion);
     }
 
     public AppInfo getAppInfoByFacilityId(Long facilityId) {
