@@ -71,9 +71,6 @@ public class RestStockCardController extends BaseController {
     for (Map.Entry<String, List<StockEvent>> entry : productStockEventMap.entrySet()) {
       try {
         restStockCardService.adjustStock(facilityId, entry.getValue(), loggedInUserId(principal));
-        if (StringUtils.equalsIgnoreCase(entry.getKey(), "08S01Z")) {
-          throw new DataException("test");
-        }
       } catch (Exception e) {
         errorProductCode.add(entry.getKey());
       }
