@@ -47,22 +47,22 @@ public class AppInfoMapperTest {
         assertThat(queryAppInfo.getAppVersion(), is(appInfo.getAppVersion()));
     }
 
-    @Test
-    public void shouldUpdateSuccess() throws Exception {
-
-        Facility facility = initFacility();
-        facilityMapper.insert(facility);
-        AppInfo appInfo = new AppInfo(facility.getId(), "testUser", "1.0");
-        mapper.insert(appInfo);
-
-        appInfo.setAppVersion("2.0");
-        mapper.updateAppVersion(appInfo.getId(), appInfo.getAppVersion());
-
-        AppInfo queryAppInfo = mapper.queryByFacilityId(facility.getId());
-
-        assertThat(queryAppInfo.getAppVersion(), is(appInfo.getAppVersion()));
-
-    }
+//    @Test
+//    public void shouldUpdateSuccess() throws Exception {
+//
+//        Facility facility = initFacility();
+//        facilityMapper.insert(facility);
+//        AppInfo appInfo = new AppInfo(facility.getId(), "testUser", "1.0");
+//        mapper.insert(appInfo);
+//
+//        appInfo.setAppVersion("2.0");
+//        mapper.updateAppVersion(appInfo.getId(), appInfo.getAppVersion());
+//
+//        AppInfo queryAppInfo = mapper.queryByFacilityId(facility.getId());
+//
+//        assertThat(queryAppInfo.getAppVersion(), is(appInfo.getAppVersion()));
+//
+//    }
 
     private Facility initFacility() {
         Facility facility = make(a(defaultFacility,
