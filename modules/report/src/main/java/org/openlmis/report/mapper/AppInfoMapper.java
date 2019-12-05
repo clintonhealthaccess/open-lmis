@@ -26,7 +26,7 @@ public interface AppInfoMapper {
     int insert(AppInfo appInfo);
 
     @Update("UPDATE moz_app_info SET appVersion = #{appVersion}, upgradetime = NOW() WHERE id = #{id}")
-    int updateAppVersion(Long facilityId, String appVersion);
+    int updateAppVersion(Long id, String appVersion);
 
     @Select({"SELECT info.*, facilities.name AS facilityName, zone.name AS districtName, parent_zone.name AS provinceName " +
             "FROM moz_app_info AS info " +
