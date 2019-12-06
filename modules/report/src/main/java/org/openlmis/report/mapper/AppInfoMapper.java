@@ -11,6 +11,7 @@ package org.openlmis.report.mapper;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.openlmis.report.model.dto.AppInfo;
@@ -26,7 +27,8 @@ public interface AppInfoMapper {
     int insert(AppInfo appInfo);
 
     @Update("UPDATE moz_app_info SET appVersion = #{appVersion}, upgradetime = NOW() WHERE facilityId = #{facilityId}")
-    int updateAppVersion(Long facilityId, String appVersion);
+    int updateAppVersion(@Param("facilityId") Long facilityId,
+        @Param("appVersion") String appVersion);
 
     @Select({"SELECT info.*, facilities.name AS facilityName, zone.name AS districtName, parent_zone.name AS provinceName " +
             "FROM moz_app_info AS info " +
