@@ -65,7 +65,7 @@ public class RestAppInfoService {
         int updateStatus = getAppVersionUpdateStatus(appInfo.getAppVersion(),
             appInfoRequest.getVersionCode());
         if (updateStatus == 1) {
-            appInfoRepository.updateAppVersion(appInfo.getId(), appInfoRequest.getAppVersion());
+            appInfoRepository.updateAppVersion(appInfo.getFacilityId(), appInfoRequest.getAppVersion());
         }
         if (!StringUtils.equals(appInfoRequest.getUniqueId(), appInfo.getUniqueId())) {
             facilityHistoryMapper.insert(FacilityHistoryModel.from(appInfo));
