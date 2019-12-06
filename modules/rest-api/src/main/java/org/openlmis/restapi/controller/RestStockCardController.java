@@ -1,5 +1,6 @@
 package org.openlmis.restapi.controller;
 
+import com.sun.tools.javac.util.ClientCodeException;
 import com.wordnik.swagger.annotations.Api;
 import java.util.ArrayList;
 import java.util.Map;
@@ -70,6 +71,10 @@ public class RestStockCardController extends BaseController {
     List<String> errorProductCode = new ArrayList<>();
     for (Map.Entry<String, List<StockEvent>> entry : productStockEventMap.entrySet()) {
       try {
+        if (StringUtils.equalsIgnoreCase(entry.getKey(), "23A06") || StringUtils
+            .equalsIgnoreCase(entry.getKey(), "13A01")) {
+            throw new RuntimeException("test");
+        }
         restStockCardService.adjustStock(facilityId, entry.getValue(), loggedInUserId(principal));
       } catch (Exception e) {
         errorProductCode.add(entry.getKey());
