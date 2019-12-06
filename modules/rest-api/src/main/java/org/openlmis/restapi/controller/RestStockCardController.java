@@ -1,6 +1,5 @@
 package org.openlmis.restapi.controller;
 
-import com.sun.tools.javac.util.ClientCodeException;
 import com.wordnik.swagger.annotations.Api;
 import java.util.ArrayList;
 import java.util.Map;
