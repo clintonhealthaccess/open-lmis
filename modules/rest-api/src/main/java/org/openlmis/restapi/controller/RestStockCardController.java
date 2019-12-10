@@ -67,15 +67,15 @@ public class RestStockCardController extends BaseController {
     filterStockEvents = restStockCardService.filterStockEventsList(events, WRONG_KIT_PRODUCTS_SET);
     Map<String, List<StockEvent>> productStockEventMap = restStockCardService
         .groupByProduct(filterStockEvents);
-    List<String> errorProductCode = new ArrayList<>();
+    List<String> errorProductCodes = new ArrayList<>();
     for (Map.Entry<String, List<StockEvent>> entry : productStockEventMap.entrySet()) {
       try {
         restStockCardService.adjustStock(facilityId, entry.getValue(), loggedInUserId(principal));
       } catch (Exception e) {
-        errorProductCode.add(entry.getKey());
+        errorProductCodes.add(entry.getKey());
       }
     }
-    return new ResponseEntity<>(errorProductCode, HttpStatus.OK);
+    return response("errorProductCodes", errorProductCodes);
   }
 
   @RequestMapping(value = "/rest-api/facilities/{facilityId}/stockCards", method = GET, headers = ACCEPT_JSON)
