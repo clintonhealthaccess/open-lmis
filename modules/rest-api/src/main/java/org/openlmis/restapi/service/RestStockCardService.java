@@ -1,5 +1,6 @@
 package org.openlmis.restapi.service;
 
+import com.google.common.collect.Lists;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.openlmis.core.domain.Product;
@@ -52,6 +53,18 @@ public class RestStockCardService {
     List<StockCardEntry> entries = createStockCardEntries(stockEvents, facilityId, userId);
     stockCardService.addStockCardEntries(entries);
     stockCardService.updateAllStockCardSyncTimeForFacilityToNow(facilityId);
+    return entries;
+  }
+
+  @Transactional
+  public List<StockCardEntry> adjustStock(Long facilityId, String productCode,
+      List<StockEvent> stockEvents, Long userId) {
+    if (!validFacility(facilityId)) {
+      throw new DataException("error.facility.unknown");
+    }
+    List<StockCardEntry> entries = createStockCardEntries(stockEvents, facilityId, userId);
+    stockCardService.addStockCardEntries(entries);
+    stockCardService.updateStockCardSyncTimeToNow(facilityId, Lists.newArrayList(productCode));
     return entries;
   }
 

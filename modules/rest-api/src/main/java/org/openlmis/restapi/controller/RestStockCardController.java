@@ -68,9 +68,10 @@ public class RestStockCardController extends BaseController {
     Map<String, List<StockEvent>> productStockEventMap = restStockCardService
         .groupByProduct(filterStockEvents);
     List<String> errorProductCodes = new ArrayList<>();
+    Long userId = loggedInUserId(principal);
     for (Map.Entry<String, List<StockEvent>> entry : productStockEventMap.entrySet()) {
       try {
-        restStockCardService.adjustStock(facilityId, entry.getValue(), loggedInUserId(principal));
+        restStockCardService.adjustStock(facilityId, entry.getKey(), entry.getValue(), userId);
       } catch (Exception e) {
         errorProductCodes.add(entry.getKey());
       }
