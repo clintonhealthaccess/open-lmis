@@ -99,22 +99,24 @@ public class RestProductService {
     return isContainedInLatestProduct;
   }
 
-  private List<Product> getLatestProducts(Date afterUpdatedTime, String versionCode, Long facilityId) {
-
+  private List<Product> getLatestProducts(Date afterUpdatedTime, String versionCode,
+      Long facilityId) {
     if (afterUpdatedTime == null) {
+      final List<String> archivedProductCodes = archivedProductService
+          .getAllArchivedProducts(facilityId);
 
-      final List<String> archivedProductCodes = archivedProductService.getAllArchivedProducts(facilityId);
-
-      return FluentIterable.from(productService.getAllProducts()).transform(new Function<Product, Product>() {
-        @Override
-        public Product apply(Product product) {
-          product.setArchived(archivedProductCodes.contains(product.getCode()));
-          return product;
-        }
-      }).toList();
+      return FluentIterable.from(productService.getAllProducts())
+          .transform(new Function<Product, Product>() {
+            @Override
+            public Product apply(Product product) {
+              product.setArchived(archivedProductCodes.contains(product.getCode()));
+              return product;
+            }
+          }).toList();
     } else {
       List<Product> products = productService.getProductsAfterUpdatedDate(afterUpdatedTime);
-      if (KitProductFilterUtils.isBiggerThanThresholdVersion(versionCode, KIT_CODE_CHANGE_VERSION)) {
+      if (KitProductFilterUtils
+          .isBiggerThanThresholdVersion(versionCode, KIT_CODE_CHANGE_VERSION)) {
         return filterProductFromGetProductsAfterUpdatedDate(products);
       }
       return products;
