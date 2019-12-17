@@ -10,7 +10,10 @@ import org.openlmis.restapi.domain.StockCardDTO;
 import org.openlmis.restapi.response.RestResponse;
 import org.openlmis.restapi.service.RestStockCardService;
 import org.openlmis.restapi.utils.KitProductFilterUtils;
+import org.openlmis.stockmanagement.domain.StockCardEntry;
 import org.openlmis.stockmanagement.dto.StockEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -33,6 +36,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @NoArgsConstructor
 @Api(value = "Stock Card", description = "Stock card update", position = 0)
 public class RestStockCardController extends BaseController {
+
+  private static final Logger LOG = LoggerFactory.getLogger(StockCardEntry.class);
 
   @Autowired
   private RestStockCardService restStockCardService;
@@ -73,6 +78,7 @@ public class RestStockCardController extends BaseController {
       try {
         restStockCardService.adjustStock(facilityId, entry.getKey(), entry.getValue(), userId);
       } catch (Exception e) {
+        LOG.error("product {} sync error", entry.getKey(), e);
         errorProductCodes.add(entry.getKey());
       }
     }
