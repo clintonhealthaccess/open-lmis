@@ -1,6 +1,8 @@
 package org.openlmis.restapi.service;
 
+import com.google.common.collect.Lists;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
 import org.openlmis.core.domain.Product;
 import org.openlmis.core.domain.StockAdjustmentReason;
 import org.openlmis.core.exception.DataException;
@@ -48,11 +50,21 @@ public class RestStockCardService {
     if (!validFacility(facilityId)) {
       throw new DataException("error.facility.unknown");
     }
-
     List<StockCardEntry> entries = createStockCardEntries(stockEvents, facilityId, userId);
     stockCardService.addStockCardEntries(entries);
     stockCardService.updateAllStockCardSyncTimeForFacilityToNow(facilityId);
+    return entries;
+  }
 
+  @Transactional
+  public List<StockCardEntry> adjustStock(Long facilityId, String productCode,
+      List<StockEvent> stockEvents, Long userId) {
+    if (!validFacility(facilityId)) {
+      throw new DataException("error.facility.unknown");
+    }
+    List<StockCardEntry> entries = createStockCardEntries(stockEvents, facilityId, userId);
+    stockCardService.addStockCardEntries(entries);
+    stockCardService.updateStockCardSyncTimeToNow(facilityId, Lists.newArrayList(productCode));
     return entries;
   }
 
@@ -188,7 +200,7 @@ public class RestStockCardService {
     return lot;
   }
 
-  private boolean validFacility(Long facilityId) {
+  public boolean validFacility(Long facilityId) {
     return facilityRepository.getById(facilityId) != null;
   }
 
@@ -223,5 +235,19 @@ public class RestStockCardService {
       stockCardMovementDTOs.add(new StockCardMovementDTO(stockCardEntry));
     }
     return stockCardMovementDTOs;
+  }
+
+
+  public Map<String, List<StockEvent>> groupByProduct(List<StockEvent> stockEvents) {
+    Map<String, List<StockEvent>> productStockEventMap = new HashMap<>();
+    for (StockEvent stockEvent : stockEvents) {
+      List<StockEvent> stockEventList = productStockEventMap.get(stockEvent.getProductCode());
+      if (CollectionUtils.isEmpty(stockEventList)) {
+        stockEventList = new ArrayList<>();
+        productStockEventMap.put(stockEvent.getProductCode(), stockEventList);
+      }
+      stockEventList.add(stockEvent);
+    }
+    return productStockEventMap;
   }
 }

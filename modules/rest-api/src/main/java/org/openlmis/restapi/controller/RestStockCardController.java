@@ -1,15 +1,22 @@
 package org.openlmis.restapi.controller;
 
 import com.wordnik.swagger.annotations.Api;
+import java.util.ArrayList;
+import java.util.Map;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.restapi.domain.StockCardDTO;
 import org.openlmis.restapi.response.RestResponse;
 import org.openlmis.restapi.service.RestStockCardService;
 import org.openlmis.restapi.utils.KitProductFilterUtils;
+import org.openlmis.stockmanagement.domain.StockCardEntry;
 import org.openlmis.stockmanagement.dto.StockEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +37,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @Api(value = "Stock Card", description = "Stock card update", position = 0)
 public class RestStockCardController extends BaseController {
 
+  private static final Logger LOG = LoggerFactory.getLogger(StockCardEntry.class);
+
   @Autowired
   private RestStockCardService restStockCardService;
 
@@ -38,8 +47,6 @@ public class RestStockCardController extends BaseController {
                                     @RequestHeader(value = "VersionCode", required = false) String versionCode,
                                     @RequestBody List<StockEvent> events,
                                     Principal principal) {
-
-    // FIXME: 2019-04-17 remove dirty data
     List<StockEvent> filterStockEvents;
     if (KitProductFilterUtils.isBiggerThanThresholdVersion(versionCode, FILTER_THRESHOLD_VERSION)) {
       filterStockEvents = restStockCardService
@@ -56,6 +63,26 @@ public class RestStockCardController extends BaseController {
     }
 
     return RestResponse.success("msg.stockmanagement.adjuststocksuccess");
+  }
+
+  @RequestMapping(value = "/rest-api/facilities/split/{facilityId}/stockCards", method = POST, headers = ACCEPT_JSON)
+  public ResponseEntity adjustStock(@PathVariable long facilityId,
+      @RequestBody List<StockEvent> events, Principal principal) {
+    List<StockEvent> filterStockEvents;
+    filterStockEvents = restStockCardService.filterStockEventsList(events, WRONG_KIT_PRODUCTS_SET);
+    Map<String, List<StockEvent>> productStockEventMap = restStockCardService
+        .groupByProduct(filterStockEvents);
+    List<String> errorProductCodes = new ArrayList<>();
+    Long userId = loggedInUserId(principal);
+    for (Map.Entry<String, List<StockEvent>> entry : productStockEventMap.entrySet()) {
+      try {
+        restStockCardService.adjustStock(facilityId, entry.getKey(), entry.getValue(), userId);
+      } catch (Exception e) {
+        LOG.error("product {} sync error", entry.getKey(), e);
+        errorProductCodes.add(entry.getKey());
+      }
+    }
+    return response("errorProductCodes", errorProductCodes);
   }
 
   @RequestMapping(value = "/rest-api/facilities/{facilityId}/stockCards", method = GET, headers = ACCEPT_JSON)

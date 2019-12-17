@@ -12,9 +12,12 @@ package org.openlmis.restapi.service;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import org.apache.commons.lang3.StringUtils;
 import org.openlmis.core.repository.FacilityRepository;
+import org.openlmis.restapi.mapper.FacilityHistoryMapper;
 import org.openlmis.report.model.dto.AppInfo;
 import org.openlmis.report.repository.AppInfoRepository;
+import org.openlmis.restapi.domain.FacilityHistoryModel;
 import org.openlmis.restapi.domain.RestAppInfoRequest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +45,8 @@ public class RestAppInfoService {
     AppInfoRepository appInfoRepository;
     @Autowired
     FacilityRepository facilityRepository;
+    @Autowired
+    FacilityHistoryMapper facilityHistoryMapper;
 
     private int getAppVersionUpdateStatus(String oldAppVersion, String currentVersionCode) {
         String oldVersionCode = oldAppVersion.substring(oldAppVersion.lastIndexOf(".") + 1);
@@ -49,21 +54,24 @@ public class RestAppInfoService {
     }
 
     @Transactional
-    public int createOrUpdateVersion(RestAppInfoRequest appInfoRequest) {
+    public int insertOrUpdateAppInfo(RestAppInfoRequest appInfoRequest) {
         appInfoRequest.setAppVersion(versionCodeMap.get(appInfoRequest.getVersionCode()));
         AppInfo appInfo = appInfoRepository.getAppInfoByFacilityId(appInfoRequest.getFacilityId());
         if (appInfo == null) {
             appInfo = new AppInfo();
             BeanUtils.copyProperties(appInfoRequest, appInfo);
-            return appInfoRepository.create(appInfo);
+            return appInfoRepository.insert(appInfo);
         }
         int updateStatus = getAppVersionUpdateStatus(appInfo.getAppVersion(),
             appInfoRequest.getVersionCode());
-        BeanUtils.copyProperties(appInfoRequest, appInfo);
         if (updateStatus == 1) {
-            appInfoRepository.updateAppVersion(appInfo);
+            appInfoRepository.updateAppVersion(appInfo.getFacilityId(), appInfoRequest.getAppVersion());
         }
-        appInfoRepository.updateInfo(appInfo);
+        if (!StringUtils.equals(appInfoRequest.getUniqueId(), appInfo.getUniqueId())) {
+            facilityHistoryMapper.insert(FacilityHistoryModel.from(appInfo));
+            BeanUtils.copyProperties(appInfoRequest, appInfo);
+            appInfoRepository.updateInfo(appInfo);
+        }
         return updateStatus;
     }
 }

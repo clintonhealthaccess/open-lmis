@@ -34,26 +34,28 @@ public class Interceptor extends HandlerInterceptorAdapter {
                              Object handler) throws Exception {
         Date expirationDateOfAndoridApp = getExpirationDate();
 
-        // if the android version is less than 86, the request version vode will be null
+        // if the android version is less than 86, the request version code will be null
         validAppVersion(request, expirationDateOfAndoridApp);
-        updateAppInfo(request);
+        insertOrUpdateAppInfo(request);
         return true;
     }
 
-    private void updateAppInfo(HttpServletRequest request) {
+    private void insertOrUpdateAppInfo(HttpServletRequest request) {
         String versionCode = request.getHeader("VersionCode");
         String userName = request.getHeader("UserName");
         String facilityId = request.getHeader("FacilityId");
         String androidVersion = request.getHeader("AndroidVersion");
         String deviceInfo = request.getHeader("DeviceInfo");
+        String uniqueId = request.getHeader("UniqueId");
         if (StringUtils.isNotBlank(facilityId) && StringUtils.isNotBlank(versionCode)) {
             RestAppInfoRequest appInfoRequest = new RestAppInfoRequest();
             appInfoRequest.setFacilityId(Long.valueOf(facilityId));
             appInfoRequest.setUserName(userName);
+            appInfoRequest.setUniqueId(uniqueId);
             appInfoRequest.setVersionCode(versionCode);
             appInfoRequest.setAndroidVersion(androidVersion);
             appInfoRequest.setDeviceInfo(deviceInfo);
-            restAppInfoService.createOrUpdateVersion(appInfoRequest);
+            restAppInfoService.insertOrUpdateAppInfo(appInfoRequest);
         }
     }
 

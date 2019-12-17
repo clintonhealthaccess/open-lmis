@@ -11,7 +11,7 @@
 
 package org.openlmis.restapi.controller;
 
-import org.junit.Rule;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;

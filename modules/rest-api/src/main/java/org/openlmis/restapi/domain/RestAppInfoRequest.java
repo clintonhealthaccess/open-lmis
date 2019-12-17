@@ -14,5 +14,6 @@ public class RestAppInfoRequest {
     private Long facilityId;
     private String androidVersion;
     private String deviceInfo;
+    private String uniqueId;
 
 }

@@ -11,6 +11,7 @@ package org.openlmis.report.mapper;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.openlmis.report.model.dto.AppInfo;
@@ -21,12 +22,13 @@ import java.util.List;
 @Repository
 public interface AppInfoMapper {
 
-    @Insert("INSERT INTO moz_app_info (facilityId, userName, appVersion, createdDate, upgradetime) VALUES(#{facilityId}, #{userName}, #{appVersion}, NOW(), NOW())")
+    @Insert("INSERT INTO moz_app_info (facilityId, userName, appVersion, androidVersion, deviceInfo, uniqueId, upgradetime) VALUES(#{facilityId}, #{userName}, #{appVersion}, #{androidVersion}, #{deviceInfo}, #{uniqueId}, NOW())")
     @Options(useGeneratedKeys = true)
     int insert(AppInfo appInfo);
 
-    @Update("UPDATE moz_app_info SET appVersion = #{appVersion}, upgradetime = NOW() WHERE id = #{id}")
-    int updateAppVersion(AppInfo appInfo);
+    @Update("UPDATE moz_app_info SET appVersion = #{appVersion}, upgradetime = NOW() WHERE facilityId = #{facilityId}")
+    int updateAppVersion(@Param("facilityId") Long facilityId,
+        @Param("appVersion") String appVersion);
 
     @Select({"SELECT info.*, facilities.name AS facilityName, zone.name AS districtName, parent_zone.name AS provinceName " +
             "FROM moz_app_info AS info " +
@@ -38,6 +40,6 @@ public interface AppInfoMapper {
     @Select("SELECT * FROM moz_app_info WHERE facilityId = #{facilityId}")
     AppInfo queryByFacilityId(Long facilityId);
 
-    @Update("UPDATE moz_app_info SET androidVersion = #{androidVersion}, deviceInfo = #{deviceInfo} WHERE id = #{id}")
+    @Update("UPDATE moz_app_info SET androidVersion = #{androidVersion}, deviceInfo = #{deviceInfo}, uniqueId = #{uniqueId} WHERE id = #{id}")
     int updateInfo(AppInfo appInfo);
 }
