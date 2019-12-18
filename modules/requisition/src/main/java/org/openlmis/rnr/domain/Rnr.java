@@ -28,7 +28,7 @@ import org.openlmis.core.exception.DataException;
 import org.openlmis.rnr.dto.ProgramDataColumnDTO;
 import org.openlmis.rnr.dto.ServiceDTO;
 import org.openlmis.rnr.dto.ServiceLineItemDTO;
-import org.openlmis.rnr.utils.MessageKeyUtils;
+import org.openlmis.core.utils.MessageKeyUtils;
 import org.springframework.beans.BeanUtils;
 
 import javax.persistence.Transient;

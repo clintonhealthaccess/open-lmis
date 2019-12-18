@@ -19,7 +19,7 @@ import org.openlmis.db.categories.UnitTests;
 import org.openlmis.rnr.builder.RegimenColumnBuilder;
 
 import java.util.List;
-import org.openlmis.rnr.utils.MessageKeyUtils;
+import org.openlmis.core.utils.MessageKeyUtils;
 
 import static com.natpryce.makeiteasy.MakeItEasy.*;
 import static java.util.Arrays.asList;

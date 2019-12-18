@@ -31,6 +31,7 @@ import org.openlmis.rnr.repository.mapper.RegimenLineItemMapper;
 import org.openlmis.rnr.search.criteria.RequisitionSearchCriteria;
 import org.openlmis.rnr.service.RequisitionService;
 import org.openlmis.rnr.service.RnrTemplateService;
+import org.openlmis.core.utils.MessageKeyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -151,10 +152,10 @@ public class RestRequisitionService {
   private void validReportDate(Date actualPeriodEndDate, Long facilityId, Long programId) {
     Date reportStartDate = programService.getReportStartDate(facilityId, programId);
     if (null == reportStartDate) {
-      throw new DataException(String.format("error.facility.supported.report.date.invalid"));
+      throw new DataException(MessageKeyUtils.RNR_REPORT_SUPPORTED_DATE_INVALID);
     }
     if (actualPeriodEndDate.before(reportStartDate)) {
-      throw new DataException(String.format("error.report.start.date.invalid"));
+      throw new DataException(MessageKeyUtils.RNR_REPORT_START_DATE_INVALID);
     }
   }
 

@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.openlmis.core.domain.RegimenCategory;
 import org.openlmis.core.exception.DataException;
-import org.openlmis.rnr.utils.MessageKeyUtils;
+import org.openlmis.core.utils.MessageKeyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

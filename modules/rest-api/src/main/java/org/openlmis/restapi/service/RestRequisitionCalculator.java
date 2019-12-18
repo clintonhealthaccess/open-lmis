@@ -25,6 +25,7 @@ import org.openlmis.rnr.domain.Rnr;
 import org.openlmis.rnr.domain.RnrLineItem;
 import org.openlmis.rnr.search.criteria.RequisitionSearchCriteria;
 import org.openlmis.rnr.service.RequisitionService;
+import org.openlmis.core.utils.MessageKeyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -83,7 +84,7 @@ public class RestRequisitionCalculator {
 
     List<Rnr> rnrs = requisitionService.getNormalRnrsByPeriodAndProgram(periodStartDate, periodEndDate, reportingProgram.getId(), reportingFacility.getId());
     if (rnrs != null && !rnrs.isEmpty()) {
-      throw new DataException("error.rnr.period.duplicate");
+      throw new DataException(MessageKeyUtils.RNR_PERIOD_DUPLICATE);
     }
     if (periodStartDate != null) {
       DateTime initStart = new DateTime(periodForInitialize.getStartDate());
@@ -97,7 +98,7 @@ public class RestRequisitionCalculator {
             initStart.toString("yyyy-MM"), initEnd.toString("yyyy-MM"),
             actualStart.toString("yyyy-MM"), actualEnd.toString("yyyy-MM"),
             LmisThreadLocal.getFacilityId(), reportingProgram.getId()));
-        throw new DataException("error.rnr.period.invalid", initStart.toString("yyyy-MM"),
+        throw new DataException(MessageKeyUtils.RNR_ERROR_RNR_PERIOD_INVALID, initStart.toString("yyyy-MM"),
             initEnd.toString("yyyy-MM"));
       }
     }
