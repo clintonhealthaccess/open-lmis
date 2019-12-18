@@ -33,9 +33,9 @@ import static org.apache.commons.collections.CollectionUtils.find;
 import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.NON_EMPTY;
 import static org.openlmis.rnr.domain.ProgramRnrTemplate.*;
 import static org.openlmis.rnr.domain.RnrStatus.AUTHORIZED;
-import static org.openlmis.rnr.utils.MessageKeyUtils.RNR_FIELD_MANDATORY_NEGATIVE_OR_NULL;
-import static org.openlmis.rnr.utils.MessageKeyUtils.RNR_VALIDATION_EQUATION_NOT_EQUAL;
-import static org.openlmis.rnr.utils.MessageKeyUtils.RNR_VALIDATION_ERROR;
+import static org.openlmis.core.utils.MessageKeyUtils.RNR_FIELD_MANDATORY_NEGATIVE_OR_NULL;
+import static org.openlmis.core.utils.MessageKeyUtils.RNR_VALIDATION_EQUATION_NOT_EQUAL;
+import static org.openlmis.core.utils.MessageKeyUtils.RNR_VALIDATION_ERROR;
 
 /**
  * This class represents the data captured against a product for each Requisition and contains methods to determine

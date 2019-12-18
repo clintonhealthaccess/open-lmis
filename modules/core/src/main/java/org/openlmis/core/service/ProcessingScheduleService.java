@@ -17,6 +17,7 @@ import org.openlmis.core.repository.ProcessingPeriodRepository;
 import org.openlmis.core.repository.ProcessingScheduleRepository;
 import org.openlmis.core.repository.RequisitionGroupProgramScheduleRepository;
 import org.openlmis.core.repository.RequisitionGroupRepository;
+import org.openlmis.core.utils.MessageKeyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -92,7 +93,7 @@ public class ProcessingScheduleService {
   private RequisitionGroupProgramSchedule getSchedule(Facility facility, Program program) {
     RequisitionGroup requisitionGroup = requisitionGroupRepository.getRequisitionGroupForProgramAndFacility(program, facility);
     if (requisitionGroup == null)
-      throw new DataException("error.no.requisition.group");
+      throw new DataException(MessageKeyUtils.RNR_REPORT_NO_REQUISITION_GROUP);
 
     return requisitionGroupProgramScheduleRepository.getScheduleForRequisitionGroupAndProgram(requisitionGroup.getId(), program.getId());
   }
