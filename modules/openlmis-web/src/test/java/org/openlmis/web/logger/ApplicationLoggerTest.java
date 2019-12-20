@@ -11,6 +11,11 @@
 package org.openlmis.web.logger;
 
 
+import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.containsString;
+import static org.mockito.Mockito.when;
+
+import java.io.ByteArrayOutputStream;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.WriterAppender;
@@ -21,15 +26,11 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.openlmis.LmisThreadLocal;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.logging.ApplicationLogger;
 import org.openlmis.db.categories.UnitTests;
+import org.powermock.api.mockito.PowerMockito;
 
-import java.io.ByteArrayOutputStream;
-
-import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.containsString;
-import static org.mockito.Mockito.when;
 @Category(UnitTests.class)
 public class ApplicationLoggerTest {
     private Logger logger;
@@ -47,12 +48,13 @@ public class ApplicationLoggerTest {
         outputStream = new ByteArrayOutputStream();
         logger.addAppender(new WriterAppender(new SimpleLayout(), outputStream));
         applicationLogger = new ApplicationLogger();
-        LmisThreadLocal.set(LmisThreadLocal.KEY_USER_NAME,"TEST_USER");
     }
 
     @Test
     public void shouldLogExceptions() {
         Exception exception = new RuntimeException("An exception was thrown !!");
+        PowerMockito.mockStatic(LmisThreadLocalUtils.class);
+        PowerMockito.when(LmisThreadLocalUtils.getSession(LmisThreadLocalUtils.SESSION_USER)).thenReturn("TEST_USER");
         when(joinPoint.getSignature()).thenReturn(signature);
         when(signature.getName()).thenReturn("Method Name");
         when(signature.getDeclaringTypeName()).thenReturn("com.x.y.Class");

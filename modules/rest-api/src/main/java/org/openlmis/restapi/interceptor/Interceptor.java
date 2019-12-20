@@ -1,6 +1,14 @@
 package org.openlmis.restapi.interceptor;
 
+import static org.openlmis.LmisThreadLocalUtils.HEADER_ANDROID_VERSION;
+import static org.openlmis.LmisThreadLocalUtils.HEADER_DEVICE_INFO;
+import static org.openlmis.LmisThreadLocalUtils.HEADER_FACILITY_ID;
+import static org.openlmis.LmisThreadLocalUtils.HEADER_UNIQUE_ID;
+import static org.openlmis.LmisThreadLocalUtils.HEADER_USER_NAME;
+import static org.openlmis.LmisThreadLocalUtils.HEADER_VERSION_CODE;
+
 import org.apache.commons.lang3.StringUtils;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.restapi.domain.RestAppInfoRequest;
 import org.openlmis.restapi.service.RestAppInfoService;
@@ -41,12 +49,12 @@ public class Interceptor extends HandlerInterceptorAdapter {
     }
 
     private void insertOrUpdateAppInfo(HttpServletRequest request) {
-        String versionCode = request.getHeader("VersionCode");
-        String userName = request.getHeader("UserName");
-        String facilityId = request.getHeader("FacilityId");
-        String androidVersion = request.getHeader("AndroidVersion");
-        String deviceInfo = request.getHeader("DeviceInfo");
-        String uniqueId = request.getHeader("UniqueId");
+        String versionCode = request.getHeader(HEADER_VERSION_CODE);
+        String userName = request.getHeader(HEADER_USER_NAME);
+        String facilityId = request.getHeader(HEADER_FACILITY_ID);
+        String androidVersion = request.getHeader(HEADER_ANDROID_VERSION);
+        String deviceInfo = request.getHeader(HEADER_DEVICE_INFO);
+        String uniqueId = request.getHeader(HEADER_UNIQUE_ID);
         if (StringUtils.isNotBlank(facilityId) && StringUtils.isNotBlank(versionCode)) {
             RestAppInfoRequest appInfoRequest = new RestAppInfoRequest();
             appInfoRequest.setFacilityId(Long.valueOf(facilityId));

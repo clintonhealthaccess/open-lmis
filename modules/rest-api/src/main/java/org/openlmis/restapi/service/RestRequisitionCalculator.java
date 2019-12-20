@@ -12,7 +12,7 @@ package org.openlmis.restapi.service;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.openlmis.LmisThreadLocal;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.Facility;
 import org.openlmis.core.domain.ProcessingPeriod;
 import org.openlmis.core.domain.Program;
@@ -97,7 +97,7 @@ public class RestRequisitionCalculator {
             "expected period is %s-%s, but submit is %s-%s, facilityId is %s, programId is %s",
             initStart.toString("yyyy-MM"), initEnd.toString("yyyy-MM"),
             actualStart.toString("yyyy-MM"), actualEnd.toString("yyyy-MM"),
-            LmisThreadLocal.getFacilityId(), reportingProgram.getId()));
+            LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_FACILITY_ID), reportingProgram.getId()));
         throw new DataException(MessageKeyUtils.RNR_ERROR_RNR_PERIOD_INVALID, initStart.toString("yyyy-MM"),
             initEnd.toString("yyyy-MM"));
       }

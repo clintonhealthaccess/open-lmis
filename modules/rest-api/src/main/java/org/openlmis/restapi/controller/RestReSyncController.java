@@ -1,6 +1,9 @@
 package org.openlmis.restapi.controller;
 
-import org.openlmis.LmisThreadLocal;
+import static org.openlmis.LmisThreadLocalUtils.HEADER_FACILITY_ID;
+import static org.openlmis.LmisThreadLocalUtils.HEADER_VERSION_CODE;
+
+import org.openlmis.LmisThreadLocalUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +19,9 @@ public class RestReSyncController {
   @RequestMapping("/rest-api/re-sync")
   public ResponseEntity reSync() {
     LOG.warn(
-        String.format(TEMPLATE, LmisThreadLocal.getFacilityId(), LmisThreadLocal.getVersionCode()));
+        String.format(TEMPLATE,
+            LmisThreadLocalUtils.getHeader(HEADER_FACILITY_ID),
+            LmisThreadLocalUtils.getHeader(HEADER_VERSION_CODE)));
     return ResponseEntity.ok(null);
   }
 
