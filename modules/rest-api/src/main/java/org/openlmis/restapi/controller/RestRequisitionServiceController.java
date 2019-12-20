@@ -38,7 +38,7 @@ public class RestRequisitionServiceController extends BaseController{
         try {
             Date afterUpdatedTimeInDate = (afterUpdatedTime == null ? null : new Date(afterUpdatedTime));
             List<RequisitionServiceResponse> requisitionServices = restRequisitionServiceService.getRequisitionServices(afterUpdatedTimeInDate, programCode);
-            if ("pt".equals(language)) {
+            if ("pt".equalsIgnoreCase(language)) {
                 TranslateUtils.translate(requisitionServices);
             }
             RestResponse restResponse = new RestResponse("latestServices", requisitionServices);
