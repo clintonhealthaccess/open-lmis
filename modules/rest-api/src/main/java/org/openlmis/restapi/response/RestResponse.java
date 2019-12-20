@@ -69,6 +69,12 @@ public class RestResponse {
     return new ResponseEntity<>(new RestResponse(ERROR, messageService.message(openLmisMessage)), statusCode);
   }
 
+  public static ResponseEntity<RestResponse> error(OpenLmisMessage openLmisMessage, String language,
+      HttpStatus statusCode) {
+    return new ResponseEntity<>(
+        new RestResponse(ERROR, messageService.message(openLmisMessage, language)), statusCode);
+  }
+
   public static ResponseEntity<RestResponse> error(String errorMsgCode, HttpStatus statusCode) {
     return new ResponseEntity<>(new RestResponse(ERROR, messageService.message(new OpenLmisMessage(errorMsgCode))), statusCode);
   }

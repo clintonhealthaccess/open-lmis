@@ -10,6 +10,7 @@
 
 package org.openlmis.restapi.controller;
 
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.restapi.response.RestResponse;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.security.Principal;
 
 import static java.lang.Long.valueOf;
+import static org.openlmis.LmisThreadLocalUtils.HEADER_LANGUAGE;
 import static org.openlmis.restapi.response.RestResponse.error;
 import static org.springframework.http.HttpStatus.*;
 
@@ -44,7 +46,8 @@ public class BaseController {
       return error(ex.getMessage(), BAD_REQUEST);
     }
     if (ex instanceof DataException) {
-      return error(((DataException) ex).getOpenLmisMessage(), BAD_REQUEST);
+      return error(((DataException) ex).getOpenLmisMessage(),
+          LmisThreadLocalUtils.getHeader(HEADER_LANGUAGE), BAD_REQUEST);
     }
     return error(UNEXPECTED_EXCEPTION, INTERNAL_SERVER_ERROR);
   }

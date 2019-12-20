@@ -14,7 +14,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
-import org.openlmis.LmisThreadLocal;
+import org.openlmis.LmisThreadLocalUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -31,7 +31,10 @@ public class ApplicationLogger {
   @AfterThrowing(pointcut = "execution(* org.openlmis..*(..))", throwing = "e")
   public void logException(JoinPoint joinPoint, Throwable e) {
     Signature signature = joinPoint.getSignature();
-    String message = String.format("%s | %s.%s(%s) | Exception", LmisThreadLocal.getUserName(), signature.getDeclaringTypeName(), signature.getName(), joinPoint.getArgs() == null ? "" : joinPoint.getArgs());
+    String message = String.format("%s | %s.%s(%s) | Exception",
+        LmisThreadLocalUtils.getSession(LmisThreadLocalUtils.SESSION_USER),
+        signature.getDeclaringTypeName(), signature.getName(),
+        joinPoint.getArgs() == null ? "" : joinPoint.getArgs());
     logException(message, e);
   }
 
