@@ -24,14 +24,18 @@ import org.aspectj.lang.Signature;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.logging.ApplicationLogger;
 import org.openlmis.db.categories.UnitTests;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 @Category(UnitTests.class)
+@RunWith(PowerMockRunner.class)
 public class ApplicationLoggerTest {
     private Logger logger;
     private ByteArrayOutputStream outputStream;
@@ -51,6 +55,7 @@ public class ApplicationLoggerTest {
     }
 
     @Test
+    @PrepareForTest(LmisThreadLocalUtils.class)
     public void shouldLogExceptions() {
         Exception exception = new RuntimeException("An exception was thrown !!");
         PowerMockito.mockStatic(LmisThreadLocalUtils.class);
