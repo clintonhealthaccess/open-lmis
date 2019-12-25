@@ -152,7 +152,7 @@ public class RequisitionService {
 
   @Transactional
   public Rnr initiate(Facility facility, Program program, Long modifiedBy, Boolean emergency,
-      ProcessingPeriod proposedPeriod, List<ServiceLineItem> serviceLineItems, String versionCode) {
+      ProcessingPeriod proposedPeriod, List<ServiceLineItem> serviceLineItems) {
 
     if (!requisitionPermissionService.hasPermission(modifiedBy, facility, program, CREATE_REQUISITION)) {
       throw new DataException(RNR_OPERATION_UNAUTHORIZED);
@@ -191,7 +191,7 @@ public class RequisitionService {
 
     List<Regimen> regimens;
     if (staticReferenceDataService.getBoolean("toggle.mmia.custom.regimen")) {
-      regimens = regimenService.getRegimensByProgramAndIsCustom(program.getId(), false, versionCode);
+      regimens = regimenService.getRegimensByProgramAndIsCustom(program.getId(), false);
     } else {
       regimens = regimenService.getByProgram(program.getId());
     }

@@ -118,10 +118,9 @@ public class RequisitionController extends BaseController {
       @RequestParam("emergency") Boolean emergency,
       HttpServletRequest request) {
     try {
-      String versionCode = request.getHeader("VersionCode");
       Rnr initiatedRnr = requisitionService
           .initiate(new Facility(facilityId), new Program(programId), loggedInUserId(request),
-              emergency, null, null, StringUtils.isBlank(versionCode)? versionCode : "87");
+              emergency, null, null);
       ResponseEntity<OpenLmisResponse> response = response(RNR, initiatedRnr);
       response.getBody().addData(NUMBER_OF_MONTHS, requisitionService.findM(initiatedRnr.getPeriod()));
       return response;

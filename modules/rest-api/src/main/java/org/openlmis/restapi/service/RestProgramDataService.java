@@ -69,7 +69,7 @@ public class RestProgramDataService {
     ProgramDataForm programDataForm = convertRequestBodyDataToProgramDataForm(requestBodyData, userId, facility);
 
     programDataRepository.createProgramDataForm(programDataForm);
-    Rnr requisition = restRequisitionService.submitReport(createReport(programDataForm), userId, versionCode);
+    Rnr requisition = restRequisitionService.submitReport(createReport(programDataForm), userId);
     syncUpHashRepository.save(requestBodyData.getSyncUpHash());
     return requisition;
   }

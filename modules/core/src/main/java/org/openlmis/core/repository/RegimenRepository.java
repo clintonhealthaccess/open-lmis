@@ -12,6 +12,7 @@ package org.openlmis.core.repository;
 
 import java.util.ArrayList;
 import javax.annotation.PostConstruct;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.*;
 import org.openlmis.core.repository.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,11 +127,11 @@ public class RegimenRepository {
     return mapper.getRegimensByCategoryIdAndName(categoryId, code);
   }
 
-  public List<Regimen> getRegimensByProgramAndIsCustom(Long programId, boolean isCustom,
-      String versionCode) {
+  public List<Regimen> getRegimensByProgramAndIsCustom(Long programId, boolean isCustom) {
     if (programId == 1) {
+      String versionCode = LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE);
       if (versionCode == null || Integer.valueOf(versionCode) < 87) {
-          return new ArrayList<>(oldRegimens);
+        return new ArrayList<>(oldRegimens);
       } else {
         return new ArrayList<>(newRegimens);
       }
@@ -308,7 +309,7 @@ public class RegimenRepository {
     oldRegimen14.setDisplayOrder(3);
     oldRegimen14.setCustom(false);
     oldRegimen14.setActive(true);
-    oldRegimen1.setSkipped(false);
+    oldRegimen14.setSkipped(false);
 
     Regimen oldRegimen15 = new Regimen();
     oldRegimen15.setCategory(childCategory);
@@ -519,7 +520,7 @@ public class RegimenRepository {
     newRegimen14.setDisplayOrder(14);
     newRegimen14.setCustom(false);
     newRegimen14.setActive(true);
-    newRegimen1.setSkipped(false);
+    newRegimen14.setSkipped(false);
 
     Regimen newRegimen15 = new Regimen();
     newRegimen15.setCategory(childCategory);
@@ -533,7 +534,7 @@ public class RegimenRepository {
 
     Regimen newRegimen16 = new Regimen();
     newRegimen16.setCategory(childCategory);
-    newRegimen16.setCode("TO8-16");
+    newRegimen16.setCode("TO816");
     newRegimen16.setProgramId(1L);
     newRegimen16.setName("AZT 60+3TC 30+LPV/r (2DFC + LPV/r 100/25)");
     newRegimen16.setDisplayOrder(16);
