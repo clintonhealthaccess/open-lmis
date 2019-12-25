@@ -67,7 +67,7 @@ public class RestProgramsServiceTest {
   @Test
   public void shouldReturnEmptyValueWhenCallGetAllProgramWithRegimenByFacilityId() {
     when(programSupportedRepository.getAllByFacilityId(anyLong())).thenReturn(new ArrayList<ProgramSupported>());
-    List<ProgramWithRegimens> actualResult = restProgramsService.getAllProgramWithRegimenByFacilityId(1L, null);
+    List<ProgramWithRegimens> actualResult = restProgramsService.getAllProgramWithRegimenByFacilityId(1L);
     assertThat(actualResult.size(), is(0));
   }
 
@@ -75,9 +75,9 @@ public class RestProgramsServiceTest {
   public void shouldReturnOneProgramWithRegimensWhenCallGetAllProgramWithRegimenByFacilityId() {
     when(programSupportedRepository.getAllByFacilityId(anyLong())).thenReturn(programSupportedList);
     when(programRepository.getProgramWithParentById(anyLong())).thenReturn(program);
-    when(regimenRepository.getRegimensByProgramAndIsCustom(anyLong(), eq(false), eq("86"))).thenReturn(new ArrayList<Regimen>());
+    when(regimenRepository.getRegimensByProgramAndIsCustom(anyLong(), eq(false))).thenReturn(new ArrayList<Regimen>());
 
-    List<ProgramWithRegimens> actualResult = restProgramsService.getAllProgramWithRegimenByFacilityId(1L, null);
+    List<ProgramWithRegimens> actualResult = restProgramsService.getAllProgramWithRegimenByFacilityId(1L);
     assertThat(actualResult.size(), is(1));
   }
 
@@ -85,11 +85,11 @@ public class RestProgramsServiceTest {
   public void shouldCallProgramsRepositoryWhenCallGetAllProgramWithRegimenByFacilityId() {
     when(programSupportedRepository.getAllByFacilityId(anyLong())).thenReturn(programSupportedList);
     when(programRepository.getProgramWithParentById(anyLong())).thenReturn(program);
-    when(regimenRepository.getRegimensByProgramAndIsCustom(anyLong(), eq(false), eq("86"))).thenReturn(new ArrayList<Regimen>());
+    when(regimenRepository.getRegimensByProgramAndIsCustom(anyLong(), eq(false))).thenReturn(new ArrayList<Regimen>());
 
-    restProgramsService.getAllProgramWithRegimenByFacilityId(1L, null);
+    restProgramsService.getAllProgramWithRegimenByFacilityId(1L);
     verify(programRepository, times(1)).getProgramWithParentById(1L);
-    verify(regimenRepository, times(1)).getRegimensByProgramAndIsCustom(1L, false, null);
+    verify(regimenRepository, times(1)).getRegimensByProgramAndIsCustom(1L, false);
   }
 
 }

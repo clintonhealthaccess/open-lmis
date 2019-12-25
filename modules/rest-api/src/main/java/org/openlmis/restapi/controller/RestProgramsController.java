@@ -7,12 +7,10 @@ import org.openlmis.restapi.domain.ProgramWithRegimens;
 import org.openlmis.restapi.response.RestResponse;
 import org.openlmis.restapi.service.RestProgramsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -38,12 +36,11 @@ public class RestProgramsController extends BaseController {
   }
 
   @RequestMapping(value = "/rest-api/programs/{facilityId}", method = GET, headers = ACCEPT_JSON)
-  public ResponseEntity getProgramsByFacilityId(@PathVariable(value = "facilityId") Long facilityId,
-      @RequestHeader(value = "VersionCode", required = false) String versionCode) {
+  public ResponseEntity getProgramsByFacilityId(@PathVariable(value = "facilityId") Long facilityId) {
     List<ProgramWithRegimens> programWithRegimens;
     try {
       programWithRegimens = restProgramsService
-          .getAllProgramWithRegimenByFacilityId(facilityId, versionCode);
+          .getAllProgramWithRegimenByFacilityId(facilityId);
     } catch (DataException e) {
       return RestResponse.error(e.getOpenLmisMessage(), BAD_REQUEST);
     }

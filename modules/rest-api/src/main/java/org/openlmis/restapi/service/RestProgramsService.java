@@ -1,7 +1,5 @@
 package org.openlmis.restapi.service;
 
-import com.google.common.base.Function;
-import com.google.common.collect.FluentIterable;
 import org.openlmis.core.domain.Program;
 import org.openlmis.core.domain.ProgramSupported;
 import org.openlmis.core.domain.Regimen;
@@ -10,9 +8,6 @@ import org.openlmis.core.repository.ProgramSupportedRepository;
 import org.openlmis.core.repository.RegimenRepository;
 import org.openlmis.restapi.domain.ProgramWithRegimens;
 import org.openlmis.restapi.domain.RegimenForRest;
-import org.openlmis.restapi.domain.RegimenLineItemForRest;
-import org.openlmis.restapi.domain.Report;
-import org.openlmis.rnr.domain.Rnr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,20 +35,20 @@ public class RestProgramsService {
   }
 
   @Transactional
-  public List<ProgramWithRegimens> getAllProgramWithRegimenByFacilityId(Long facilityId, String versionCode) {
+  public List<ProgramWithRegimens> getAllProgramWithRegimenByFacilityId(Long facilityId) {
     List<ProgramWithRegimens> programWithRegimensList = new ArrayList<>();
 
     List<ProgramSupported> programSupporteds = programSupportedRepository.getAllByFacilityId(facilityId);
 
     for (ProgramSupported programSupported: programSupporteds) {
       Program program = programRepository.getProgramWithParentById(programSupported.getProgram().getId());
-      ProgramWithRegimens programWithRegimens = createProgramWithRegimens(program, versionCode);
+      ProgramWithRegimens programWithRegimens = createProgramWithRegimens(program);
       programWithRegimensList.add(programWithRegimens);
     }
     return programWithRegimensList;
   }
 
-  private ProgramWithRegimens createProgramWithRegimens(Program program,String versionCode) {
+  private ProgramWithRegimens createProgramWithRegimens(Program program) {
     ProgramWithRegimens programWithRegimens = new ProgramWithRegimens();
 
     programWithRegimens.setId(program.getId());
@@ -61,14 +56,14 @@ public class RestProgramsService {
     programWithRegimens.setName(program.getName());
     programWithRegimens.setParentCode(program.getParent() != null ? program.getParent().getCode() : null);
     programWithRegimens.setIsSupportEmergency(program.getIsSupportEmergency());
-    programWithRegimens.setRegimens(getRegimensByProgramAndIsCustom(program, versionCode));
+    programWithRegimens.setRegimens(getRegimensByProgramAndIsCustom(program));
 
     return programWithRegimens;
   }
 
-  private List<RegimenForRest> getRegimensByProgramAndIsCustom(Program program, String versionCode) {
+  private List<RegimenForRest> getRegimensByProgramAndIsCustom(Program program) {
     List<RegimenForRest> result = new ArrayList<>();
-    List<Regimen> regimenList = regimenRepository.getRegimensByProgramAndIsCustom(program.getId(), false, versionCode);
+    List<Regimen> regimenList = regimenRepository.getRegimensByProgramAndIsCustom(program.getId(), false);
     for (Regimen regimen: regimenList) {
       result.add(RegimenForRest.convertFromRegimenLineItem(regimen));
     }

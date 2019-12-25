@@ -77,11 +77,11 @@ public class RestRequisitionControllerTest {
 
     Rnr requisition = new Rnr();
     requisition.setId(1L);
-    when(service.submitReport(report, 1L, null)).thenReturn(requisition);
+    when(service.submitReport(report, 1L)).thenReturn(requisition);
     ResponseEntity<RestResponse> expectResponse = new ResponseEntity<>(new RestResponse(RNR, requisition.getId()), OK);
     when(RestResponse.response(RNR, requisition.getId(), HttpStatus.CREATED)).thenReturn(expectResponse);
 
-    ResponseEntity<RestResponse> response = controller.submitRequisition(report, principal, null);
+    ResponseEntity<RestResponse> response = controller.submitRequisition(report, principal);
 
     assertThat((Long) response.getBody().getData().get(RNR), is(1L));
   }
@@ -92,11 +92,11 @@ public class RestRequisitionControllerTest {
 
     Rnr requisition = new Rnr();
     requisition.setId(1L);
-    when(service.submitSdpReport(report, 1L, null)).thenReturn(requisition);
+    when(service.submitSdpReport(report, 1L)).thenReturn(requisition);
     ResponseEntity<RestResponse> expectResponse = new ResponseEntity<>(new RestResponse(RNR, requisition.getId()), OK);
     when(RestResponse.response(RNR, requisition.getId(), HttpStatus.CREATED)).thenReturn(expectResponse);
 
-    ResponseEntity<RestResponse> response = controller.submitSDPRequisition(report, principal, null);
+    ResponseEntity<RestResponse> response = controller.submitSDPRequisition(report, principal);
 
     assertThat((Long) response.getBody().getData().get(RNR), is(1L));
   }
@@ -110,11 +110,11 @@ public class RestRequisitionControllerTest {
     Rnr requisition = new Rnr();
     requisition.setId(1L);
     DataException dataException = new DataException(errorMessage);
-    doThrow(dataException).when(service).submitReport(report, 1L, null);
+    doThrow(dataException).when(service).submitReport(report, 1L);
     ResponseEntity<RestResponse> expectResponse = new ResponseEntity<>(new RestResponse(ERROR, errorMessage), HttpStatus.BAD_REQUEST);
     when(error(dataException.getOpenLmisMessage(), HttpStatus.BAD_REQUEST)).thenReturn(expectResponse);
 
-    ResponseEntity<RestResponse> response = controller.submitRequisition(report, principal, null);
+    ResponseEntity<RestResponse> response = controller.submitRequisition(report, principal);
 
     assertThat((String) response.getBody().getData().get(ERROR), is(errorMessage));
   }
@@ -253,11 +253,11 @@ public class RestRequisitionControllerTest {
   @Test
   public void shouldReturnOKIfRnrIsNullAndNoException() {
     Report report = new Report();
-    when(service.submitReport(report, 1L, null)).thenReturn(null);
+    when(service.submitReport(report, 1L)).thenReturn(null);
     ResponseEntity<RestResponse> expectResponse = new ResponseEntity<>(new RestResponse(RNR, 0L), OK);
     when(RestResponse.response(RNR, 0L, HttpStatus.OK)).thenReturn(expectResponse);
 
-    ResponseEntity<RestResponse> response = controller.submitRequisition(report, principal, null);
+    ResponseEntity<RestResponse> response = controller.submitRequisition(report, principal);
 
     assertThat((Long) response.getBody().getData().get(RNR), is(0L));
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
@@ -266,11 +266,11 @@ public class RestRequisitionControllerTest {
   @Test
   public void shouldReturnOKIfEmergencyRnrIsNullAndNoException() {
     Report report = new Report();
-    when(service.submitSdpReport(report, 1L, null)).thenReturn(null);
+    when(service.submitSdpReport(report, 1L)).thenReturn(null);
     ResponseEntity<RestResponse> expectResponse = new ResponseEntity<>(new RestResponse(RNR, 0L), OK);
     when(RestResponse.response(RNR, 0L, HttpStatus.OK)).thenReturn(expectResponse);
 
-    ResponseEntity<RestResponse> response = controller.submitSDPRequisition(report, principal, null);
+    ResponseEntity<RestResponse> response = controller.submitSDPRequisition(report, principal);
 
     assertThat((Long) response.getBody().getData().get(RNR), is(0L));
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
