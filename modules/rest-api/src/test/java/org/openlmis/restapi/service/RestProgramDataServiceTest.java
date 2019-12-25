@@ -136,7 +136,7 @@ public class RestProgramDataServiceTest {
             .thenReturn(Lists.newArrayList(new ProgramDataColumn("SYPHILLIS", "SYPHILLIS", "programId"),
                     new ProgramDataColumn("MALARIA", "MALARIA", "programId")));
 
-    restProgramDataService.createProgramDataForm(programDataFormDTO, 1L, null);
+    restProgramDataService.createProgramDataForm(programDataFormDTO, 1L);
     List<ProgramDataForm> captorAllValues = captor.getAllValues();
     verify(programDataRepository, times(1)).createProgramDataForm(captor.capture());
     ProgramDataForm convertedProgramDataForm = captorAllValues.get(0);
@@ -162,7 +162,7 @@ public class RestProgramDataServiceTest {
     expectException.expect(DataException.class);
     expectException.expectMessage("error.facility.unknown");
 
-    restProgramDataService.createProgramDataForm(make(a(ProgramDataFormBuilder.defaultProgramDataForm)), 12345L, null);
+    restProgramDataService.createProgramDataForm(make(a(ProgramDataFormBuilder.defaultProgramDataForm)), 12345L);
 
   }
 
@@ -186,14 +186,14 @@ public class RestProgramDataServiceTest {
 
     programDataFormDTO.setProgramDataFormItems(asList(programDataFormItemDTO));
 
-    restProgramDataService.createProgramDataForm(programDataFormDTO, 1L, null);
+    restProgramDataService.createProgramDataForm(programDataFormDTO, 1L);
   }
 
   @Test
   public void shouldNotSaveProgramFormWhenHashExists() throws Exception {
     Mockito.when(syncUpHashRepository.hashExists(anyString())).thenReturn(true);
 
-    restProgramDataService.createProgramDataForm(make(a(ProgramDataFormBuilder.defaultProgramDataForm)), 1L, null);
+    restProgramDataService.createProgramDataForm(make(a(ProgramDataFormBuilder.defaultProgramDataForm)), 1L);
 
     verify(syncUpHashRepository, never()).save(anyString());
   }
@@ -203,7 +203,7 @@ public class RestProgramDataServiceTest {
     Mockito.when(syncUpHashRepository.hashExists(anyString())).thenReturn(false);
 
     when(facilityMapper.getById(1L)).thenReturn(new Facility());
-    restProgramDataService.createProgramDataForm(make(a(ProgramDataFormBuilder.defaultProgramDataForm)), 1L, null);
+    restProgramDataService.createProgramDataForm(make(a(ProgramDataFormBuilder.defaultProgramDataForm)), 1L);
 
     verify(syncUpHashRepository).save(anyString());
   }

@@ -73,9 +73,9 @@ public class RestProgramDataControllerTest {
     when(RestResponse.success(successMsgCode)).thenReturn(expectedResponse);
 
     ProgramDataFormDTO programFormData = new ProgramDataFormDTO();
-    ResponseEntity<RestResponse> response = restProgramDataController.createProgramDataForm(programFormData, principal, null);
+    ResponseEntity<RestResponse> response = restProgramDataController.createProgramDataForm(programFormData, principal);
 
-    verify(restProgramDataService).createProgramDataForm(programFormData, 1L, null);
+    verify(restProgramDataService).createProgramDataForm(programFormData, 1L);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
   }
 

@@ -34,11 +34,9 @@ public class RestProgramDataController extends BaseController {
   private RestRequisitionService restRequisitionService;
 
   @RequestMapping(value = "/rest-api/programData", method = POST, headers = ACCEPT_JSON)
-  public ResponseEntity createProgramDataForm(@RequestBody ProgramDataFormDTO programDataForm,
-      Principal principal,
-      @RequestHeader(value = "VersionCode", required = false) String versionCode) {
+  public ResponseEntity createProgramDataForm(@RequestBody ProgramDataFormDTO programDataForm, Principal principal) {
 
-    Rnr requisition = restProgramDataService.createProgramDataForm(programDataForm, loggedInUserId(principal), versionCode);
+    Rnr requisition = restProgramDataService.createProgramDataForm(programDataForm, loggedInUserId(principal));
     if (requisition != null) {
       restRequisitionService.notifySubmittedEvent(requisition);
     }
