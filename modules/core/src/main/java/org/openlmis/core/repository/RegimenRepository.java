@@ -64,7 +64,7 @@ public class RegimenRepository {
     childCategory.setDisplayOrder(2);
     childCategory.setName("Paediatrics");
     initOldRegimens(adultCategory, childCategory);
-    initnewRegimens(adultCategory, childCategory);
+    initNewRegimens(adultCategory, childCategory);
   }
 
 
@@ -239,7 +239,7 @@ public class RegimenRepository {
     oldRegimen8.setId(26L);
     oldRegimen8.setProgramId(1L);
     oldRegimen8.setName("ABC+3TC+LPV/r");
-    oldRegimen1.setDisplayOrder(3);
+    oldRegimen8.setDisplayOrder(3);
     oldRegimen8.setCustom(false);
     oldRegimen8.setActive(true);
     oldRegimen8.setSkipped(false);
@@ -378,7 +378,7 @@ public class RegimenRepository {
 
 
 
-  public void initnewRegimens(RegimenCategory adultCategory,RegimenCategory childCategory){
+  public void initNewRegimens(RegimenCategory adultCategory,RegimenCategory childCategory){
     // adult
     Regimen newRegimen1 = new Regimen();
     newRegimen1.setCategory(adultCategory);
@@ -456,7 +456,7 @@ public class RegimenRepository {
     newRegimen8.setCode("006");
     newRegimen8.setProgramId(1L);
     newRegimen8.setName("AZT+3TC+LPV/r");
-    newRegimen1.setDisplayOrder(8);
+    newRegimen8.setDisplayOrder(8);
     newRegimen8.setCustom(false);
     newRegimen8.setActive(true);
     newRegimen8.setSkipped(false);
