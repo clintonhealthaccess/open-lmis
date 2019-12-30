@@ -155,9 +155,9 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
             'Type of patients in TRAV': 'patientsType',
             'Tipo de pacientes em TARV': 'patientsType',
             'Months dispensed': 'md',
-            'Meses de Dispensa': 'md',
+            'Meses dispensados': 'md',
             'age range of TRAV patients': 'TARVPatients',
-            'Faixa Etária dos Pacientes TARV': 'TARVPatients',
+            'Faixa etária dos pacientes em TRAV': 'TARVPatients',
             'prophylaxis': 'prophylaxis',
             'Profilaxia': 'prophylaxis'
         };
