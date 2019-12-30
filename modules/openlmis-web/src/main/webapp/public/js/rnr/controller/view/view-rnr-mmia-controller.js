@@ -153,9 +153,13 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         };
         var tableMap = {
             'Type of patients in TRAV': 'patientsType',
+            'Tipo de pacientes em TARV': 'patientsType',
             'Months dispensed': 'md',
+            'Meses de Dispensa': 'md',
             'age range of TRAV patients': 'TARVPatients',
-            'prophylaxis': 'prophylaxis'
+            'Faixa Etária dos Pacientes TARV': 'TARVPatients',
+            'prophylaxis': 'prophylaxis',
+            'Profilaxia': 'prophylaxis'
         };
         var invalideKey = _.keys(openlmisMessageMap);
         var patientQuantifications = _.filter($scope.rnr.patientQuantifications, function (value) {
