@@ -134,7 +134,7 @@
                 <tr ng-repeat="item in therapeuticLines">
                     <td class="banner-text">{{$index+1}}</td>
                     <td class="no-border therapeutic-item"></td>
-                    <td class="no-border therapeutic-item">{{item.code}}</td>
+                    <td class="no-border therapeutic-item" openlmis-message="{{item.code}}"></td>
                     <td>{{item.patientsOnTreatment}}</td>
                     <td>{{item.comunitaryPharmacy}}</td>
                 </tr>

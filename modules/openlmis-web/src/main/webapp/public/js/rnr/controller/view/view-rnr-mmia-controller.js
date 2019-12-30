@@ -47,9 +47,21 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         });
     }
 
+    $scope.initTherapeuticLines = function () {
 
-    $scope.initTherapeuticLines = function (){
-        $scope.therapeuticLines = $scope.rnr.therapeuticLines;
+        var therapeuticLinesMap = {
+            '1st Line': 'view.rnr.mmia.regime.therapeutic.line.1',
+            '1ª Linha': 'view.rnr.mmia.regime.therapeutic.line.1',
+            '2nd Line': 'view.rnr.mmia.regime.therapeutic.line.2',
+            '2ª Linha': 'view.rnr.mmia.regime.therapeutic.line.2',
+            '3rd Line': 'view.rnr.mmia.regime.therapeutic.line.3',
+            '3ª Linha': 'view.rnr.mmia.regime.therapeutic.line.3'
+        };
+        $scope.therapeuticLines = _.map($scope.rnr.therapeuticLines,
+            function (value) {
+                value.code = therapeuticLinesMap[value.code];
+                return value;
+            });
     };
 
     $scope.initMonth = function () {
