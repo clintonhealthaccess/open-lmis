@@ -10,6 +10,8 @@
 
 package org.openlmis.rnr.repository;
 
+import java.util.Collections;
+import java.util.Comparator;
 import org.apache.commons.collections.CollectionUtils;
 import org.openlmis.core.domain.*;
 import org.openlmis.core.exception.DataException;
@@ -115,7 +117,14 @@ public class RequisitionRepository {
   }
 
   public void insertTherapeuticLinesItem(Rnr rnr) {
-    for (TherapeuticLinesItem therapeuticLinesItem : rnr.getTherapeuticLines()) {
+    List<TherapeuticLinesItem> therapeuticLinesItems = rnr.getTherapeuticLines();
+    Collections.sort(therapeuticLinesItems, new Comparator<TherapeuticLinesItem>() {
+      @Override
+      public int compare(TherapeuticLinesItem o1, TherapeuticLinesItem o2) {
+        return o1.getDisplayOrder() - o2.getDisplayOrder();
+      }
+    });
+    for (TherapeuticLinesItem therapeuticLinesItem : therapeuticLinesItems) {
       therapeuticLinesItem.setRnrId(rnr.getId());
       therapeuticLinesItem.setModifiedBy(rnr.getModifiedBy());
       therapeuticLinesItem.setCreatedBy(rnr.getCreatedBy());
