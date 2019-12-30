@@ -56,27 +56,6 @@ import static org.openlmis.rnr.domain.RnrStatus.*;
 public class Rnr extends BaseModel {
 
 
-  private static final Map<String, Integer> displayOrderMap = new HashMap<>();
-
-  static {
-    displayOrderMap.put("new", 0);
-    displayOrderMap.put("maintenance", 1);
-    displayOrderMap.put("alteration", 2);
-    displayOrderMap.put("transit", 3);
-    displayOrderMap.put("transfers", 4);
-    displayOrderMap.put("3 mopnths dispense (dt)", 5);
-    displayOrderMap.put("month dispense", 6);
-    displayOrderMap.put("# of therapeutic months dispensed", 7);
-    displayOrderMap.put("adults", 8);
-    displayOrderMap.put("pediatric from 0 to 4 years", 9);
-    displayOrderMap.put("pediatric from 5 to 9 years", 10);
-    displayOrderMap.put("pediatric from 10 to 14 years", 11);
-    displayOrderMap.put("ppe", 12);
-    displayOrderMap.put("prep", 13);
-    displayOrderMap.put("exposed child", 14);
-    displayOrderMap.put("total nr of patients in tarv at hf", 15);
-  }
-
   private boolean emergency;
   private Facility facility;
   private Program program;
@@ -506,29 +485,6 @@ public class Rnr extends BaseModel {
   @JsonIgnore
   public boolean isBudgetingApplicable() {
     return !this.emergency && this.program.getBudgetingApplies();
-  }
-
-
-  /**
-   * for new MIMA report put the displayOrder in PatientQuantificationLineItem
-   */
-  public void putDisplayOrderIfNeed() {
-    if (CollectionUtils.isNotEmpty(this.getPatientQuantifications())) {
-      for (PatientQuantificationLineItem item : this.getPatientQuantifications()) {
-        if (StringUtils.isBlank(item.getTableName())
-            || displayOrderMap.get(item.getCategory().toLowerCase()) == null) {
-          return;
-        }
-        item.setDisplayOrder(displayOrderMap.get(item.getCategory().toLowerCase()));
-      }
-      Collections.sort(this.getPatientQuantifications(),
-          new Comparator<PatientQuantificationLineItem>() {
-            @Override
-            public int compare(PatientQuantificationLineItem o1, PatientQuantificationLineItem o2) {
-              return o1.getDisplayOrder() - o2.getDisplayOrder();
-            }
-          });
-    }
   }
 }
 

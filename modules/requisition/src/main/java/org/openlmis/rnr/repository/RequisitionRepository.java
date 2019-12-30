@@ -13,6 +13,8 @@ package org.openlmis.rnr.repository;
 import java.util.Collections;
 import java.util.Comparator;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.*;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.core.repository.helper.CommaSeparator;
@@ -108,7 +110,19 @@ public class RequisitionRepository {
   }
 
   public void insertPatientQuantificationLineItems(Rnr rnr) {
-    for (PatientQuantificationLineItem patientQuantificationLineItem : rnr.getPatientQuantifications()) {
+    String versionCode = LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE);
+    List<PatientQuantificationLineItem> patientQuantificationLineItems = rnr.getPatientQuantifications();
+    if(StringUtils.isNumeric(versionCode) && Integer.valueOf(versionCode) >= 87){
+        Collections.sort(patientQuantificationLineItems,
+            new Comparator<PatientQuantificationLineItem>() {
+              @Override
+              public int compare(PatientQuantificationLineItem o1,
+                  PatientQuantificationLineItem o2) {
+                return o1.getDisplayOrder() - o2.getDisplayOrder();
+              }
+            });
+    }
+    for (PatientQuantificationLineItem patientQuantificationLineItem : patientQuantificationLineItems) {
       patientQuantificationLineItem.setRnrId(rnr.getId());
       patientQuantificationLineItem.setModifiedBy(rnr.getModifiedBy());
       patientQuantificationLineItem.setCreatedBy(rnr.getCreatedBy());
@@ -117,14 +131,7 @@ public class RequisitionRepository {
   }
 
   public void insertTherapeuticLinesItem(Rnr rnr) {
-    List<TherapeuticLinesItem> therapeuticLinesItems = rnr.getTherapeuticLines();
-    Collections.sort(therapeuticLinesItems, new Comparator<TherapeuticLinesItem>() {
-      @Override
-      public int compare(TherapeuticLinesItem o1, TherapeuticLinesItem o2) {
-        return o1.getDisplayOrder() - o2.getDisplayOrder();
-      }
-    });
-    for (TherapeuticLinesItem therapeuticLinesItem : therapeuticLinesItems) {
+    for (TherapeuticLinesItem therapeuticLinesItem : rnr.getTherapeuticLines()) {
       therapeuticLinesItem.setRnrId(rnr.getId());
       therapeuticLinesItem.setModifiedBy(rnr.getModifiedBy());
       therapeuticLinesItem.setCreatedBy(rnr.getCreatedBy());

@@ -460,7 +460,6 @@ public class RestRequisitionService {
     return FluentIterable.from(rnrList).transform(new Function<Rnr, Report>() {
       @Override
       public Report apply(Rnr rnr) {
-        rnr.putDisplayOrderIfNeed();
         return Report.prepareForREST(rnr);
       }
     }).toList();

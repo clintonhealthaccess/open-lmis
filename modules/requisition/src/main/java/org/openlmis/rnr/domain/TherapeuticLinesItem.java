@@ -15,7 +15,6 @@ public class TherapeuticLinesItem extends LineItem {
     private String code;
     private Integer patientsOnTreatment;
     private Integer comunitaryPharmacy;
-    private Integer displayOrder;
 
     @Override
     public boolean compareCategory(LineItem lineItem) {
