@@ -15,17 +15,19 @@ public class MaterializedViewRefresher {
 
     public void refreshDailyMaterializedViews() {
         log.info("start to refresh daily materialized view");
-        materializedViewMapper.refreshPeriodMovements();
+        //todo test the performance
+//        materializedViewMapper.refreshPeriodMovements();
     }
 
     public void refreshHourlyMaterializedViews() {
         log.info("start to refresh hourly materialized view");
-        materializedViewMapper.refreshLotExpiryDate();
-        materializedViewMapper.refreshDailyFullSOH();
-        materializedViewMapper.refreshCMMEntries();
-        materializedViewMapper.refreshStockouts();
-        materializedViewMapper.refreshCarryStartDates();
-        materializedViewMapper.refreshWeeklyTracerSOH();
-        materializedViewMapper.refreshWeeklyNOSSOH();
+        //todo test the performance
+//        materializedViewMapper.refreshLotExpiryDate();
+//        materializedViewMapper.refreshDailyFullSOH();
+//        materializedViewMapper.refreshCMMEntries();
+//        materializedViewMapper.refreshStockouts();
+//        materializedViewMapper.refreshCarryStartDates();
+//        materializedViewMapper.refreshWeeklyTracerSOH();
+//        materializedViewMapper.refreshWeeklyNOSSOH();
     }
 }
