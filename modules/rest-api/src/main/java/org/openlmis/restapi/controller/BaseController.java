@@ -10,7 +10,6 @@
 
 package org.openlmis.restapi.controller;
 
-import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.restapi.response.RestResponse;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.security.Principal;
 
 import static java.lang.Long.valueOf;
-import static org.openlmis.LmisThreadLocalUtils.HEADER_LANGUAGE;
 import static org.openlmis.restapi.response.RestResponse.error;
 import static org.springframework.http.HttpStatus.*;
 
@@ -33,21 +31,16 @@ import static org.springframework.http.HttpStatus.*;
 
 public class BaseController {
   public static final String ACCEPT_JSON = "Accept=application/json";
-  static final String UNEXPECTED_EXCEPTION = "unexpected.exception";
-  private static final String FORBIDDEN_EXCEPTION = "error.authorisation";
+  public static final String UNEXPECTED_EXCEPTION = "unexpected.exception";
+  public static final String FORBIDDEN_EXCEPTION = "error.authorisation";
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<RestResponse> handleException(Exception ex) {
     if (ex instanceof AccessDeniedException) {
       return error(FORBIDDEN_EXCEPTION, FORBIDDEN);
     }
-    if (ex instanceof MissingServletRequestParameterException
-        || ex instanceof HttpMessageNotReadableException) {
+    if (ex instanceof MissingServletRequestParameterException || ex instanceof HttpMessageNotReadableException || ex instanceof DataException) {
       return error(ex.getMessage(), BAD_REQUEST);
-    }
-    if (ex instanceof DataException) {
-      return error(((DataException) ex).getOpenLmisMessage(),
-          LmisThreadLocalUtils.getHeader(HEADER_LANGUAGE), BAD_REQUEST);
     }
     return error(UNEXPECTED_EXCEPTION, INTERNAL_SERVER_ERROR);
   }
