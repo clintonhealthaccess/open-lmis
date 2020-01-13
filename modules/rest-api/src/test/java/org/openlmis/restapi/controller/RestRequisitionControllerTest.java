@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.core.service.MessageService;
 import org.openlmis.db.categories.UnitTests;
@@ -39,6 +40,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
+import static org.openlmis.LmisThreadLocalUtils.HEADER_LANGUAGE;
 import static org.openlmis.restapi.controller.RestRequisitionController.RNR;
 import static org.openlmis.restapi.controller.RestRequisitionController.UNEXPECTED_EXCEPTION;
 import static org.openlmis.restapi.response.RestResponse.*;
@@ -112,7 +114,8 @@ public class RestRequisitionControllerTest {
     DataException dataException = new DataException(errorMessage);
     doThrow(dataException).when(service).submitReport(report, 1L);
     ResponseEntity<RestResponse> expectResponse = new ResponseEntity<>(new RestResponse(ERROR, errorMessage), HttpStatus.BAD_REQUEST);
-    when(error(dataException.getOpenLmisMessage(), HttpStatus.BAD_REQUEST)).thenReturn(expectResponse);
+    when(error(dataException.getOpenLmisMessage(), LmisThreadLocalUtils.getHeader(HEADER_LANGUAGE),
+        HttpStatus.BAD_REQUEST)).thenReturn(expectResponse);
 
     ResponseEntity<RestResponse> response = controller.submitRequisition(report, principal);
 
