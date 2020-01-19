@@ -555,7 +555,7 @@ public class RegimenRepository {
 
     Regimen newRegimen18 = new Regimen();
     newRegimen18.setCategory(childCategory);
-    newRegimen18.setCode("018");
+    newRegimen18.setCode("TO818");
     newRegimen18.setId(32L);
     newRegimen18.setProgramId(1L);
     newRegimen18.setName("AZT 60+3TC 30+LPV/r (2DFC + LPV/r 40/10)");
