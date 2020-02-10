@@ -189,7 +189,7 @@ sonarRunner {
 }
 
 jettyRun {
-    jettyRun.httpPort = 8081;
+    jettyRun.httpPort = 9091;
     contextPath = ''
     daemon = true;
     jettyRun.scanIntervalSeconds = 1
