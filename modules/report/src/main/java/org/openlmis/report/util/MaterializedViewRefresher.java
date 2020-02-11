@@ -15,7 +15,7 @@ public class MaterializedViewRefresher {
 
     public void refreshDailyMaterializedViews() {
         log.info("start to refresh daily materialized view");
-        materializedViewMapper.refreshPeriodMovements();
+//        materializedViewMapper.refreshPeriodMovements();
     }
 
     public void refreshHourlyMaterializedViews() {
