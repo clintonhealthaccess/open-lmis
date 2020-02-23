@@ -21,7 +21,7 @@ public class MaterializedViewRefresher {
     private static final String PROD_ENVIRONMENT = "prod";
 
     public void refreshDailyMaterializedViews() {
-        log.info("start to refresh daily materialized view,environment is {}", environment);
+        log.info("start to refresh daily materialized view, environment is {}", environment);
         if (!StringUtils.equalsIgnoreCase(PROD_ENVIRONMENT, environment)) {
             return;
         }
@@ -29,7 +29,7 @@ public class MaterializedViewRefresher {
     }
 
     public void refreshHourlyMaterializedViews() {
-        log.info("start to refresh hourly materialized view,environment is {}", environment);
+        log.info("start to refresh hourly materialized view, environment is {}", environment);
         if (!StringUtils.equalsIgnoreCase(PROD_ENVIRONMENT, environment)) {
             return;
         }
