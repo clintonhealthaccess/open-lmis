@@ -2,9 +2,9 @@ package org.openlmis.restapi.controller;
 
 import com.wordnik.swagger.annotations.Api;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.restapi.domain.StockCardDTO;
 import org.openlmis.restapi.response.RestResponse;
@@ -12,11 +12,11 @@ import org.openlmis.restapi.service.RestStockCardService;
 import org.openlmis.restapi.utils.KitProductFilterUtils;
 import org.openlmis.stockmanagement.domain.StockCardEntry;
 import org.openlmis.stockmanagement.dto.StockEvent;
+import org.openlmis.stockmanagement.service.StockCardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +41,8 @@ public class RestStockCardController extends BaseController {
 
   @Autowired
   private RestStockCardService restStockCardService;
+  @Autowired
+  private StockCardService stockCardService;
 
   @RequestMapping(value = "/rest-api/facilities/{facilityId}/stockCards", method = POST, headers = ACCEPT_JSON)
   public ResponseEntity adjustStock(@PathVariable long facilityId,
@@ -76,7 +78,7 @@ public class RestStockCardController extends BaseController {
     Long userId = loggedInUserId(principal);
     for (Map.Entry<String, List<StockEvent>> entry : productStockEventMap.entrySet()) {
       try {
-        restStockCardService.adjustStock(facilityId, entry.getKey(), entry.getValue(), userId);
+        restStockCardService.adjustStockSpilt(facilityId, entry.getValue(), userId);
       } catch (DataException e) {
         LOG.error("product {} sync error", entry.getKey(), e);
         errorProductCodes.add(entry.getKey());

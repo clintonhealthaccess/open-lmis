@@ -132,7 +132,7 @@ public class StockCardService {
     entry.validStockCardEntry();
     StockCard card = entry.getStockCard();
     card.setLatestStockCardEntry(entry);
-    card.addToTotalQuantityOnHand(entry.getQuantity());
+    card.setTotalQuantityOnHand(entry.getLotStockOnHandTotal());
     repository.updateStockCard(card);
     repository.persistStockCardEntry(entry);
 
@@ -157,7 +157,7 @@ public class StockCardService {
       stockCardEntryLotItem.setStockCardEntryId(entry.getId());
       LotOnHand lotOnHand = lotOnHandMap.get(stockCardEntryLotItem.getLot().getLotCode());
       if (lotOnHand != null) {
-        lotOnHand.addToQuantityOnHand(stockCardEntryLotItem.getQuantity());
+        lotOnHand.setQuantityOnHand(stockCardEntryLotItem.getStockOnHand());
       }
       lotRepository.createStockCardEntryLotItem(stockCardEntryLotItem);
     }

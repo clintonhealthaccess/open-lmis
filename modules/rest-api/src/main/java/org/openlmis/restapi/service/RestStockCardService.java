@@ -57,14 +57,12 @@ public class RestStockCardService {
   }
 
   @Transactional
-  public List<StockCardEntry> adjustStock(Long facilityId, String productCode,
-      List<StockEvent> stockEvents, Long userId) {
+  public List<StockCardEntry> adjustStockSpilt(Long facilityId, List<StockEvent> stockEvents, Long userId) {
     if (!validFacility(facilityId)) {
       throw new DataException("error.facility.unknown");
     }
     List<StockCardEntry> entries = createStockCardEntries(stockEvents, facilityId, userId);
     stockCardService.addStockCardEntries(entries);
-    stockCardService.updateStockCardSyncTimeToNow(facilityId, Lists.newArrayList(productCode));
     return entries;
   }
 

@@ -33,4 +33,13 @@ public class StockCardEntryLotItem extends BaseModel {
         String newKey = key.trim().toLowerCase();
         extensions.add(new StockCardEntryLotItemKV(newKey, value, new Date()));
     }
+
+    public long getStockOnHand() {
+        for (StockCardEntryLotItemKV lotItemKV : extensions) {
+            if (lotItemKV.getKey().equals("soh")) {
+                return Long.valueOf(lotItemKV.getValue());
+            }
+        }
+        return 0;
+    }
 }
