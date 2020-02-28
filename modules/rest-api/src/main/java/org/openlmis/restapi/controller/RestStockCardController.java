@@ -70,15 +70,19 @@ public class RestStockCardController extends BaseController {
   @RequestMapping(value = "/rest-api/facilities/split/{facilityId}/stockCards", method = POST, headers = ACCEPT_JSON)
   public ResponseEntity adjustStock(@PathVariable long facilityId,
       @RequestBody List<StockEvent> events, Principal principal) {
-    List<StockEvent> filterStockEvents;
-    filterStockEvents = restStockCardService.filterStockEventsList(events, WRONG_KIT_PRODUCTS_SET);
+    if (!restStockCardService.validFacility(facilityId)) {
+      throw new DataException("error.facility.unknown");
+    }
+    List<StockEvent> correctEventList = restStockCardService
+        .filterStockEventsList(events, WRONG_KIT_PRODUCTS_SET);
     Map<String, List<StockEvent>> productStockEventMap = restStockCardService
-        .groupByProduct(filterStockEvents);
+        .groupByProduct(correctEventList);
     List<String> errorProductCodes = new ArrayList<>();
     Long userId = loggedInUserId(principal);
     for (Map.Entry<String, List<StockEvent>> entry : productStockEventMap.entrySet()) {
       try {
         restStockCardService.adjustStockSpilt(facilityId, entry.getValue(), userId);
+        productStockEventMap.put(entry.getKey(), null);
       } catch (DataException e) {
         LOG.error("product {} sync error", entry.getKey(), e);
         errorProductCodes.add(entry.getKey());

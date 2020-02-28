@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import org.springframework.util.CollectionUtils;
 
 
 /**
@@ -128,11 +129,10 @@ public class StockCardService {
 
   @Transactional
   public void addStockCardEntry(StockCardEntry entry) {
-    logger.info("start to valid stock card entry");
     entry.validStockCardEntry();
     StockCard card = entry.getStockCard();
     card.setLatestStockCardEntry(entry);
-    card.setTotalQuantityOnHand(entry.getLotStockOnHandTotal());
+    card.setTotalQuantityOnHand(entry.getStockOnHand());
     repository.updateStockCard(card);
     repository.persistStockCardEntry(entry);
 
@@ -157,7 +157,11 @@ public class StockCardService {
       stockCardEntryLotItem.setStockCardEntryId(entry.getId());
       LotOnHand lotOnHand = lotOnHandMap.get(stockCardEntryLotItem.getLot().getLotCode());
       if (lotOnHand != null) {
-        lotOnHand.setQuantityOnHand(stockCardEntryLotItem.getStockOnHand());
+        if (!CollectionUtils.isEmpty(stockCardEntryLotItem.getExtensions())) {
+          lotOnHand.setQuantityOnHand(stockCardEntryLotItem.getStockOnHand());
+        } else {
+          lotOnHand.addToQuantityOnHand(stockCardEntryLotItem.getQuantity());
+        }
       }
       lotRepository.createStockCardEntryLotItem(stockCardEntryLotItem);
     }
@@ -179,8 +183,12 @@ public class StockCardService {
     repository.updateAllStockCardSyncTimeForFacility(facilityId);
   }
 
-  public void updateStockCardSyncTimeToNow(long facilityId, final List<String> stockCardProductCodeList) {
-    for (StockCard stockCard : getStockCardsNotInList(facilityId, stockCardProductCodeList)) {
+  public void updateStockCardSyncTimeToNow(long facilityId, String productCode) {
+      repository.updateStockCardSyncTimeToNow(facilityId, productCode);
+  }
+
+  public void updateStockCardSyncTimeToNowExclude(long facilityId, final List<String> unSyncProductCodeList) {
+    for (StockCard stockCard : getStockCardsNotInList(facilityId, unSyncProductCodeList)) {
       repository.updateStockCardSyncTimeToNow(facilityId, stockCard.getProduct().getCode());
     }
   }

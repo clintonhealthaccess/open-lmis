@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import org.springframework.util.CollectionUtils;
 
 @Data
 @NoArgsConstructor
@@ -80,52 +81,53 @@ public class StockCardEntry extends BaseModel {
   }
 
   public void validStockCardEntry() {
-    if((this.getStockCard().getEntries() == null && this.getStockCard().getLastestStockCardEntry() == null)) {
+    if ((this.getStockCard().getEntries() == null
+        && this.getStockCard().getLastestStockCardEntry() == null)) {
       this.validFirstInventory();
     } else {
-      this.validOccurredDate();
-      this.validStockOnHand();
+      List<StockCardEntry> stockCardEntries = stockCard.getEntries();
+      StockCardEntry latestStockCardEntry =
+          stockCard.getLastestStockCardEntry() == null ? stockCardEntries.get(0)
+              : stockCard.getLastestStockCardEntry();
+      this.validOccurredDate(latestStockCardEntry);
+      this.validStockOnHand(latestStockCardEntry);
     }
   }
 
-  private void validStockOnHand() {
-    if(stockCard.getTotalQuantityOnHand() + this.getQuantity() != this.getStockOnHand()) {
-      logger.error("stock movement quantity error, facilityname: " + this.getStockCard().getFacility().getName() + ", productcode: " + this.getStockCard().getProduct().getCode());
-//      throw new DataException("error.stockmovementquantity.validation");
+  private void validStockOnHand(StockCardEntry latestStockCardEntry) {
+    if (latestStockCardEntry.getStockOnHand() + this.getQuantity() != this.getStockOnHand()) {
+      logger.error(
+          "stock movement quantity error, facilityCode: " + this.getStockCard().getFacility()
+              .getCode() + ", productCode: " + this.getStockCard().getProduct().getCode());
+      throw new DataException("error.stock.entry.quantity");
     }
   }
 
-  private void validOccurredDate() {
-    List<StockCardEntry> stockCardEntries = stockCard.getEntries();
-    StockCardEntry latestStockCardEntry = stockCard.getLastestStockCardEntry() == null ? stockCardEntries.get(0) : stockCard.getLastestStockCardEntry();
-    if(latestStockCardEntry.getOccurred().after(this.getOccurred())) {
-      logger.error("stock movement date error, facilityname: " + this.getStockCard().getFacility().getName() + ", productcode: " + this.getStockCard().getProduct().getCode());
-//      throw new DataException("error.stockmovementdate.validation");
+  private void validOccurredDate(StockCardEntry latestStockCardEntry) {
+    if (latestStockCardEntry.getOccurred().after(this.getOccurred())) {
+      logger.error(
+          "stock movement date error, facilityCode: " + this.getStockCard().getFacility().getCode()
+              + ", productCode: " + this.getStockCard().getProduct().getCode());
+      throw new DataException("error.stock.entry.date.validation");
     }
   }
 
   private void validFirstInventory() {
-    if(!(this.getAdjustmentReason().getName().equals("INVENTORY") && this.getQuantity() >= 0)) {
-      logger.error("first inventory error, facilityname: " + this.getStockCard().getFacility().getName() + ", productcode: " + this.getStockCard().getProduct().getCode());
-//      throw new DataException("error.firstinventory.validation");
+    if (!(this.getAdjustmentReason().getName().equals("INVENTORY") && this.getQuantity() >= 0)) {
+      logger.error(
+          "first inventory error, facilityCode: " + this.getStockCard().getFacility().getCode()
+              + ", productCode: " + this.getStockCard().getProduct().getCode());
+      throw new DataException("error.stock.entry.first.inventory");
     }
   }
 
-  public long getLotStockOnHandTotal() {
-    long totalOnHand = 0;
-    for (StockCardEntryLotItem stockCardEntryLotItem : stockCardEntryLotItems) {
-      totalOnHand += stockCardEntryLotItem.getStockOnHand();
-    }
-    return totalOnHand;
-  }
-
-  private Integer getStockOnHand() {
-    for(StockCardEntryKV stockCardEntryKV : extensions) {
-      if(stockCardEntryKV.getKey().equals("soh")) {
-        return Integer.valueOf(stockCardEntryKV.getValue());
+  public Long getStockOnHand() {
+    for (StockCardEntryKV stockCardEntryKV : extensions) {
+      if (stockCardEntryKV.getKey().equals("soh")) {
+        return Long.valueOf(stockCardEntryKV.getValue());
       }
     }
-    throw new DataException("error.stockonhand.notfound");
+    throw new DataException("error.stock.entry.soh.notfound");
   }
 
 }

@@ -1,6 +1,5 @@
 package org.openlmis.restapi.service;
 
-import com.google.common.collect.Lists;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.openlmis.core.domain.Product;
@@ -57,13 +56,9 @@ public class RestStockCardService {
   }
 
   @Transactional
-  public List<StockCardEntry> adjustStockSpilt(Long facilityId, List<StockEvent> stockEvents, Long userId) {
-    if (!validFacility(facilityId)) {
-      throw new DataException("error.facility.unknown");
-    }
+  public void adjustStockSpilt(Long facilityId, List<StockEvent> stockEvents, Long userId) {
     List<StockCardEntry> entries = createStockCardEntries(stockEvents, facilityId, userId);
     stockCardService.addStockCardEntries(entries);
-    return entries;
   }
 
   public List<StockEvent> filterStockEventsList(List<StockEvent> stockEvents, Set<String> filteredProductsCodesSet) {
@@ -78,15 +73,16 @@ public class RestStockCardService {
   }
 
   @Transactional
-  public void updateStockCardSyncTime(Long facilityId, List<String> stockCardProductCodeList) {
-    if (facilityId == null || stockCardProductCodeList == null) {
+  public void updateStockCardSyncTime(Long facilityId, List<String> unSyncedStockCardProductCodes) {
+    if (facilityId == null || unSyncedStockCardProductCodes == null) {
       throw new DataException("");
     }
 
-    if (stockCardProductCodeList.isEmpty()) {
+    if (unSyncedStockCardProductCodes.isEmpty()) {
       stockCardService.updateAllStockCardSyncTimeForFacilityToNow(facilityId);
     } else {
-      stockCardService.updateStockCardSyncTimeToNow(facilityId, stockCardProductCodeList);
+      stockCardService
+          .updateStockCardSyncTimeToNowExclude(facilityId, unSyncedStockCardProductCodes);
     }
   }
 
