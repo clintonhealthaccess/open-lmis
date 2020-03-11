@@ -84,7 +84,7 @@ public class RestStockCardController extends BaseController {
         restStockCardService.adjustStockSpilt(facilityId, entry.getValue(), userId);
         productStockEventMap.put(entry.getKey(), null);
       } catch (DataException e) {
-        LOG.error("product {} sync error", entry.getKey(), e);
+        LOG.error("product {} sync error", entry.getKey());
         errorProductCodes.add(entry.getKey());
       }
     }
