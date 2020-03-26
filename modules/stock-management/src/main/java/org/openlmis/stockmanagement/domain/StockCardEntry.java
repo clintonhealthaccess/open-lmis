@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
 import org.openlmis.core.domain.BaseModel;
 import org.openlmis.core.domain.StockAdjustmentReason;
 import org.openlmis.core.exception.DataException;
@@ -16,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import org.springframework.util.CollectionUtils;
 
 @Data
 @NoArgsConstructor
@@ -83,7 +83,7 @@ public class StockCardEntry extends BaseModel {
   }
 
   public void validStockCardEntry() {
-    if ((this.getStockCard().getEntries() == null
+    if ((CollectionUtils.isEmpty(this.getStockCard().getEntries())
         && this.getStockCard().getLastestStockCardEntry() == null)) {
       this.validFirstInventory();
     } else {
