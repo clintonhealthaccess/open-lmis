@@ -83,14 +83,19 @@ public class RestRequisitionCalculator {
     }
 
     List<Rnr> rnrs = requisitionService.getNormalRnrsByPeriodAndProgram(periodStartDate, periodEndDate, reportingProgram.getId(), reportingFacility.getId());
+
+    DateTime actualStart = new DateTime(periodStartDate);
+    DateTime actualEnd = new DateTime(periodEndDate);
     if (rnrs != null && !rnrs.isEmpty()) {
+      LOGGER.error(String.format("%s-%s has been submitted, facilityId is %s, programId is %s",
+          actualStart.toString("yyyy-MM"), actualEnd.toString("yyyy-MM"),
+          LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_FACILITY_ID),
+          reportingProgram.getId()));
       throw new DataException(MessageKeyUtils.RNR_PERIOD_DUPLICATE);
     }
     if (periodStartDate != null) {
       DateTime initStart = new DateTime(periodForInitialize.getStartDate());
       DateTime initEnd = new DateTime(periodForInitialize.getEndDate());
-      DateTime actualStart = new DateTime(periodStartDate);
-      DateTime actualEnd = new DateTime(periodEndDate);
       if (initStart.getMonthOfYear() != actualStart.getMonthOfYear()
           && initEnd.getMonthOfYear() != actualEnd.getMonthOfYear()) {
         LOGGER.error(String.format(

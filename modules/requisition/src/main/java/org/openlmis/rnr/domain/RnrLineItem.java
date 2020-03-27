@@ -198,6 +198,8 @@ public class RnrLineItem extends LineItem {
       if (template.columnsVisible(fieldName) &&
         !template.columnsCalculated(fieldName) &&
         (getValueFor(fieldName) == null || (Integer) getValueFor(fieldName) < 0)) {
+        LOGGER.error("product code {}, filed {} is {}", productCode, fieldName,
+            getValueFor(fieldName));
         throw new DataException(RNR_FIELD_MANDATORY_NEGATIVE_OR_NULL, productCode,
             fieldName);
       }
@@ -221,7 +223,7 @@ public class RnrLineItem extends LineItem {
         validQuantityDispensed = (quantityDispensed == (beginningBalance + quantityReceived + totalLossesAndAdjustments - stockInHand));
       }
       if (!validQuantityDispensed) {
-        LOGGER.error(String.format("product is not match code is %s", productCode));
+        LOGGER.error("product is not match code is {}", productCode);
         throw new DataException(RNR_VALIDATION_EQUATION_NOT_EQUAL, productCode);
       }
     }

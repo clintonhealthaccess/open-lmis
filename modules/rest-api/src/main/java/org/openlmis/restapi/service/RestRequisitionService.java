@@ -152,9 +152,15 @@ public class RestRequisitionService {
   private void validReportDate(Date actualPeriodEndDate, Long facilityId, Long programId) {
     Date reportStartDate = programService.getReportStartDate(facilityId, programId);
     if (null == reportStartDate) {
+      logger.error(String
+          .format("report support date is invalid, facilityId is %s, programId is %s", facilityId,
+              programId));
       throw new DataException(MessageKeyUtils.RNR_REPORT_SUPPORTED_DATE_INVALID);
     }
     if (actualPeriodEndDate.before(reportStartDate)) {
+      logger.error(String
+          .format("report start date is invalid, facilityId is %s, programId is %s", facilityId,
+              programId));
       throw new DataException(MessageKeyUtils.RNR_REPORT_START_DATE_INVALID);
     }
   }
