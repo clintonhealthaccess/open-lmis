@@ -261,4 +261,39 @@ public interface StockCardMapper {
       "WHERE facilityid = #{facilityId} " +
       "AND productid = (SELECT id FROM products WHERE code = (#{stockCardProductCode}))")
   int updateStockCardToSyncTimeToNow(@Param("facilityId") long facilityId, @Param("stockCardProductCode") String stockCardProductCode);
+
+  @Select("SELECT *" +
+      " FROM stock_cards" +
+      " WHERE facilityid = #{facilityId}" +
+      "   AND productid = #{productId}")
+  @Results({
+      @Result(property = "id", column = "id"),
+      @Result(property = "facility", column = "facilityId", javaType = Facility.class,
+          one = @One(select = "org.openlmis.core.repository.mapper.FacilityMapper.getById")),
+      @Result(property = "product", column = "productId", javaType = Product.class,
+          one = @One(select = "org.openlmis.core.repository.mapper.ProductMapper.getById")),
+      @Result(property = "entries", column = "id", javaType = List.class,
+          many = @Many(select = "getAllEntries")),
+      @Result(property = "lotsOnHand", column = "id", javaType = List.class,
+          many = @Many(select = "getLotsOnHand"))
+  })
+  StockCard getStockCard(@Param("facilityId") Long facilityId, @Param("productId") Long productId);
+
+  @Select("SELECT *" +
+      " FROM stock_card_entries" +
+      " WHERE stockcardid = #{stockCardId}" +
+      " ORDER BY createddate")
+  @Results({
+      @Result(property = "id", column = "id"),
+      @Result(property = "adjustmentReason", column = "adjustmentType", javaType = StockAdjustmentReason.class,
+          one = @One(select = "org.openlmis.core.repository.mapper.StockAdjustmentReasonMapper.getByName")),
+      @Result(property = "extensions", column = "id", javaType = List.class,
+          many = @Many(select = "getStockCardEntryExtensionAttributes")),
+      @Result(property = "stockCardEntryLotItems", column = "id", javaType = List.class,
+          many = @Many(select = "org.openlmis.stockmanagement.repository.mapper.LotMapper.getLotMovementItemsByStockEntry"))
+  })
+  List<StockCardEntry> getAllEntries(@Param("stockCardId") Long stockCardId);
+
+  @Select("select delete_stock_card(#{facilityId},#{productId})")
+  String deleteStockCard(@Param("facilityId") Long facilityId, @Param("productId") Long productId);
 }

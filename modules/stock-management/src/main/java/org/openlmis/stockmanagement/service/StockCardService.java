@@ -14,13 +14,20 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import lombok.NoArgsConstructor;
 import org.openlmis.core.repository.ProductRepository;
+import org.openlmis.core.repository.mapper.ProductMapper;
 import org.openlmis.core.service.FacilityService;
 import org.openlmis.stockmanagement.domain.*;
+import org.openlmis.stockmanagement.dto.StockCardBakDto;
 import org.openlmis.stockmanagement.repository.LotRepository;
 import org.openlmis.stockmanagement.repository.StockCardRepository;
+import org.openlmis.stockmanagement.repository.mapper.StockCardBakMapper;
+import org.openlmis.stockmanagement.repository.mapper.StockCardLockMapper;
+import org.openlmis.stockmanagement.repository.mapper.StockCardMapper;
+import org.openlmis.stockmanagement.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +55,14 @@ public class StockCardService {
 
   @Autowired
   StockCardRepository repository;
+  @Autowired
+  StockCardLockMapper stockCardLockMapper;
+  @Autowired
+  StockCardMapper stockCardMapper;
+  @Autowired
+  StockCardBakMapper stockCardBakMapper;
+  @Autowired
+  ProductMapper productMapper;
 
   StockCardService(FacilityService facilityService,
                    ProductRepository productRepository,
@@ -204,5 +219,49 @@ public class StockCardService {
 
   public LotOnHand getLotOnHandByLotNumberAndProductCodeAndFacilityId(String lotNumber, String code, Long facilityId) {
     return lotRepository.getLotOnHandByLotNumberAndProductCodeAndFacilityId(lotNumber, code, facilityId);
+  }
+
+  public void deleteStockCard(Long facilityId, Long productId) {
+    stockCardMapper.deleteStockCard(facilityId, productId);
+  }
+
+  public Long getProductIdByCode(String productCode){
+    return productMapper.getProductIdByCode(productCode);
+  }
+
+
+  @Transactional
+  public boolean lockStockCard(Long facilityId, String productCode, String actionType) {
+    Long productId = productMapper.getProductIdByCode(productCode);
+    return lockStockCard(facilityId, productId, actionType);
+  }
+
+  @Transactional
+  public boolean lockStockCard(Long facilityId, Long productId, String actionType) {
+    try {
+      stockCardLockMapper.lockStockCard(facilityId, productId, actionType);
+    } catch (DuplicateKeyException e) {
+      return false;
+    }
+    return true;
+  }
+
+  public void backStockCard(StockCardBakDto stockCardBakDto) {
+    stockCardBakMapper.insertBack(stockCardBakDto);
+  }
+
+  @Transactional
+  public void unLockStockCard(Long facilityId, String productCode, String actionType) {
+    Long productId = productMapper.getProductIdByCode(productCode);
+    unLockStockCard(facilityId, productId, actionType);
+  }
+
+  @Transactional
+  public void unLockStockCard(Long facilityId, Long productId, String actionType) {
+    stockCardLockMapper.unLockStockCard(facilityId, productId, actionType);
+  }
+
+  public StockCard getStockCard(Long facilityId, Long productId) {
+    return stockCardMapper.getStockCard(facilityId, productId);
   }
 }

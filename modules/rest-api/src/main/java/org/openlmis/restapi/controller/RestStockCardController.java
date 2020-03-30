@@ -2,7 +2,6 @@ package org.openlmis.restapi.controller;
 
 import com.wordnik.swagger.annotations.Api;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Map;
 import lombok.NoArgsConstructor;
 import org.openlmis.core.exception.DataException;
@@ -11,8 +10,10 @@ import org.openlmis.restapi.response.RestResponse;
 import org.openlmis.restapi.service.RestStockCardService;
 import org.openlmis.restapi.utils.KitProductFilterUtils;
 import org.openlmis.stockmanagement.domain.StockCardEntry;
+import org.openlmis.stockmanagement.dto.StockCardDeleteDto;
 import org.openlmis.stockmanagement.dto.StockEvent;
 import org.openlmis.stockmanagement.service.StockCardService;
+import org.openlmis.stockmanagement.util.StockCardLockConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,11 +82,16 @@ public class RestStockCardController extends BaseController {
     Long userId = loggedInUserId(principal);
     for (Map.Entry<String, List<StockEvent>> entry : productStockEventMap.entrySet()) {
       try {
-        restStockCardService.adjustStockSpilt(facilityId, entry.getValue(), userId);
-        productStockEventMap.put(entry.getKey(), null);
+        if (stockCardService
+            .lockStockCard(facilityId, entry.getKey(), StockCardLockConstants.update)) {
+          restStockCardService.adjustStockSpilt(facilityId, entry.getValue(), userId);
+        }
       } catch (DataException e) {
-        LOG.error("product {} sync error", entry.getKey());
+        LOG.error("product {} sync error", entry.getKey(), e);
         errorProductCodes.add(entry.getKey());
+      } finally {
+        stockCardService.unLockStockCard(facilityId, entry.getKey(), StockCardLockConstants.update);
+        productStockEventMap.put(entry.getKey(), null);
       }
     }
     return response("errorProductCodes", errorProductCodes);
@@ -115,4 +121,20 @@ public class RestStockCardController extends BaseController {
   }
 
 
+  @RequestMapping(value = "/rest-api/facilities/{facilityId}/deleteStockCards", method = POST, headers = ACCEPT_JSON)
+  public ResponseEntity deleteStockCards(@PathVariable long facilityId,
+      @RequestBody List<StockCardDeleteDto> stockCardDeleteDtos, Principal principal) {
+    List<String> errorCodes = new ArrayList<>();
+    Long userId = loggedInUserId(principal);
+    try {
+      for (StockCardDeleteDto stockCardDeleteDto : stockCardDeleteDtos) {
+        if (!restStockCardService.deleteStockCard(facilityId, stockCardDeleteDto, userId)) {
+          errorCodes.add(stockCardDeleteDto.getProduceCode());
+        }
+      }
+    } catch (DataException e) {
+      return ResponseEntity.badRequest().build();
+    }
+    return response("errorCodes", errorCodes);
+  }
 }
