@@ -262,7 +262,7 @@ public class RestStockCardService {
     Long productId = stockCardService.getProductIdByCode(stockCardDeleteDto.getProduceCode());
     try {
       if (productId != null && stockCardService.lockStockCard(facilityId, productId,
-          StockCardLockConstants.delete)) {
+          StockCardLockConstants.DELETE)) {
         StockCardBakDto stockCardBakDto = buildStockCardDto(facilityId, productId, userId,
             stockCardDeleteDto.getClientMovements());
         stockCardService.backStockCard(stockCardBakDto);
@@ -273,7 +273,7 @@ public class RestStockCardService {
       LOG.error("delete stock card error, facilityId is {}, productCode is {}", facilityId,
           stockCardDeleteDto.getProduceCode(), e);
     } finally {
-      stockCardService.unLockStockCard(facilityId, productId, StockCardLockConstants.delete);
+      stockCardService.unLockStockCard(facilityId, productId, StockCardLockConstants.DELETE);
     }
     return false;
   }

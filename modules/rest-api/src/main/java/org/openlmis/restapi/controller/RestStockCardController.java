@@ -83,14 +83,14 @@ public class RestStockCardController extends BaseController {
     for (Map.Entry<String, List<StockEvent>> entry : productStockEventMap.entrySet()) {
       try {
         if (stockCardService
-            .lockStockCard(facilityId, entry.getKey(), StockCardLockConstants.update)) {
+            .lockStockCard(facilityId, entry.getKey(), StockCardLockConstants.UPDATE)) {
           restStockCardService.adjustStockSpilt(facilityId, entry.getValue(), userId);
         }
       } catch (DataException e) {
         LOG.error("product {} sync error", entry.getKey(), e);
         errorProductCodes.add(entry.getKey());
       } finally {
-        stockCardService.unLockStockCard(facilityId, entry.getKey(), StockCardLockConstants.update);
+        stockCardService.unLockStockCard(facilityId, entry.getKey(), StockCardLockConstants.UPDATE);
         productStockEventMap.put(entry.getKey(), null);
       }
     }
