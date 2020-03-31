@@ -8,12 +8,24 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StockCardLockMapper {
 
-    @Insert("insert into stock_cards_lock values(#{facilityId}, #{productId}, #{actionType})")
-    Integer lockStockCard(@Param("facilityId") Long facilityId, @Param("productId") Long productId,
+    @Insert("INSERT INTO stock_cards_lock "
+        + "VALUES(#{facilityId}, #{productId}, #{actionType})")
+    Integer lock(@Param("facilityId") Long facilityId, @Param("productId") Long productId,
         @Param("actionType") String actionType);
 
-    @Delete("delete from stock_cards_lock where facilityId = #{facilityId} and productId= #{productId} and actionType = #{actionType}")
-    Integer unLockStockCard(@Param("facilityId") Long facilityId, @Param("productId") Long productId,
+    @Insert("SELECT 1 FROM stock_cards_lock "
+        + "WHERE facilityId = #{facilityId} "
+        + "AND productId= #{productId} "
+        + "AND actionType = #{actionType}")
+    Integer findLock(@Param("facilityId") Long facilityId, @Param("productId") Long productId,
+        @Param("actionType") String actionType);
+
+    @Delete("DELETE FROM stock_cards_lock "
+        + "WHERE facilityId = #{facilityId} "
+        + "AND productId= #{productId} "
+        + "AND actionType = #{actionType}")
+    Integer release(@Param("facilityId") Long facilityId,
+        @Param("productId") Long productId,
         @Param("actionType") String actionType);
 
 }

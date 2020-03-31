@@ -294,6 +294,6 @@ public interface StockCardMapper {
   })
   List<StockCardEntry> getAllEntries(@Param("stockCardId") Long stockCardId);
 
-  @Select("select delete_stock_card(#{facilityId},#{productId})")
+  @Select("SELECT delete_stock_card(#{facilityId},#{productId})")
   String deleteStockCard(@Param("facilityId") Long facilityId, @Param("productId") Long productId);
 }

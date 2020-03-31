@@ -10,7 +10,7 @@ import org.openlmis.restapi.response.RestResponse;
 import org.openlmis.restapi.service.RestStockCardService;
 import org.openlmis.restapi.utils.KitProductFilterUtils;
 import org.openlmis.stockmanagement.domain.StockCardEntry;
-import org.openlmis.stockmanagement.dto.StockCardDeleteDto;
+import org.openlmis.stockmanagement.dto.StockCardDeleteDTO;
 import org.openlmis.stockmanagement.dto.StockEvent;
 import org.openlmis.stockmanagement.service.StockCardService;
 import org.openlmis.stockmanagement.util.StockCardLockConstants;
@@ -82,15 +82,16 @@ public class RestStockCardController extends BaseController {
     Long userId = loggedInUserId(principal);
     for (Map.Entry<String, List<StockEvent>> entry : productStockEventMap.entrySet()) {
       try {
-        if (stockCardService
-            .lockStockCard(facilityId, entry.getKey(), StockCardLockConstants.UPDATE)) {
+        if (stockCardService.tryLock(facilityId, entry.getKey(), StockCardLockConstants.UPDATE)) {
           restStockCardService.adjustStockSpilt(facilityId, entry.getValue(), userId);
+        } else {
+          errorProductCodes.add(entry.getKey());
         }
       } catch (DataException e) {
-        LOG.error("product {} sync error", entry.getKey(), e);
         errorProductCodes.add(entry.getKey());
+        LOG.error("facilityId {} productCode {} sync error", entry.getKey(), e);
       } finally {
-        stockCardService.unLockStockCard(facilityId, entry.getKey(), StockCardLockConstants.UPDATE);
+        stockCardService.release(facilityId, entry.getKey(), StockCardLockConstants.UPDATE);
         productStockEventMap.put(entry.getKey(), null);
       }
     }
@@ -123,13 +124,13 @@ public class RestStockCardController extends BaseController {
 
   @RequestMapping(value = "/rest-api/facilities/{facilityId}/deleteStockCards", method = POST, headers = ACCEPT_JSON)
   public ResponseEntity deleteStockCards(@PathVariable long facilityId,
-      @RequestBody List<StockCardDeleteDto> stockCardDeleteDtos, Principal principal) {
+      @RequestBody List<StockCardDeleteDTO> stockCardDeleteDTOs, Principal principal) {
     List<String> errorCodes = new ArrayList<>();
     Long userId = loggedInUserId(principal);
     try {
-      for (StockCardDeleteDto stockCardDeleteDto : stockCardDeleteDtos) {
-        if (!restStockCardService.deleteStockCard(facilityId, stockCardDeleteDto, userId)) {
-          errorCodes.add(stockCardDeleteDto.getProduceCode());
+      for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
+        if (!restStockCardService.deleteStockCard(facilityId, stockCardDeleteDTO, userId)) {
+          errorCodes.add(stockCardDeleteDTO.getProduceCode());
         }
       }
     } catch (DataException e) {

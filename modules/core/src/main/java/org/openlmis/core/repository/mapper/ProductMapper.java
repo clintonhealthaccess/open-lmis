@@ -189,6 +189,6 @@ public interface ProductMapper {
   @Delete("DELETE FROM kit_products_relation WHERE kitCode = #{kitCode} and productCode = #{productCode}")
   void deleteKitProduct(KitProduct kitProduct);
 
-  @Select("select id from products where code = #{code} ")
+  @Select("SELECT id FROM products WHERE code = #{code} ")
   Long getProductIdByCode(String code);
 }

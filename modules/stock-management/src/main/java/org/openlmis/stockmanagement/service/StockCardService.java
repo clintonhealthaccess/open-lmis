@@ -17,13 +17,12 @@ import org.openlmis.core.repository.ProductRepository;
 import org.openlmis.core.repository.mapper.ProductMapper;
 import org.openlmis.core.service.FacilityService;
 import org.openlmis.stockmanagement.domain.*;
-import org.openlmis.stockmanagement.dto.StockCardBakDto;
+import org.openlmis.stockmanagement.dto.StockCardBakDTO;
 import org.openlmis.stockmanagement.repository.LotRepository;
 import org.openlmis.stockmanagement.repository.StockCardRepository;
 import org.openlmis.stockmanagement.repository.mapper.StockCardBakMapper;
 import org.openlmis.stockmanagement.repository.mapper.StockCardLockMapper;
 import org.openlmis.stockmanagement.repository.mapper.StockCardMapper;
-import org.openlmis.stockmanagement.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +41,7 @@ import org.springframework.util.CollectionUtils;
 @Service
 @NoArgsConstructor
 public class StockCardService {
-  private static final Logger logger = LoggerFactory.getLogger(StockCardService.class);
+  private static final Logger LOG = LoggerFactory.getLogger(StockCardService.class);
 
   @Autowired
   FacilityService facilityService;
@@ -231,34 +230,38 @@ public class StockCardService {
 
 
   @Transactional
-  public boolean lockStockCard(Long facilityId, String productCode, String actionType) {
+  public boolean tryLock(Long facilityId, String productCode, String actionType) {
     Long productId = productMapper.getProductIdByCode(productCode);
-    return lockStockCard(facilityId, productId, actionType);
+    return tryLock(facilityId, productId, actionType);
   }
 
   @Transactional
-  public boolean lockStockCard(Long facilityId, Long productId, String actionType) {
+  public boolean tryLock(Long facilityId, Long productId, String actionType) {
     try {
-      stockCardLockMapper.lockStockCard(facilityId, productId, actionType);
+      Integer lock = stockCardLockMapper.findLock(facilityId, productId, actionType);
+      if (lock == null) {
+        stockCardLockMapper.lock(facilityId, productId, actionType);
+        return true;
+      }
     } catch (DuplicateKeyException e) {
-      return false;
+      LOG.error("delete and update stockCard conflict, facilityId {}, productId {}", facilityId,
+          productId);
     }
-    return true;
+    return false;
   }
 
-  public void backStockCard(StockCardBakDto stockCardBakDto) {
-    stockCardBakMapper.insertBack(stockCardBakDto);
+  public void backupStockCard(StockCardBakDTO stockCardBakDto) {
+    stockCardBakMapper.backupStockCard(stockCardBakDto);
   }
 
   @Transactional
-  public void unLockStockCard(Long facilityId, String productCode, String actionType) {
+  public void release(Long facilityId, String productCode, String actionType) {
     Long productId = productMapper.getProductIdByCode(productCode);
-    unLockStockCard(facilityId, productId, actionType);
+    release(facilityId, productId, actionType);
   }
 
-  @Transactional
-  public void unLockStockCard(Long facilityId, Long productId, String actionType) {
-    stockCardLockMapper.unLockStockCard(facilityId, productId, actionType);
+  public void release(Long facilityId, Long productId, String actionType) {
+    stockCardLockMapper.release(facilityId, productId, actionType);
   }
 
   public StockCard getStockCard(Long facilityId, Long productId) {

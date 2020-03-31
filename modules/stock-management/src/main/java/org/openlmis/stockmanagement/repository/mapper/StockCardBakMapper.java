@@ -1,7 +1,7 @@
 package org.openlmis.stockmanagement.repository.mapper;
 
 import org.apache.ibatis.annotations.Insert;
-import org.openlmis.stockmanagement.dto.StockCardBakDto;
+import org.openlmis.stockmanagement.dto.StockCardBakDTO;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -19,5 +19,5 @@ public interface StockCardBakMapper {
         ", #{clientMovements}" +
         ", #{userId}" +
         ", NOW() )")
-    void insertBack(StockCardBakDto stockCardBakDto);
+    void backupStockCard(StockCardBakDTO stockCardBakDto);
 }

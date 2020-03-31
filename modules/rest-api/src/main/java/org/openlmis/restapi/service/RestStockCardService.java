@@ -12,9 +12,9 @@ import org.openlmis.core.service.ProductService;
 import org.openlmis.restapi.domain.StockCardDTO;
 import org.openlmis.restapi.domain.StockCardMovementDTO;
 import org.openlmis.stockmanagement.domain.*;
-import org.openlmis.stockmanagement.dto.StockCardDeleteDto;
+import org.openlmis.stockmanagement.dto.StockCardDeleteDTO;
 import org.openlmis.stockmanagement.dto.LotEvent;
-import org.openlmis.stockmanagement.dto.StockCardBakDto;
+import org.openlmis.stockmanagement.dto.StockCardBakDTO;
 import org.openlmis.stockmanagement.dto.StockEvent;
 import org.openlmis.stockmanagement.service.LotService;
 import org.openlmis.stockmanagement.service.StockCardService;
@@ -257,45 +257,32 @@ public class RestStockCardService {
   }
 
   @Transactional
-  public boolean deleteStockCard(Long facilityId, StockCardDeleteDto stockCardDeleteDto,
+  public boolean deleteStockCard(Long facilityId, StockCardDeleteDTO stockCardDeleteDTO,
       Long userId) {
-    Long productId = stockCardService.getProductIdByCode(stockCardDeleteDto.getProduceCode());
+    Long productId = stockCardService.getProductIdByCode(stockCardDeleteDTO.getProduceCode());
     try {
-      if (productId != null && stockCardService.lockStockCard(facilityId, productId,
+      if (productId != null && stockCardService.tryLock(facilityId, productId,
           StockCardLockConstants.DELETE)) {
-        StockCardBakDto stockCardBakDto = buildStockCardDto(facilityId, productId, userId,
-            stockCardDeleteDto.getClientMovements());
-        stockCardService.backStockCard(stockCardBakDto);
+        StockCardBakDTO stockCardBakDTO = StockCardBakDTO.builder().facilityId(facilityId)
+            .productId(productId).userId(userId)
+            .clientMovements(stockCardDeleteDTO.getClientMovements())
+            .serverMovements(convertStockCardToJsonString(facilityId, productId)).build();
+        stockCardService.backupStockCard(stockCardBakDTO);
         stockCardService.deleteStockCard(facilityId, productId);
         return true;
       }
     } catch (Exception e) {
       LOG.error("delete stock card error, facilityId is {}, productCode is {}", facilityId,
-          stockCardDeleteDto.getProduceCode(), e);
+          stockCardDeleteDTO.getProduceCode(), e);
     } finally {
-      stockCardService.unLockStockCard(facilityId, productId, StockCardLockConstants.DELETE);
+      stockCardService.release(facilityId, productId, StockCardLockConstants.DELETE);
     }
     return false;
   }
 
-  private StockCardBakDto buildStockCardDto(Long facilityId, Long productId, Long userId,
-      String clientMovements) {
-    StockCardBakDto stockCardBakDto = new StockCardBakDto();
-    stockCardBakDto.setFacilityId(facilityId);
-    stockCardBakDto.setProductId(productId);
-    stockCardBakDto.setUserId(userId);
-    stockCardBakDto.setClientMovements(clientMovements);
-    stockCardBakDto.setServerMovements(convertStockCardToJsonString(facilityId, productId));
-    return stockCardBakDto;
-  }
-
   private String convertStockCardToJsonString(Long facilityId, Long productId) {
     StockCard stockCard = stockCardService.getStockCard(facilityId, productId);
-    if (stockCard != null) {
-      StockCardDTO stockCardDTO = transformStockCardsToDTO(stockCard);
-      return JsonUtils.toJsonString(stockCardDTO);
-    }
-    return null;
+    return stockCard == null ? null : JsonUtils.toJsonString(transformStockCardsToDTO(stockCard));
   }
 
 }
