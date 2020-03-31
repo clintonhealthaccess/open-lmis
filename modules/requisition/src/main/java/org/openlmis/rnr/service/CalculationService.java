@@ -190,9 +190,9 @@ public class CalculationService {
 
     for (RnrLineItem lineItem : requisition.getNonSkippedLineItems()) {
       lineItem.setProgram(requisition.getProgram());
-      lineItem.validateMandatoryFields(template);
+      lineItem.validateMandatoryFields(requisition, template);
       lineItem.calculateForFullSupply(template, requisition.getStatus(), lossesAndAdjustmentsTypes, numberOfMonths);
-      lineItem.validateCalculatedFields(template);
+      lineItem.validateCalculatedFields(requisition, template);
 
       requisition.addToFullSupplyCost(lineItem.calculateCost());
     }

@@ -10,7 +10,6 @@
 
 package org.openlmis.restapi.service;
 
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.Facility;
@@ -26,6 +25,8 @@ import org.openlmis.rnr.domain.RnrLineItem;
 import org.openlmis.rnr.search.criteria.RequisitionSearchCriteria;
 import org.openlmis.rnr.service.RequisitionService;
 import org.openlmis.core.utils.MessageKeyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +54,7 @@ public class RestRequisitionCalculator {
   @Autowired
   private StaticReferenceDataService staticReferenceDataService;
 
-  private static final Logger LOGGER = Logger.getLogger(RestRequisitionCalculator.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RestRequisitionCalculator.class);
 
   public void validatePeriod(Facility reportingFacility, Program reportingProgram, Date periodStartDate, Date periodEndDate) {
 
@@ -87,10 +88,10 @@ public class RestRequisitionCalculator {
     DateTime actualStart = new DateTime(periodStartDate);
     DateTime actualEnd = new DateTime(periodEndDate);
     if (rnrs != null && !rnrs.isEmpty()) {
-      LOGGER.error(String.format("%s-%s has been submitted, facilityId is %s, programId is %s",
+      LOGGER.error("facilityId {} programId {}, {}-{} has been submitted",
           actualStart.toString("yyyy-MM"), actualEnd.toString("yyyy-MM"),
           LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_FACILITY_ID),
-          reportingProgram.getId()));
+          reportingProgram.getId());
       throw new DataException(MessageKeyUtils.RNR_PERIOD_DUPLICATE);
     }
     if (periodStartDate != null) {
@@ -98,11 +99,10 @@ public class RestRequisitionCalculator {
       DateTime initEnd = new DateTime(periodForInitialize.getEndDate());
       if (initStart.getMonthOfYear() != actualStart.getMonthOfYear()
           && initEnd.getMonthOfYear() != actualEnd.getMonthOfYear()) {
-        LOGGER.error(String.format(
-            "expected period is %s-%s, but submit is %s-%s, facilityId is %s, programId is %s",
-            initStart.toString("yyyy-MM"), initEnd.toString("yyyy-MM"),
-            actualStart.toString("yyyy-MM"), actualEnd.toString("yyyy-MM"),
-            LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_FACILITY_ID), reportingProgram.getId()));
+          LOGGER.error("facilityId {} programId {}, expected period is {}-{}, but submit is {}-{}, ",
+              LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_FACILITY_ID),
+              reportingProgram.getId(), initStart.toString("yyyy-MM"), initEnd.toString("yyyy-MM"),
+              actualStart.toString("yyyy-MM"), actualEnd.toString("yyyy-MM"));
         throw new DataException(MessageKeyUtils.RNR_ERROR_RNR_PERIOD_INVALID, initStart.toString("yyyy-MM"),
             initEnd.toString("yyyy-MM"));
       }

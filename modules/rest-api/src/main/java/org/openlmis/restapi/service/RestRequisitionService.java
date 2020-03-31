@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.openlmis.core.domain.*;
 import org.openlmis.core.exception.DataException;
@@ -32,6 +31,8 @@ import org.openlmis.rnr.search.criteria.RequisitionSearchCriteria;
 import org.openlmis.rnr.service.RequisitionService;
 import org.openlmis.rnr.service.RnrTemplateService;
 import org.openlmis.core.utils.MessageKeyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +57,7 @@ public class RestRequisitionService {
 
   public static final boolean EMERGENCY = false;
   private static final String RAPID_TEST_PROGRAM_CODE = "TEST_KIT";
-  private static final Logger logger = Logger.getLogger(RestRequisitionService.class);
+  private static final Logger logger = LoggerFactory.getLogger(RestRequisitionService.class);
   @Autowired
   private RequisitionService requisitionService;
   @Autowired
@@ -152,15 +153,13 @@ public class RestRequisitionService {
   private void validReportDate(Date actualPeriodEndDate, Long facilityId, Long programId) {
     Date reportStartDate = programService.getReportStartDate(facilityId, programId);
     if (null == reportStartDate) {
-      logger.error(String
-          .format("report support date is invalid, facilityId is %s, programId is %s", facilityId,
-              programId));
+      logger.error("facilityId {} programId {}, report support date is invalid", facilityId,
+          programId);
       throw new DataException(MessageKeyUtils.RNR_REPORT_SUPPORTED_DATE_INVALID);
     }
     if (actualPeriodEndDate.before(reportStartDate)) {
-      logger.error(String
-          .format("report start date is invalid, facilityId is %s, programId is %s", facilityId,
-              programId));
+      logger
+          .error("facilityId {} programId {}, report start date is invalid", facilityId, programId);
       throw new DataException(MessageKeyUtils.RNR_REPORT_START_DATE_INVALID);
     }
   }

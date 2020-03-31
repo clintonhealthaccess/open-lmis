@@ -190,18 +190,18 @@ public class RnrLineItem extends LineItem {
     if (!skipped && quantityApproved == null) throw new DataException(RNR_VALIDATION_ERROR);
   }
 
-  public void validateMandatoryFields(ProgramRnrTemplate template) {
+  public void validateMandatoryFields(Rnr rnr,ProgramRnrTemplate template) {
     String[] nonNullableFields = {BEGINNING_BALANCE, QUANTITY_RECEIVED, STOCK_IN_HAND,
       QUANTITY_DISPENSED, NEW_PATIENT_COUNT, STOCK_OUT_DAYS};
 
     for (String fieldName : nonNullableFields) {
       if (template.columnsVisible(fieldName) &&
-        !template.columnsCalculated(fieldName) &&
-        (getValueFor(fieldName) == null || (Integer) getValueFor(fieldName) < 0)) {
-        LOGGER.error("product code {}, filed {} is {}", productCode, fieldName,
+          !template.columnsCalculated(fieldName) &&
+          (getValueFor(fieldName) == null || (Integer) getValueFor(fieldName) < 0)) {
+        LOGGER.error("facilityId {} programId {}, product code {} filed {} is {}",
+            rnr.getFacility().getId(), rnr.getProgram().getId(), productCode, fieldName,
             getValueFor(fieldName));
-        throw new DataException(RNR_FIELD_MANDATORY_NEGATIVE_OR_NULL, productCode,
-            fieldName);
+        throw new DataException(RNR_FIELD_MANDATORY_NEGATIVE_OR_NULL);
       }
     }
     requestedQuantityConditionalValidation(template);
@@ -213,7 +213,7 @@ public class RnrLineItem extends LineItem {
     }
   }
 
-  public void validateCalculatedFields(ProgramRnrTemplate template) {
+  public void validateCalculatedFields(Rnr rnr, ProgramRnrTemplate template) {
     boolean validQuantityDispensed = true;
 
     RnrColumn rnrColumn = (RnrColumn) template.getColumns().get(0);
@@ -223,8 +223,9 @@ public class RnrLineItem extends LineItem {
         validQuantityDispensed = (quantityDispensed == (beginningBalance + quantityReceived + totalLossesAndAdjustments - stockInHand));
       }
       if (!validQuantityDispensed) {
-        LOGGER.error("product is not match code is {}", productCode);
-        throw new DataException(RNR_VALIDATION_EQUATION_NOT_EQUAL, productCode);
+        LOGGER.error("facilityId {} programId {}, productCode {} is not match code",
+            rnr.getFacility().getId(), rnr.getProgram().getId(), productCode);
+        throw new DataException(RNR_VALIDATION_EQUATION_NOT_EQUAL);
       }
     }
   }
