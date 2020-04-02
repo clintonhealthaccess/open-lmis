@@ -38,7 +38,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @Api(value = "Stock Card", description = "Stock card update", position = 0)
 public class RestStockCardController extends BaseController {
 
-  private static final Logger LOG = LoggerFactory.getLogger(StockCardEntry.class);
+  private static final Logger logger = LoggerFactory.getLogger(StockCardEntry.class);
 
   @Autowired
   private RestStockCardService restStockCardService;
@@ -89,7 +89,7 @@ public class RestStockCardController extends BaseController {
         }
       } catch (DataException e) {
         errorProductCodes.add(entry.getKey());
-        LOG.error("facilityId {} productCode {} sync error", entry.getKey(), e);
+        logger.error("facilityId {} productCode {} sync error", entry.getKey(), e);
       } finally {
         stockCardService.release(facilityId, entry.getKey(), StockCardLockConstants.UPDATE);
         productStockEventMap.put(entry.getKey(), null);

@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.*;
 import org.openlmis.core.exception.DataException;
 import org.slf4j.Logger;
@@ -190,17 +191,18 @@ public class RnrLineItem extends LineItem {
     if (!skipped && quantityApproved == null) throw new DataException(RNR_VALIDATION_ERROR);
   }
 
-  public void validateMandatoryFields(Rnr rnr,ProgramRnrTemplate template) {
+  public void validateMandatoryFields(ProgramRnrTemplate template) {
     String[] nonNullableFields = {BEGINNING_BALANCE, QUANTITY_RECEIVED, STOCK_IN_HAND,
-      QUANTITY_DISPENSED, NEW_PATIENT_COUNT, STOCK_OUT_DAYS};
+        QUANTITY_DISPENSED, NEW_PATIENT_COUNT, STOCK_OUT_DAYS};
 
     for (String fieldName : nonNullableFields) {
-      if (template.columnsVisible(fieldName) &&
-          !template.columnsCalculated(fieldName) &&
-          (getValueFor(fieldName) == null || (Integer) getValueFor(fieldName) < 0)) {
+      boolean notNullAndNegative =
+          template.columnsVisible(fieldName) && !template.columnsCalculated(fieldName) && (
+              getValueFor(fieldName) == null || (Integer) getValueFor(fieldName) < 0);
+      if (notNullAndNegative) {
         LOGGER.error("facilityId {} programId {}, product code {} filed {} is {}",
-            rnr.getFacility().getId(), rnr.getProgram().getId(), productCode, fieldName,
-            getValueFor(fieldName));
+            LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_FACILITY_ID),
+            template.getProgramId(), productCode, fieldName, getValueFor(fieldName));
         throw new DataException(RNR_FIELD_MANDATORY_NEGATIVE_OR_NULL);
       }
     }
@@ -213,7 +215,7 @@ public class RnrLineItem extends LineItem {
     }
   }
 
-  public void validateCalculatedFields(Rnr rnr, ProgramRnrTemplate template) {
+  public void validateCalculatedFields(ProgramRnrTemplate template) {
     boolean validQuantityDispensed = true;
 
     RnrColumn rnrColumn = (RnrColumn) template.getColumns().get(0);
@@ -224,7 +226,8 @@ public class RnrLineItem extends LineItem {
       }
       if (!validQuantityDispensed) {
         LOGGER.error("facilityId {} programId {}, productCode {} is not match code",
-            rnr.getFacility().getId(), rnr.getProgram().getId(), productCode);
+            LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_FACILITY_ID),
+            template.getProgramId(), productCode);
         throw new DataException(RNR_VALIDATION_EQUATION_NOT_EQUAL);
       }
     }

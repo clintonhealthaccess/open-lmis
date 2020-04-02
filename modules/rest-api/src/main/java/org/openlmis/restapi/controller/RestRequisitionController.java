@@ -57,8 +57,7 @@ public class RestRequisitionController extends BaseController {
     try {
       requisition = restRequisitionService.submitReport(report, loggedInUserId(principal));
     } catch (DataException e) {
-      return error(e.getOpenLmisMessage(), LmisThreadLocalUtils.getHeader(HEADER_LANGUAGE),
-          BAD_REQUEST);
+      return error(e.getOpenLmisMessage(), BAD_REQUEST);
     }
     if (requisition != null) {
       restRequisitionService.notifySubmittedEvent(requisition);
