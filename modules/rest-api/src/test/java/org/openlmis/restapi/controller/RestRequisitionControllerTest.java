@@ -114,8 +114,7 @@ public class RestRequisitionControllerTest {
     DataException dataException = new DataException(errorMessage);
     doThrow(dataException).when(service).submitReport(report, 1L);
     ResponseEntity<RestResponse> expectResponse = new ResponseEntity<>(new RestResponse(ERROR, errorMessage), HttpStatus.BAD_REQUEST);
-    when(error(dataException.getOpenLmisMessage(), LmisThreadLocalUtils.getHeader(HEADER_LANGUAGE),
-        HttpStatus.BAD_REQUEST)).thenReturn(expectResponse);
+    when(error(dataException.getOpenLmisMessage(), HttpStatus.BAD_REQUEST)).thenReturn(expectResponse);
 
     ResponseEntity<RestResponse> response = controller.submitRequisition(report, principal);
 
