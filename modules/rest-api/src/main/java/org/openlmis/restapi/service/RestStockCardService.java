@@ -259,7 +259,7 @@ public class RestStockCardService {
   @Transactional
   public boolean deleteStockCard(Long facilityId, StockCardDeleteDTO stockCardDeleteDTO,
       Long userId) {
-    Long productId = stockCardService.getProductIdByCode(stockCardDeleteDTO.getProduceCode());
+    Long productId = stockCardService.getProductIdByCode(stockCardDeleteDTO.getProductCode());
     try {
       if (productId != null && stockCardService.tryLock(facilityId, productId,
           StockCardLockConstants.DELETE)) {
@@ -275,7 +275,7 @@ public class RestStockCardService {
       }
     } catch (Exception e) {
       LOG.error("delete stock card error, facilityId is {}, productCode is {}", facilityId,
-          stockCardDeleteDTO.getProduceCode(), e);
+          stockCardDeleteDTO.getProductCode(), e);
     } finally {
       stockCardService.release(facilityId, productId, StockCardLockConstants.DELETE);
     }

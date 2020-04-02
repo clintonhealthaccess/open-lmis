@@ -130,7 +130,7 @@ public class RestStockCardController extends BaseController {
     try {
       for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
         if (!restStockCardService.deleteStockCard(facilityId, stockCardDeleteDTO, userId)) {
-          errorCodes.add(stockCardDeleteDTO.getProduceCode());
+          errorCodes.add(stockCardDeleteDTO.getProductCode());
         }
       }
     } catch (DataException e) {

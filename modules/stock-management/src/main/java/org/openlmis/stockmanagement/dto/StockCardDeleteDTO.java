@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class StockCardDeleteDTO {
-    private String produceCode;
+    private String productCode;
     private String clientMovements;
 }
