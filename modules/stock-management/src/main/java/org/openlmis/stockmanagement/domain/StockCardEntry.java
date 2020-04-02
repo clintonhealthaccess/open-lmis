@@ -97,7 +97,7 @@ public class StockCardEntry extends BaseModel {
   }
 
   private void validStockOnHand(StockCardEntry latestStockCardEntry) {
-    if (latestStockCardEntry.getStockOnHand() + this.getQuantity() != this.getStockOnHand()) {
+    if (latestStockCardEntry.findStockOnHand() + this.getQuantity() != this.findStockOnHand()) {
       logger.error("stock movement quantity error");
       logger.error(
           "stock movement quantity error, facilityId: " + this.getStockCard().getFacility()
@@ -133,7 +133,7 @@ public class StockCardEntry extends BaseModel {
     }
   }
 
-  public Long getStockOnHand() {
+  public Long findStockOnHand() {
     for (StockCardEntryKV stockCardEntryKV : extensions) {
       if (stockCardEntryKV.getKey().equals("soh")) {
         return Long.valueOf(stockCardEntryKV.getValue());

@@ -263,10 +263,12 @@ public class RestStockCardService {
     try {
       if (productId != null && stockCardService.tryLock(facilityId, productId,
           StockCardLockConstants.DELETE)) {
-        StockCardBakDTO stockCardBakDTO = StockCardBakDTO.builder().facilityId(facilityId)
+        StockCardBakDTO stockCardBakDTO = StockCardBakDTO.builder()
+            .facilityId(facilityId)
             .productId(productId).userId(userId)
             .clientMovements(stockCardDeleteDTO.getClientMovements())
-            .serverMovements(convertStockCardToJsonString(facilityId, productId)).build();
+            .serverMovements(convertStockCardToJsonString(facilityId, productId))
+            .build();
         stockCardService.backupStockCard(stockCardBakDTO);
         stockCardService.deleteStockCard(facilityId, productId);
         return true;

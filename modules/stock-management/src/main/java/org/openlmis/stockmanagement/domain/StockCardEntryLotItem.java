@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 @NoArgsConstructor
 public class StockCardEntryLotItem extends BaseModel {
 
-    private static final Logger LOG = LoggerFactory.getLogger(StockCardEntryLotItem.class);
+    private static final Logger logger = LoggerFactory.getLogger(StockCardEntryLotItem.class);
     @JsonIgnore
     private Long stockCardEntryId;
 
@@ -39,13 +39,13 @@ public class StockCardEntryLotItem extends BaseModel {
         extensions.add(new StockCardEntryLotItemKV(newKey, value, new Date()));
     }
 
-    public long getStockOnHand() {
+    public long findStockOnHand() {
         for (StockCardEntryLotItemKV lotItemKV : extensions) {
             if (lotItemKV.getKey().equals("soh")) {
                 return Long.valueOf(lotItemKV.getValue());
             }
         }
-        LOG.error("product[{}], lot[{}] has no soh field", this.getLot().getProduct().getCode(),
+        logger.error("product[{}], lot[{}] has no soh field", this.getLot().getProduct().getCode(),
             this.getLot().getLotCode());
         throw new DataException("error.stock.entry.lot.soh.notfound");
     }

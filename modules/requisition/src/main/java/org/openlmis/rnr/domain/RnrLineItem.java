@@ -196,10 +196,10 @@ public class RnrLineItem extends LineItem {
         QUANTITY_DISPENSED, NEW_PATIENT_COUNT, STOCK_OUT_DAYS};
 
     for (String fieldName : nonNullableFields) {
-      boolean notNullAndNegative =
+      boolean nullOrNegative =
           template.columnsVisible(fieldName) && !template.columnsCalculated(fieldName) && (
               getValueFor(fieldName) == null || (Integer) getValueFor(fieldName) < 0);
-      if (notNullAndNegative) {
+      if (nullOrNegative) {
         LOGGER.error("facilityId {} programId {}, product code {} filed {} is {}",
             LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_FACILITY_ID),
             template.getProgramId(), productCode, fieldName, getValueFor(fieldName));

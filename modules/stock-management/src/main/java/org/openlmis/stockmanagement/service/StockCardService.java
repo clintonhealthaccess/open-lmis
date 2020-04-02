@@ -41,7 +41,7 @@ import org.springframework.util.CollectionUtils;
 @Service
 @NoArgsConstructor
 public class StockCardService {
-  private static final Logger LOG = LoggerFactory.getLogger(StockCardService.class);
+  private static final Logger logger = LoggerFactory.getLogger(StockCardService.class);
 
   @Autowired
   FacilityService facilityService;
@@ -146,7 +146,7 @@ public class StockCardService {
     entry.validStockCardEntry();
     StockCard card = entry.getStockCard();
     card.setLatestStockCardEntry(entry);
-    card.setTotalQuantityOnHand(entry.getStockOnHand());
+    card.setTotalQuantityOnHand(entry.findStockOnHand());
     repository.updateStockCard(card);
     repository.persistStockCardEntry(entry);
 
@@ -172,7 +172,7 @@ public class StockCardService {
       LotOnHand lotOnHand = lotOnHandMap.get(stockCardEntryLotItem.getLot().getLotCode());
       if (lotOnHand != null) {
         if (!CollectionUtils.isEmpty(stockCardEntryLotItem.getExtensions())) {
-          lotOnHand.setQuantityOnHand(stockCardEntryLotItem.getStockOnHand());
+          lotOnHand.setQuantityOnHand(stockCardEntryLotItem.findStockOnHand());
         } else {
           lotOnHand.addToQuantityOnHand(stockCardEntryLotItem.getQuantity());
         }
@@ -229,13 +229,11 @@ public class StockCardService {
   }
 
 
-  @Transactional
   public boolean tryLock(Long facilityId, String productCode, String actionType) {
     Long productId = productMapper.getProductIdByCode(productCode);
     return tryLock(facilityId, productId, actionType);
   }
 
-  @Transactional
   public boolean tryLock(Long facilityId, Long productId, String actionType) {
     try {
       Integer lock = stockCardLockMapper.findLock(facilityId, productId, actionType);
@@ -244,7 +242,7 @@ public class StockCardService {
         return true;
       }
     } catch (DuplicateKeyException e) {
-      LOG.error("delete and update stockCard conflict, facilityId {}, productId {}", facilityId,
+      logger.error("delete and update stockCard conflict, facilityId {}, productId {}", facilityId,
           productId);
     }
     return false;
@@ -254,7 +252,6 @@ public class StockCardService {
     stockCardBakMapper.backupStockCard(stockCardBakDto);
   }
 
-  @Transactional
   public void release(Long facilityId, String productCode, String actionType) {
     Long productId = productMapper.getProductIdByCode(productCode);
     release(facilityId, productId, actionType);
