@@ -89,7 +89,7 @@ public class RestStockCardController extends BaseController {
         }
       } catch (DataException e) {
         errorProductCodes.add(entry.getKey());
-        logger.error("facilityId {} productCode {} sync error", entry.getKey(), e);
+        logger.error("facilityId {} productCode {} sync error", facilityId, entry.getKey());
       } finally {
         stockCardService.release(facilityId, entry.getKey(), StockCardLockConstants.UPDATE);
         productStockEventMap.put(entry.getKey(), null);
