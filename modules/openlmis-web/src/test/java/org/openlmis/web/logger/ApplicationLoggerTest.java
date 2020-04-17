@@ -27,12 +27,12 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.logging.ApplicationLogger;
 import org.openlmis.db.categories.UnitTests;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Category(UnitTests.class)
 @RunWith(PowerMockRunner.class)
@@ -55,11 +55,11 @@ public class ApplicationLoggerTest {
     }
 
     @Test
-    @PrepareForTest(LmisThreadLocalUtils.class)
+    @PrepareForTest(SecurityContextHolder.class)
     public void shouldLogExceptions() {
         Exception exception = new RuntimeException("An exception was thrown !!");
-        PowerMockito.mockStatic(LmisThreadLocalUtils.class);
-        PowerMockito.when(LmisThreadLocalUtils.getSession(LmisThreadLocalUtils.SESSION_USER)).thenReturn("TEST_USER");
+        PowerMockito.mockStatic(SecurityContextHolder.class);
+        PowerMockito.when(SecurityContextHolder.getContext().getAuthentication().getName()).thenReturn("TEST_USER");
         when(joinPoint.getSignature()).thenReturn(signature);
         when(signature.getName()).thenReturn("Method Name");
         when(signature.getDeclaringTypeName()).thenReturn("com.x.y.Class");

@@ -17,6 +17,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.openlmis.LmisThreadLocalUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,7 +33,7 @@ public class ApplicationLogger {
   public void logException(JoinPoint joinPoint, Throwable e) {
     Signature signature = joinPoint.getSignature();
     String message = String.format("%s | %s.%s(%s) | Exception",
-        LmisThreadLocalUtils.getSession(LmisThreadLocalUtils.SESSION_USER),
+        SecurityContextHolder.getContext().getAuthentication().getName(),
         signature.getDeclaringTypeName(), signature.getName(),
         joinPoint.getArgs() == null ? "" : joinPoint.getArgs());
     logException(message, e);

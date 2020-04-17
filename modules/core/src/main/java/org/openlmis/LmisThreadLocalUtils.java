@@ -28,17 +28,6 @@ public class LmisThreadLocalUtils {
         return null;
     }
 
-    public static String getSession(String key) {
-        HttpServletRequest httpServletRequest = getHttpServletRequest();
-        if (httpServletRequest != null) {
-            Object userName = httpServletRequest.getSession().getAttribute(key);
-            if(userName != null){
-                return userName.toString();
-            }
-        }
-        return null;
-    }
-
 
     public static HttpServletRequest getHttpServletRequest() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
