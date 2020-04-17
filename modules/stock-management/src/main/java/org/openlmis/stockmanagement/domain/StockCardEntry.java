@@ -100,8 +100,8 @@ public class StockCardEntry extends BaseModel {
     if (latestStockCardEntry.findStockOnHand() + this.getQuantity() != this.findStockOnHand()) {
       logger.error("stock movement quantity error");
       logger.error(
-          "stock movement quantity error, facilityId {}, stockCardId: {} movement is {} latestMovement is:{}"
-              + this.getStockCard().getFacility().getId(), this.getStockCard().getId(),
+          "stock movement quantity error, facilityId {} stockCardId {} movement is {} latestMovement is {}",
+          this.getStockCard().getFacility().getId(), this.getStockCard().getId(),
           JsonUtils.toJsonString(this), JsonUtils.toJsonString(latestStockCardEntry));
       throw new DataException("error.stock.entry.quantity");
     }
@@ -111,8 +111,8 @@ public class StockCardEntry extends BaseModel {
     if (latestStockCardEntry.getOccurred().after(this.getOccurred())) {
       logger.error("stock movement date error");
       logger.error(
-          "stock movement date error, facilityId {}, stockCardId: {} movement is {} latestMovement is:{}"
-              + this.getStockCard().getFacility().getId(), this.getStockCard().getId(),
+          "stock movement date error, facilityId {} stockCardId {} movement is {} latestMovement is {}",
+          this.getStockCard().getFacility().getId(), this.getStockCard().getId(),
           JsonUtils.toJsonString(this), JsonUtils.toJsonString(latestStockCardEntry));
       throw new DataException("error.stock.entry.date.validation");
     }
