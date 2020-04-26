@@ -11,7 +11,10 @@
 package org.openlmis.restapi.controller;
 
 import com.wordnik.swagger.annotations.Api;
+import java.util.Date;
 import lombok.NoArgsConstructor;
+import org.apache.ibatis.annotations.Param;
+import org.joda.time.DateTime;
 import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.restapi.domain.Report;
@@ -19,6 +22,7 @@ import org.openlmis.restapi.response.RestResponse;
 import org.openlmis.restapi.service.RestRequisitionService;
 import org.openlmis.rnr.domain.Rnr;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -103,9 +107,12 @@ public class RestRequisitionController extends BaseController {
   }
 
   @RequestMapping(value = "/rest-api/requisitions", method = GET, headers = ACCEPT_JSON)
-  public ResponseEntity<RestResponse> getRequisitionsByFacility(@RequestParam(value = "facilityCode") String facilityCode) {
+  public ResponseEntity<RestResponse> getRequisitionsByFacility(
+      @RequestParam("facilityCode") String facilityCode,
+      @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final Date startDate) {
     try {
-      return response("requisitions", restRequisitionService.getRequisitionsByFacility(facilityCode), OK);
+      return response("requisitions",
+          restRequisitionService.getRequisitionsByFacility(facilityCode, startDate), OK);
     } catch (DataException e) {
       return error(e.getOpenLmisMessage(), BAD_REQUEST);
     }

@@ -454,13 +454,13 @@ public class RestRequisitionService {
     }
   }
 
-  public List<Report> getRequisitionsByFacility(String facilityCode) {
+  public List<Report> getRequisitionsByFacility(String facilityCode, Date startDate) {
     Facility facility = facilityService.getFacilityByCode(facilityCode);
     if (facility == null) {
       throw new DataException("error.facility.unknown");
     }
 
-    List<Rnr> rnrList = requisitionService.getRequisitionsByFacility(facility);
+    List<Rnr> rnrList = requisitionService.getRequisitionsByFacility(facility, startDate);
 
     return FluentIterable.from(rnrList).transform(new Function<Rnr, Report>() {
       @Override

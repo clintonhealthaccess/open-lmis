@@ -375,8 +375,12 @@ public class RequisitionRepository {
     requisitionMapper.updateClientFields(rnr);
   }
 
-  public List<Rnr> getRequisitionDetailsByFacility(Facility facility) {
-    return requisitionMapper.getRequisitionsWithLineItemsByFacility(facility);
+  public List<Rnr> getRequisitionDetailsByFacility(Facility facility, Date startDate) {
+    if (startDate == null) {
+      return requisitionMapper.getRequisitionsWithLineItemsByFacility(facility);
+    } else {
+      return requisitionMapper.getRequisitionsWithLineItemsByFacilityAndDate(facility, startDate);
+    }
   }
 
   public List<Rnr> getRequisitionsDetailsByProgramID(int programId) {

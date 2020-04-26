@@ -489,7 +489,7 @@ public class RequisitionRepositoryTest {
   @Test
   public void shouldGetRequisitionsWithLineItemsByFacility() {
     Facility facility = new Facility();
-    requisitionRepository.getRequisitionDetailsByFacility(facility);
+    requisitionRepository.getRequisitionDetailsByFacility(facility, null);
     verify(requisitionMapper).getRequisitionsWithLineItemsByFacility(facility);
   }
 

@@ -228,12 +228,12 @@ public class RestRequisitionControllerTest {
     String facilityCode = "F1";
 
     List<Report> expectedRequisitions = new ArrayList<>();
-    when(service.getRequisitionsByFacility(facilityCode)).thenReturn(expectedRequisitions);
+    when(service.getRequisitionsByFacility(facilityCode, null)).thenReturn(expectedRequisitions);
     String requisitionsKey = "requisitions";
     ResponseEntity<RestResponse> expectedResponse = new ResponseEntity<>(new RestResponse(requisitionsKey, expectedRequisitions), OK);
     when(RestResponse.response(requisitionsKey, expectedRequisitions, HttpStatus.OK)).thenReturn(expectedResponse);
 
-    ResponseEntity<RestResponse> response = controller.getRequisitionsByFacility(facilityCode);
+    ResponseEntity<RestResponse> response = controller.getRequisitionsByFacility(facilityCode, null);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
     assertThat((List<Report>) response.getBody().getData().get(requisitionsKey), is(expectedRequisitions));
   }
@@ -243,12 +243,12 @@ public class RestRequisitionControllerTest {
     String facilityCode = "F1";
 
     DataException exception = new DataException("some error");
-    doThrow(exception).when(service).getRequisitionsByFacility(facilityCode);
+    doThrow(exception).when(service).getRequisitionsByFacility(facilityCode, null);
 
     ResponseEntity<RestResponse> expectedResponse = new ResponseEntity<>(new RestResponse(ERROR, messageService.message("some error")), BAD_REQUEST);
     when(error(exception.getOpenLmisMessage(), BAD_REQUEST)).thenReturn(expectedResponse);
 
-    ResponseEntity<RestResponse> response = controller.getRequisitionsByFacility(facilityCode);
+    ResponseEntity<RestResponse> response = controller.getRequisitionsByFacility(facilityCode, null);
     assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
   }
 

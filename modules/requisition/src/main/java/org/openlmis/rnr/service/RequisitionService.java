@@ -756,8 +756,8 @@ public class RequisitionService {
     requisitionRepository.insertTherapeuticLinesItem(rnr);
   }
 
-  public List<Rnr> getRequisitionsByFacility(Facility facility) {
-    return requisitionRepository.getRequisitionDetailsByFacility(facility);
+  public List<Rnr> getRequisitionsByFacility(Facility facility, Date startDate) {
+    return requisitionRepository.getRequisitionDetailsByFacility(facility, startDate);
   }
 
   @Transactional

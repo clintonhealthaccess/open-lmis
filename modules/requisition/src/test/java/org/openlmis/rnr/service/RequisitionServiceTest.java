@@ -1690,8 +1690,8 @@ public class RequisitionServiceTest {
     @Test
     public void shouldGetRequisitionsByFacility() {
         Facility facility = new Facility();
-        requisitionService.getRequisitionsByFacility(facility);
-        verify(requisitionRepository).getRequisitionDetailsByFacility(facility);
+        requisitionService.getRequisitionsByFacility(facility, null);
+        verify(requisitionRepository).getRequisitionDetailsByFacility(facility, null);
     }
 
     @Test

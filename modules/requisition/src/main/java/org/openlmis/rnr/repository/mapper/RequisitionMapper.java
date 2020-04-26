@@ -148,6 +148,41 @@ public interface RequisitionMapper {
   })
   List<Rnr> getRequisitionsWithLineItemsByFacility(@Param("facility") Facility facility);
 
+
+  @Select({"SELECT r.* FROM requisitions r",
+      "JOIN requisition_periods rp ON r.id = rp.rnrid",
+      "WHERE r.facilityId = #{facility.id} AND rp.periodstartdate > #{startDate}"})
+  @Results(value = {
+      @Result(property = "facility.id", column = "facilityId"),
+      @Result(property = "program", javaType = Program.class, column = "programId",
+          one = @One(select = "org.openlmis.core.repository.mapper.ProgramMapper.getById")),
+      @Result(property = "period.id", column = "periodId"),
+      @Result(property = "fullSupplyLineItems", javaType = List.class, column = "id",
+          many = @Many(select = "org.openlmis.rnr.repository.mapper.RnrLineItemMapper.getNonSkippedRnrLineItemsByRnrId")),
+      @Result(property = "nonFullSupplyLineItems", javaType = List.class, column = "id",
+          many = @Many(select = "org.openlmis.rnr.repository.mapper.RnrLineItemMapper.getNonSkippedNonFullSupplyRnrLineItemsByRnrId")),
+      @Result(property = "regimenLineItems", javaType = List.class, column = "id",
+          many = @Many(select = "org.openlmis.rnr.repository.mapper.RegimenLineItemMapper.getRegimenLineItemsByRnrId")),
+      @Result(property = "equipmentLineItems", javaType = List.class, column = "id",
+          many = @Many(select = "org.openlmis.rnr.repository.mapper.EquipmentLineItemMapper.getEquipmentLineItemsByRnrId")),
+      @Result(property = "patientQuantifications", javaType = List.class, column = "id",
+          many = @Many(select = "org.openlmis.rnr.repository.mapper.PatientQuantificationLineItemMapper.getPatientQuantificationLineItemsByRnrId")),
+      @Result(property = "therapeuticLines", javaType = List.class, column = "id",
+          many = @Many(select = "org.openlmis.rnr.repository.mapper.TherapeuticLinesItemMapper.getTherapeuticLinesItemsByRnrId")),
+      @Result(property = "period", column = "periodId", javaType = ProcessingPeriod.class,
+          one = @One(select = "org.openlmis.core.repository.mapper.ProcessingPeriodMapper.getById")),
+      @Result(property = "clientSubmittedTime", column = "clientSubmittedTime"),
+      @Result(property = "clientSubmittedNotes", column = "clientSubmittedNotes"),
+      @Result(property = "rnrSignatures", column = "id", javaType = List.class,
+          many = @Many(select = "org.openlmis.rnr.repository.mapper.RequisitionMapper.getRnrSignaturesByRnrId")),
+      @Result(property = "actualPeriodStartDate", column = "id", javaType = Date.class,
+          one = @One(select = "org.openlmis.rnr.repository.mapper.RequisitionMapper.getRnrPeriodStartDateByRnrId")),
+      @Result(property = "actualPeriodEndDate", column = "id", javaType = Date.class,
+          one = @One(select = "org.openlmis.rnr.repository.mapper.RequisitionMapper.getRnrPeriodEndDateByRnrId"))
+  })
+  List<Rnr> getRequisitionsWithLineItemsByFacilityAndDate(@Param("facility") Facility facility,
+      @Param("startDate") Date startDate);
+
   @Select({"SELECT * FROM requisitions r",
       "WHERE programid = #{programid}"}
   )

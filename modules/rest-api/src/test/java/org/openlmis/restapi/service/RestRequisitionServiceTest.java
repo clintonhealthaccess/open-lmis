@@ -770,7 +770,7 @@ public class RestRequisitionServiceTest {
   public void shouldThrowExceptionIfFacilityCodeIsInvalid() throws Exception {
     expectedException.expect(DataException.class);
     expectedException.expectMessage("error.facility.unknown");
-    service.getRequisitionsByFacility("invalid_code");
+    service.getRequisitionsByFacility("invalid_code", null);
   }
 
   @Test
@@ -781,9 +781,9 @@ public class RestRequisitionServiceTest {
 
     when(facilityService.getFacilityByCode(FACILITY_CODE)).thenReturn(facility);
 
-    service.getRequisitionsByFacility(FACILITY_CODE);
+    service.getRequisitionsByFacility(FACILITY_CODE, null);
 
-    verify(requisitionService).getRequisitionsByFacility(facility);
+    verify(requisitionService).getRequisitionsByFacility(facility, null);
   }
 
   @Test
