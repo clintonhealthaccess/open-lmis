@@ -100,8 +100,8 @@ public class StockCardEntry extends BaseModel {
     if (latestStockCardEntry.findStockOnHand() + this.getQuantity() != this.findStockOnHand()) {
       logger.error("stock movement quantity error");
       logger.error(
-          "stock movement quantity error, facilityId {} stockCardId {} movement is {} latestMovement is {}",
-          this.getStockCard().getFacility().getId(), this.getStockCard().getId(),
+          "stock movement quantity error, facilityId {} productCode {} movement is {} latestMovement is {}",
+          this.getStockCard().getFacility().getId(), this.getStockCard().getProduct().getCode(),
           JsonUtils.toJsonString(this), JsonUtils.toJsonString(latestStockCardEntry));
       throw new DataException("error.stock.entry.quantity");
     }
@@ -111,8 +111,8 @@ public class StockCardEntry extends BaseModel {
     if (latestStockCardEntry.getOccurred().after(this.getOccurred())) {
       logger.error("stock movement date error");
       logger.error(
-          "stock movement date error, facilityId {} stockCardId {} movement is {} latestMovement is {}",
-          this.getStockCard().getFacility().getId(), this.getStockCard().getId(),
+          "stock movement date error, facilityId {} productCode {} movement is {} latestMovement is {}",
+          this.getStockCard().getFacility().getId(), this.getStockCard().getProduct().getCode(),
           JsonUtils.toJsonString(this), JsonUtils.toJsonString(latestStockCardEntry));
       throw new DataException("error.stock.entry.date.validation");
     }
@@ -123,8 +123,8 @@ public class StockCardEntry extends BaseModel {
         && this.getQuantity() >= 0)) {
       logger.error("stock movement first inventory error");
       logger.error(
-          "stock movement first inventory error, facilityId {}, stockCardId: {} movement is {}",
-          this.getStockCard().getFacility().getId(), this.getStockCard().getId(),
+          "stock movement first inventory error, facilityId {}, productCode: {} movement is {}",
+          this.getStockCard().getFacility().getId(), this.getStockCard().getProduct().getCode(),
           JsonUtils.toJsonString(this));
       throw new DataException("error.stock.entry.first.inventory");
     }
