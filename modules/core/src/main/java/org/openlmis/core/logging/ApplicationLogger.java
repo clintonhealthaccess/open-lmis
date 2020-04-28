@@ -33,7 +33,8 @@ public class ApplicationLogger {
   public void logException(JoinPoint joinPoint, Throwable e) {
     Signature signature = joinPoint.getSignature();
     String message = String.format("%s | %s.%s(%s) | Exception",
-        SecurityContextHolder.getContext().getAuthentication().getName(),
+        SecurityContextHolder.getContext().getAuthentication() == null ? ""
+            : SecurityContextHolder.getContext().getAuthentication().getName(),
         signature.getDeclaringTypeName(), signature.getName(),
         joinPoint.getArgs() == null ? "" : joinPoint.getArgs());
     logException(message, e);
