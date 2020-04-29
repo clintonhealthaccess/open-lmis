@@ -2,7 +2,8 @@ DO
 $do$
 BEGIN
 IF EXISTS (SELECT * FROM programs WHERE id = 1) THEN
-INTO public.regimens (programid,categoryid,code,"name",active,displayorder,createdby,createddate,modifiedby,modifieddate) VALUES (1,2,'TO818','AZT 60+3TC 30+LPV/r (2DFC + LPV/r 40/10)',true,18,NULL,now(),NULL,now());
-END IF;
+INSERT INTO public.program_regimen_columns (programid,name,"label",visible,"datatype",createdby,createddate,modifiedby,modifieddate,displayorder) VALUES
+(1,'comunitaryPharmacy','Number of comunitary on pharmacy',true,'regimen.reporting.dataType.numeric',NULL,now() ,1,now() ,4);
+ END IF;
 END
 $do$
