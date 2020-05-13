@@ -1,8 +1,11 @@
 function ViewRnrMmiaController($scope, $route, Requisitions, messageService, downloadPdfService, downloadSimamService) {
     $scope.rnrLineItems = [];
     $scope.regimens = [];
-    $scope.regimeTotal = 0;
+    $scope.regimeTotalPatients = 0;
+    $scope.regimeTotalComunitaryPharmacy = 0;
     $scope.therapeuticLines = [];
+    $scope.therapeuticLinesTotalPatients = 0;
+    $scope.therapeuticLinesTotalComunitaryPharmacy = 0;
 
     $scope.patient = [];
 
@@ -226,12 +229,37 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         regimens.Paediatrics.push({ categoryName: 'Paediatrics' });
 
         $scope.regimens = $scope.regimens.concat(regimens.Adults, regimens.Paediatrics);
-        calculateRegimeTotal($scope.rnr.regimenLineItems);
+        calculateRegimeTotalPatients($scope.rnr.regimenLineItems);
+        if ($scope.rnr.regimenLineItems[0].comunitaryPharmacy !== undefined) {
+            calculateRegimeTotalComunitaryPharmacy($scope.rnr.regimenLineItems);
+        }
+        if($scope.rnr.therapeuticLines !== undefined){
+            calculateTherapeuticLinesTotalPatients($scope.rnr.therapeuticLines);
+            calculateTherapeuticLinesTotalComunitaryPharmacy($scope.rnr.therapeuticLines);
+        }
     };
 
-    var calculateRegimeTotal = function (regimens) {
+    var calculateRegimeTotalPatients = function (regimens) {
         for (var i = 0; i < regimens.length; i++) {
-            $scope.regimeTotal += regimens[i].patientsOnTreatment;
+            $scope.regimeTotalPatients += regimens[i].patientsOnTreatment;
+        }
+    };
+
+    var calculateRegimeTotalComunitaryPharmacy = function (regimens) {
+        for (var i = 0; i < regimens.length; i++) {
+            $scope.regimeTotalComunitaryPharmacy += regimens[i].comunitaryPharmacy;
+        }
+    };
+
+    var calculateTherapeuticLinesTotalPatients = function (therapeuticLines) {
+        for (var i = 0; i < therapeuticLines.length; i++) {
+            $scope.therapeuticLinesTotalPatients += therapeuticLines[i].patientsOnTreatment;
+        }
+    };
+
+    var calculateTherapeuticLinesTotalComunitaryPharmacy = function (therapeuticLines) {
+        for (var i = 0; i < therapeuticLines.length; i++) {
+            $scope.therapeuticLinesTotalComunitaryPharmacy += therapeuticLines[i].comunitaryPharmacy;
         }
     };
 }

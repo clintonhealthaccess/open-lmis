@@ -184,7 +184,7 @@ describe('ViewRnrViaDetailController', function () {
       return item.categoryName;
     });
 
-    expect(scope.regimeTotal).toBe(19);
+    expect(scope.regimeTotalPatients).toBe(19);
     expect(actualRegimens.Adults.length).toBe(11);
     expect(actualRegimens.Paediatrics.length).toBe(12);
   });
