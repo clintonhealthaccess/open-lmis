@@ -40,7 +40,7 @@ task setupExtensions() << {
 }
 
 jar.doFirst {
-//    tasks.migrateExtensions.execute()
+    tasks.migrateExtensions.execute()
 }
 
 task migrateExtensions() << {
