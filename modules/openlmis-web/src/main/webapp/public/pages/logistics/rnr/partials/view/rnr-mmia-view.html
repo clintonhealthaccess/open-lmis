@@ -121,8 +121,8 @@
                         <span openlmis-message="view.rnr.mmia.regime.total"></span>
                         <span> :</span>
                     </td>
-                    <td>{{regimeTotal}}</td>
-                    <td ng-if="rnr.reportType === 'new'">{{regimeTotal}}</td>
+                    <td>{{regimeTotalPatients}}</td>
+                    <td ng-if="rnr.reportType === 'new'">{{regimeTotalComunitaryPharmacy}}</td>
                 </tr>
                 <tr ng-if="rnr.reportType === 'new'" class="therapeutic-lines">
                     <td class="banner-text"></td>
@@ -145,8 +145,8 @@
                         <span openlmis-message="view.rnr.mmia.regime.total"></span>
                         <span> :</span>
                     </td>
-                    <td>{{regimeTotal}}</td>
-                    <td>{{regimeTotal}}</td>
+                    <td>{{therapeuticLinesTotalPatients}}</td>
+                    <td>{{therapeuticLinesTotalComunitaryPharmacy}}</td>
                 </tr>
                 </tbody>
         </table>
