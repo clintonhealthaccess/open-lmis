@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.BaseModel;
 import org.openlmis.core.domain.StockAdjustmentReason;
 import org.openlmis.core.exception.DataException;
@@ -96,14 +98,25 @@ public class StockCardEntry extends BaseModel {
     }
   }
 
+  private String getVersionCode(){
+    return LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE);
+  }
+
+  private boolean shouldBlockProcess(){
+    String versionCode = LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE);
+    return StringUtils.isNumeric(versionCode) && Integer.valueOf(versionCode) >= LmisThreadLocalUtils.VERSION_87;
+  }
+
   private void validStockOnHand(StockCardEntry latestStockCardEntry) {
     if (latestStockCardEntry.findStockOnHand() + this.getQuantity() != this.findStockOnHand()) {
       logger.error("stock movement quantity error");
       logger.error(
-          "stock movement quantity error, facilityId {} productCode {} movement is {} latestMovement is {}",
-          this.getStockCard().getFacility().getId(), this.getStockCard().getProduct().getCode(),
+          "stock movement quantity error, facilityId {} version {} productCode {} movement is {} latestMovement is {}",
+          this.getStockCard().getFacility().getId(),this.getVersionCode(),this.getStockCard().getProduct().getCode(),
           JsonUtils.toJsonString(this), JsonUtils.toJsonString(latestStockCardEntry));
-      throw new DataException("error.stock.entry.quantity");
+      if (shouldBlockProcess()) {
+          throw new DataException("error.stock.entry.quantity");
+      }
     }
   }
 
@@ -111,10 +124,12 @@ public class StockCardEntry extends BaseModel {
     if (latestStockCardEntry.getOccurred().after(this.getOccurred())) {
       logger.error("stock movement date error");
       logger.error(
-          "stock movement date error, facilityId {} productCode {} movement is {} latestMovement is {}",
-          this.getStockCard().getFacility().getId(), this.getStockCard().getProduct().getCode(),
+          "stock movement date error, facilityId {} version {}  productCode {} movement is {} latestMovement is {}",
+          this.getStockCard().getFacility().getId(), this.getVersionCode(), this.getStockCard().getProduct().getCode(),
           JsonUtils.toJsonString(this), JsonUtils.toJsonString(latestStockCardEntry));
-      throw new DataException("error.stock.entry.date.validation");
+      if (shouldBlockProcess()) {
+        throw new DataException("error.stock.entry.date.validation");
+      }
     }
   }
 
@@ -123,10 +138,12 @@ public class StockCardEntry extends BaseModel {
         && this.getQuantity() >= 0)) {
       logger.error("stock movement first inventory error");
       logger.error(
-          "stock movement first inventory error, facilityId {}, productCode: {} movement is {}",
-          this.getStockCard().getFacility().getId(), this.getStockCard().getProduct().getCode(),
+          "stock movement first inventory error, facilityId {},version {} , productCode: {} movement is {}",
+          this.getStockCard().getFacility().getId(),this.getVersionCode(), this.getStockCard().getProduct().getCode(),
           JsonUtils.toJsonString(this));
-      throw new DataException("error.stock.entry.first.inventory");
+      if (shouldBlockProcess()) {
+          throw new DataException("error.stock.entry.first.inventory");
+      }
     }
   }
 
