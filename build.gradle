@@ -12,7 +12,7 @@ apply plugin: 'idea'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'properties'
 apply plugin: 'sonar-runner'
-
+apply plugin: 'com.palantir.jacoco-full-report'
 
 idea.project.languageLevel = '1.7'
 idea.project.jdkName = '1.7'
@@ -29,6 +29,7 @@ buildscript {
         classpath "net.saliman:gradle-cobertura-plugin:2.2.7"
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.8'
         classpath "net.saliman:gradle-properties-plugin:1.4.2"
+        classpath 'com.palantir:jacoco-coverage:0.4.0'
     }
 }
 sonarRunner {
@@ -43,6 +44,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'properties'
+    apply plugin: 'jacoco'
     idea {
         project {
             ext.languageLevel = '1.7'
@@ -129,6 +131,8 @@ subprojects {
         jvmArgs '-XX:-UseSplitVerifier', '-XX:MaxPermSize=256m'
         System.properties.get('environmentName', 'local')
         systemProperties System.properties
+        systemProperties['user.dir'] = workingDir
+
         useJUnit {
             includeCategories 'org.openlmis.db.categories.UnitTests'
         }
@@ -145,6 +149,7 @@ subprojects {
         jvmArgs '-XX:-UseSplitVerifier', '-XX:MaxPermSize=256m'
         System.properties.get('environmentName', 'local')
         systemProperties System.properties
+        systemProperties['user.dir'] = workingDir
         useJUnit {
             includeCategories 'org.openlmis.db.categories.IntegrationTests'
         }

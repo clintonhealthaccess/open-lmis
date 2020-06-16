@@ -104,6 +104,12 @@ JDWP exit error AGENT_ERROR_TRANSPORT_INIT(197): No transports initialized [debu
 
 you should kill the gradle threat and restart. kill all gradle can use command `pkill gradle`
 
+Get the Unit test coverage
+---------------------------------
+```
+ ./gradlew clean jacocoFullReport
+```
+
 Tech Stack
 ---------------------------------
  - Java 1.7
