@@ -79,9 +79,9 @@ Running App on embedded Jetty server
   - `seed` is to seed in the reference data.
   - `run` is to start the embedded jetty server.
 
-Once the system is running, you can access the home page at `http://localhost:8081/`. You can log into the default instance with: user: `Admin123`, password: `Admin123`
+Once the system is running, you can access the home page at `http://localhost:9091/`. You can log into the default instance with: user: `Admin123`, password: `Admin123`
 
-> If you need to change the port(default:8081) for web server, you can change jettyRun.httpport attribute on 'modules/openlmis-web/build.gradle'. then restart the application.
+> If you need to change the port(default:9091) for web server, you can change jettyRun.httpport attribute on 'modules/openlmis-web/build.gradle'. then restart the application.
 
 Running Unit tests on Docker
 --------------------------------------------------
