@@ -168,25 +168,20 @@ describe('ViewRnrViaDetailController', function () {
     scope.rnr = mockedRnrItem.rnr;
     scope.initRegime();
 
-    var actualRegimens = _.groupBy(scope.regimens, function (item) {
-      return item.categoryName;
-    });
-
-    expect(actualRegimens.Adults.length).toBe(3);
-    expect(actualRegimens.Paediatrics.length).toBe(2);
+    var actualRegimens = scope.regimens;
+    expect(actualRegimens["Adults"].length).toBe(3);
+    expect(actualRegimens["Paediatrics"].length).toBe(2);
   });
 
   it('should calculate regime total',function(){
     scope.rnr = mockedRnrItem.rnr;
     scope.initRegime();
 
-    var actualRegimens = _.groupBy(scope.regimens, function (item) {
-      return item.categoryName;
-    });
+    var actualRegimens = scope.regimens;
 
     expect(scope.regimeTotalPatients).toBe(19);
-    expect(actualRegimens.Adults.length).toBe(11);
-    expect(actualRegimens.Paediatrics.length).toBe(12);
+    expect(actualRegimens["Adults"].length).toBe(11);
+    expect(actualRegimens["Paediatrics"].length).toBe(12);
   });
 
   function initMockRequisition() {
