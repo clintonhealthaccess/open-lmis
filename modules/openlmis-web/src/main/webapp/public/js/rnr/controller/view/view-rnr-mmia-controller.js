@@ -26,12 +26,12 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
 
             $scope.initMonth();
             $scope.initProduct();
-            $scope.initRegime();
-            if (data.rnr.patientQuantifications.length == 7) {
+            if (data.rnr.patientQuantifications.length === 7) {
                 $scope.initOldPatient();
             } else {
                 $scope.initPatient();
             }
+            $scope.initRegime();
             $scope.initTherapeuticLines();
             parseSignature($scope.rnr.rnrSignatures);
 
@@ -40,7 +40,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         });
     };
 
-    function getBarCodeOptions(type){
+    function getBarCodeOptions(product){
         var baseOptions = {
             lineColor: "#000",
             width: 1,
@@ -49,14 +49,15 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
             textAlign: "justify",
             textMargin: 0,
             margin: 0,
+            text: "* " + product.productCode + " *",
             displayValue: true
         };
         var backgroundColor = "#fff";
-        if ('Adult' === type) {
+        if ('Adult' === product.productType) {
             backgroundColor = "#c7ddbb";
-        } else if ('Children' === type){
+        } else if ('Children' === product.productType){
             backgroundColor = "#faf8c7";
-        } else if ('Solution' === type){
+        } else if ('Solution' === product.productType){
             backgroundColor = "#d3e9f0";
         }
         return _.assign({}, baseOptions, {background: backgroundColor});
@@ -64,7 +65,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
 
     $scope.generateBarcode = function (product) {
         if (product.productCode === '') return;
-        JsBarcode("#barcode"+product.productCode, "* " + product.productCode + " *", getBarCodeOptions(product.productType));
+        JsBarcode("#barcode"+product.productCode, product.productCode , getBarCodeOptions(product));
     };
 
     function parseSignature(signatures) {
@@ -256,7 +257,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         regimens.Paediatrics.push({categoryName: 'Paediatrics'});
         regimens.Paediatrics.push({categoryName: 'Paediatrics'});
 
-        $scope.regimens = regimens;
+        $scope.regimens = $scope.rnr.reportType === 'new' ? regimens : $scope.regimens.concat(regimens.Adults, regimens.Paediatrics);
         calculateRegimeTotalPatients($scope.rnr.regimenLineItems);
         if ($scope.rnr.regimenLineItems[0].comunitaryPharmacy !== undefined) {
             calculateRegimeTotalComunitaryPharmacy($scope.rnr.regimenLineItems);
