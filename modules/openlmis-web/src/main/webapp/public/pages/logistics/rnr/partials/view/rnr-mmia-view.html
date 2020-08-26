@@ -306,7 +306,8 @@
 
         <div>Nota: Mapa de Preenchimento Obrigatório Mensal HdD em Conjunto com a Farmácia da Unidade Sanitária/ ou DPM
         </div>
-        <div>Versão nº 9 21 Fev2020 TLD90 DS</div>
+        <div ng-if="rnr.reportType === 'new'">Versão nº 9 21 Fev2020 TLD90 DS</div>
+        <div ng-if="rnr.reportType === 'old'">Versão no 5 14Nov 2012</div>
     </div>
 
     <div class="align-right">
