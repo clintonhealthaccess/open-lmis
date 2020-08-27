@@ -296,4 +296,12 @@ public interface StockCardMapper {
 
   @Select("SELECT delete_stock_card(#{facilityId},#{productId})")
   String deleteStockCard(@Param("facilityId") Long facilityId, @Param("productId") Long productId);
+
+  @Select({"SELECT COUNT(*) FROM (select sc.facilityid",
+          "FROM stock_cards sc" ,
+          " INNER JOIN products p ON sc.productid = p.id" ,
+          " WHERE p.code = #{productCode} " ,
+          " AND sc.totalquantityonhand != 0" ,
+          " GROUP BY sc.facilityid) as tmp"})
+  int getTotalFacilityWithProductSOHGreaterZero(@Param("productCode") String productCode);
 }

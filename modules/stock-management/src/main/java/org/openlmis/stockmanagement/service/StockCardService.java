@@ -224,6 +224,10 @@ public class StockCardService {
     stockCardMapper.deleteStockCard(facilityId, productId);
   }
 
+  public int getTotalFacilityWithProductSOHGreaterZero(String productCode){
+    return stockCardMapper.getTotalFacilityWithProductSOHGreaterZero(productCode);
+  }
+
   public Long getProductIdByCode(String productCode){
     return productMapper.getProductIdByCode(productCode);
   }
