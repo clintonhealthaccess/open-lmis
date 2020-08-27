@@ -94,17 +94,24 @@ function FacilityController($scope, facilityReferenceData, $routeParams, facilit
 
     conventReportType($scope.facility);
 
-    if (!$scope.isEdit) {
-      Facility.getFacilityById().save({}, $scope.facility, facilitySaveCallback, errorFunc);
+    if (isPTVAndMMIAEnableBoth()){
+      return;
     } else {
-      if (isActiveProgramFirst($scope.facility.supportedReportTypes) || filterMMIAAndPTVReportStatus($scope.facility)){
-        $scope.showError = "true";
-        $scope.message = "";
-        $scope.error = isActiveProgramFirst($scope.facility.supportedReportTypes)? messageService.get('supported.programs.report.type.active') : messageService.get('create.facility.reportTypeBothMMIAAndPTV');
-        return;
+      if (!$scope.isEdit) {
+        Facility.getFacilityById().save({}, $scope.facility, facilitySaveCallback, errorFunc);
       } else {
         Facility.getFacilityById().update({id: $scope.facility.id}, $scope.facility, facilitySaveCallback, errorFunc);
       }
+    }
+
+    function isPTVAndMMIAEnableBoth(){
+      if(isActiveProgramFirst($scope.facility.supportedReportTypes) || filterMMIAAndPTVReportStatus($scope.facility)){
+        $scope.showError = "true";
+        $scope.message = "";
+        $scope.error = isActiveProgramFirst($scope.facility.supportedReportTypes)? messageService.get('supported.programs.report.type.active') : messageService.get('create.facility.reportTypeBothMMIAAndPTV');
+        return true;
+      }
+      return false;
     }
 
     function isActiveProgramFirst(supportedReportTypes) {
