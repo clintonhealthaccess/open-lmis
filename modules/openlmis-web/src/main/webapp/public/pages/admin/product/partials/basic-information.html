@@ -224,6 +224,7 @@
                  ng-required="true"/>
           <span openlmis-message="button.yes"></span> &nbsp; &nbsp; &nbsp;
           <input id="activeFalse" ng-model="product.active" type="radio" name="active"
+                 ng-disabled="kitOfProduct.isProductKit"
                  ng-value="false"/>
           <span openlmis-message="button.no"></span>
           <span class="field-error"

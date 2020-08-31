@@ -300,8 +300,9 @@ public interface StockCardMapper {
   @Select({"SELECT COUNT(*) FROM (select sc.facilityid",
           "FROM stock_cards sc" ,
           " INNER JOIN products p ON sc.productid = p.id" ,
-          " WHERE p.code = #{productCode} " ,
-          " AND sc.totalquantityonhand != 0" ,
+          " WHERE p.code = #{productCode} ",
+          " AND p.code NOT IN ('26A01','26B01','26A02','26B02') " ,
+          " AND sc.totalquantityonhand > 0" ,
           " GROUP BY sc.facilityid) as tmp"})
   int getTotalFacilityWithProductSOHGreaterZero(@Param("productCode") String productCode);
 }
