@@ -9,17 +9,7 @@ import org.openlmis.report.view.WorkbookCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public abstract class AbstractDrugReportGenerator extends AbstractReportModelGenerator {
     private final static String CMM_ENTRIES_CUBE = "vw_cmm_entries";
@@ -31,10 +21,15 @@ public abstract class AbstractDrugReportGenerator extends AbstractReportModelGen
 
     @Override
     protected Map<String, Object> getQueryResult(Map<Object, Object> paraMap) {
-        String queryUriDrugs = getFactUri();
-        String queryStringDrugs = getQueryStringDrugs(paraMap);
-        ResponseEntity responseEntityDrugs = super.cubesReportProxy.redirect(queryUriDrugs, queryStringDrugs);
-        String bodyDrugs = responseEntityDrugs.getBody().toString();
+        Map<String, String> uriAndParams = getURIAndParams(paraMap);
+        Iterator<Map.Entry<String, String>> iterator = uriAndParams.entrySet().iterator();
+        List<Map<String, String>> drugs = new ArrayList<>();
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> entry = iterator.next();
+            ResponseEntity responseEntityDrugs = super.cubesReportProxy.redirect(entry.getKey(), entry.getValue());
+            String bodyDrugs = responseEntityDrugs.getBody().toString();
+            drugs.addAll(jsonToListMap(bodyDrugs));
+        }
 
         String queryUriCmmEntries = getBaseFactUri(CMM_ENTRIES_CUBE);
         String queryStringCmmEntries = getQueryStringCmmEntries(paraMap);
@@ -42,7 +37,7 @@ public abstract class AbstractDrugReportGenerator extends AbstractReportModelGen
         String bodyCmmEntries = responseEntityCmmEntries.getBody().toString();
 
         Map<String, Object> cubeQueryResult = new HashMap<>();
-        cubeQueryResult.put(WEEKLY_DRUG_SOH_CUBE, jsonToListMap(bodyDrugs));
+        cubeQueryResult.put(WEEKLY_DRUG_SOH_CUBE, drugs);
         cubeQueryResult.put(CMM_ENTRIES_CUBE, jsonToListMap(bodyCmmEntries));
         Set<String> set = getUniqSortedDates(cubeQueryResult);
         cubeQueryResult.put(UNIQUE_SORTED_DATES, set);
@@ -58,7 +53,34 @@ public abstract class AbstractDrugReportGenerator extends AbstractReportModelGen
         return cubeQueryResult;
     }
 
-    protected abstract String getFactUri();
+    private Map<String, String> getURIAndParams(Map<Object, Object> paramMap) {
+        Map<String, String> URIAndParams = new HashMap<>();
+        String startTime = paramMap.get("startTime").toString();
+        String endTime = paramMap.get("endTime").toString();
+        Date startDate =  DateUtil.parseDate(startTime, DateUtil.FORMAT_DATE_TIME_CUBE);
+        Date endDate =  DateUtil.parseDate(endTime, DateUtil.FORMAT_DATE_TIME_CUBE);
+        String splitTime = getSplitDate();
+        Date splitDate = DateUtil.parseDate(splitTime, DateUtil.FORMAT_DATE_TIME_CUBE);
+
+        if (endDate.before(splitDate) || endDate.equals(splitDate)) {
+            URIAndParams.put(getBeforeFactUri(), getQueryStringDrugs(paramMap, startTime, endTime));
+            return URIAndParams;
+        } else if (startDate.after(splitDate)) {
+            URIAndParams.put(getAfterFactUri(), getQueryStringDrugs(paramMap, startTime, endTime));
+            return URIAndParams;
+        } else {
+            URIAndParams.put(getBeforeFactUri(), getQueryStringDrugs(paramMap, startTime, splitTime));
+            URIAndParams.put(getAfterFactUri(), getQueryStringDrugs(paramMap, splitTime, endTime));
+            return URIAndParams;
+        }
+    };
+
+
+    protected abstract String getSplitDate();
+
+    protected abstract String getBeforeFactUri();
+
+    protected abstract String getAfterFactUri();
 
     @Override
     protected Object getReportHeaders(Map<Object, Object> paraMap, Map<String, Object> cubeQueryResult) {
@@ -170,9 +192,9 @@ public abstract class AbstractDrugReportGenerator extends AbstractReportModelGen
         return false;
     }
 
-    private String getQueryStringDrugs(Map<Object, Object> paraMap) {
-        String startTime = paraMap.get("startTime").toString();
-        String endTime = paraMap.get("endTime").toString();
+    protected String getQueryStringDrugs(Map<Object, Object> paraMap, String startTime, String endTime) {
+//        String startTime = paraMap.get("startTime").toString();
+//        String endTime = paraMap.get("endTime").toString();
         List<String> selectedDrugs = validateDrugs(paraMap) ? (List<String>) paraMap.get("selectedDrugs") : null;
         String province = getProvince(paraMap);
         String district = getDistrict(paraMap);
