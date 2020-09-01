@@ -130,9 +130,14 @@ public class ProductController extends BaseController {
                                                  HttpServletRequest request) {
     Product product = productDTO.getProduct(programService);
     Product queryFromDB = service.getProductByCode(product.getCode());
+    List<KitProduct> productsRelateToKit = service.getKitProductsByProductCode(product.getCode());
+    boolean isRelateToKit = productsRelateToKit != null && productsRelateToKit.size() > 0;
+    boolean isFromActiveToDeactive = queryFromDB != null && queryFromDB.getActive() && !product.getActive();
     // active to deactivate
-    if(queryFromDB != null && queryFromDB.getActive() && !product.getActive()
-            && stockCardService.getTotalFacilityWithProductSOHGreaterZero(product.getCode()) > 0 ){
+    //1 normal product
+    //2 The product relate to kit pack
+    if (!(isFromActiveToDeactive && isRelateToKit)
+            && (isFromActiveToDeactive && stockCardService.getTotalFacilityWithProductSOHGreaterZero(product.getCode()) > 0)){
       return OpenLmisResponse.error(messageService.message("error.deactivate.product.greater.zero"), BAD_REQUEST);
     }
 
