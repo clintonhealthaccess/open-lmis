@@ -62,12 +62,8 @@ CREATE MATERIALIZED VIEW vw_weekly_tracer_soh_after_2020_05_31 AS (SELECT *
 
 -- Permissions
 
-ALTER TABLE public.vw_weekly_tracer_soh_after_2020_05_31 OWNER TO openlmis;
-GRANT ALL ON TABLE public.vw_weekly_tracer_soh_after_2020_05_31 TO openlmis;
 GRANT ALL ON TABLE public.vw_weekly_tracer_soh_after_2020_05_31 TO db_test;
 GRANT SELECT ON TABLE public.vw_weekly_tracer_soh_after_2020_05_31 TO postgres;
-GRANT SELECT ON TABLE public.vw_weekly_tracer_soh_after_2020_05_31 TO readonly;
-GRANT SELECT ON TABLE public.vw_weekly_tracer_soh_after_2020_05_31 TO test1;
 
 CREATE OR REPLACE FUNCTION refresh_weekly_tracer_soh_after_2020_05_31()
   RETURNS INT LANGUAGE plpgsql

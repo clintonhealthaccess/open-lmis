@@ -74,12 +74,8 @@ CREATE UNIQUE INDEX idx_vw_weekly_nos_soh_before_2020_05_31 ON vw_weekly_nos_soh
 
 -- Permissions
 
-ALTER TABLE public.vw_weekly_nos_soh_before_2020_05_31 OWNER TO openlmis;
-GRANT ALL ON TABLE public.vw_weekly_nos_soh_before_2020_05_31 TO openlmis;
-GRANT SELECT ON TABLE public.vw_weekly_nos_soh_before_2020_05_31 TO readonly;
 GRANT ALL ON TABLE public.vw_weekly_nos_soh_before_2020_05_31 TO db_test;
 GRANT SELECT ON TABLE public.vw_weekly_nos_soh_before_2020_05_31 TO postgres;
-GRANT SELECT ON TABLE public.vw_weekly_nos_soh_before_2020_05_31 TO test1;
 
 
 CREATE OR REPLACE FUNCTION refresh_weekly_nos_soh_before_2020_05_31()
