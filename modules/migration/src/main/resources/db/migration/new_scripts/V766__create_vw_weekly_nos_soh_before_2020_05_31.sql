@@ -74,7 +74,6 @@ CREATE UNIQUE INDEX idx_vw_weekly_nos_soh_before_2020_05_31 ON vw_weekly_nos_soh
 
 -- Permissions
 
-GRANT ALL ON TABLE public.vw_weekly_nos_soh_before_2020_05_31 TO db_test;
 GRANT SELECT ON TABLE public.vw_weekly_nos_soh_before_2020_05_31 TO postgres;
 
 

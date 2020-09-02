@@ -62,7 +62,6 @@ CREATE MATERIALIZED VIEW vw_weekly_tracer_soh_after_2020_05_31 AS (SELECT *
 
 -- Permissions
 
-GRANT ALL ON TABLE public.vw_weekly_tracer_soh_after_2020_05_31 TO db_test;
 GRANT SELECT ON TABLE public.vw_weekly_tracer_soh_after_2020_05_31 TO postgres;
 
 CREATE OR REPLACE FUNCTION refresh_weekly_tracer_soh_after_2020_05_31()
