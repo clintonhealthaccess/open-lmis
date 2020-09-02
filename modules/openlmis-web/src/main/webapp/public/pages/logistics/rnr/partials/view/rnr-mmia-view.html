@@ -62,18 +62,26 @@
         <tbody>
         <tr ng-repeat="item in rnrLineItems">
             <td class="banner-text">{{$index+1}}</td>
-
-            <td ng-if="item.categoryName === 'Adult'" class="product-code bg-color-green">{{item.productCode===undefined? '':
-                '*'+item.productCode+'*'}}
+            <td ng-if="item.categoryName === 'Adult' && rnr.reportType === 'new'" class="bg-color-green" style="min-width: 20px" width="76px">
+                <svg width="76" height="20" id="barcode{{item.productCode===undefined? '': item.productCode }}">{{generateBarcode({productCode:item.productCode===undefined? '': item.productCode, productType: 'Adult'})}}</svg>
             </td>
+            <td ng-if="item.categoryName === 'Adult' && rnr.reportType === 'old'" class="product-code bg-color-green">{{item.productCode===undefined? '': '*'+item.productCode+'*'}}</td>
+
             <td ng-if="item.categoryName === 'Adult'" class="bg-color-green align-left">{{item.productPrimaryName}}</td>
 
 
-            <td ng-if="item.categoryName === 'Children'" class="product-code bg-color-lightyellow">{{item.productCode===undefined? '': '*'+item.productCode+'*'}}</td>
+            <td ng-if="item.categoryName === 'Children' && rnr.reportType === 'new'" class="bg-color-lightyellow">
+                <svg  width="76" height="20" id="barcode{{item.productCode===undefined? '': item.productCode }}">{{generateBarcode({productCode:item.productCode===undefined? '': item.productCode, productType: 'Children'})}}</svg>
+            </td>
+            <td ng-if="item.categoryName === 'Children' && rnr.reportType === 'old'" class="product-code bg-color-lightyellow">{{item.productCode===undefined? '': '*'+item.productCode+'*'}}</td>
+
             <td ng-if="item.categoryName === 'Children'" class="bg-color-lightyellow align-left">{{item.productPrimaryName}}</td>
 
 
-            <td ng-if="item.categoryName === 'Solution'" class="product-code bg-color-lightblue">{{item.productCode===undefined? '': '*'+item.productCode+'*'}}</td>
+            <td ng-if="item.categoryName === 'Solution' && rnr.reportType === 'new'" class="bg-color-lightblue">
+                <svg width="76" height="20" id="barcode{{item.productCode===undefined? '': item.productCode }}">{{generateBarcode({productCode:item.productCode===undefined? '': item.productCode, productType: 'Solution'})}}</svg>
+            </td>
+            <td ng-if="item.categoryName === 'Solution' && rnr.reportType === 'old'" class="product-code bg-color-lightblue">{{item.productCode===undefined? '': '*'+item.productCode+'*'}}</td>
             <td ng-if="item.categoryName === 'Solution'" class="bg-color-lightblue align-left">{{item.productPrimaryName}}</td>
 
             <td>{{item.productStrength}}</td>
@@ -94,15 +102,15 @@
                 <thead>
                 <tr>
                     <th class="banner-text"></th>
-                    <th openlmis-message="view.rnr.mmia.regime.code"></th>
-                    <th class="col-4" openlmis-message="view.rnr.mmia.regime.therapeutic"></th>
+                    <th ng-if="rnr.reportType === 'old'" openlmis-message="view.rnr.mmia.regime.code"></th>
+                    <th ng-if="rnr.reportType === 'old'" class="col-4" openlmis-message="view.rnr.mmia.regime.therapeutic"></th>
+                    <th ng-if="rnr.reportType === 'new'" class="col-4" openlmis-message="view.rnr.mmia.regime.therapeutic" colspan="2"></th>
                     <th openlmis-message="view.rnr.mmia.regime.column.total"></th>
                     <th ng-if="rnr.reportType === 'new'" openlmis-message="view.rnr.mmia.regime.pharmacy"></th>
                 </tr>
                 </thead>
                 <tbody>
-
-                <tr ng-repeat="item in regimens">
+                <tr ng-if="rnr.reportType === 'old'" ng-repeat="item in regimens">
                     <td class="banner-text">{{$index+1}}</td>
 
                     <td ng-if="item.categoryName === 'Adults'" class="bg-color-green"></td>
@@ -113,6 +121,26 @@
 
                     <td>{{item.patientsOnTreatment}}</td>
                     <td ng-if="rnr.reportType === 'new'" >{{item.comunitaryPharmacy}}</td>
+                </tr>
+                <tr ng-if="rnr.reportType === 'new'" ng-repeat-start="(key, val) in regimens" width="50px" height="50px">
+                    <td class="banner-text">{{1}}</td>
+                    <td ng-if="key==='Adults'" class="bg-color-green" style="max-width: 50px" rowspan="{{val.length}}">
+                        <div ng-if="key==='Adults'" class="text-nowrap"><span>Adultos & Adolescentes</span></div>
+                    </td>
+                    <td ng-if="key==='Paediatrics'" class="bg-color-yellow rowspan" style="max-width: 50px" rowspan="{{val.length}}">
+                        <div class="text-nowrap"><span>Paediatrics</span></div>
+                    </td>
+                    <td ng-if="val[0].categoryName==='Adults'" class="bg-color-green align-left" >{{val[0].name}}</td>
+                    <td ng-if="val[0].categoryName==='Paediatrics'" class="bg-color-yellow align-left" >{{val[0].name}}</td>
+                    <td>{{val[0].patientsOnTreatment}}</td>
+                    <td ng-if="rnr.reportType === 'new'">{{val[0].comunitaryPharmacy}}</td>
+                </tr>
+                <tr ng-if="rnr.reportType === 'new'" ng-repeat-end ng-repeat="value in val.slice(1)">
+                    <td class="banner-text">{{$index+2}}</td>
+                    <td ng-if="value.categoryName==='Paediatrics'" class="bg-color-yellow align-left" >{{value.name}} </td>
+                    <td ng-if="value.categoryName==='Adults'" class="bg-color-green align-left" >{{value.name}} </td>
+                    <td>{{value.patientsOnTreatment}}</td>
+                    <td ng-if="rnr.reportType === 'new'" >{{value.comunitaryPharmacy}}</td>
                 </tr>
                 <tr>
                     <td class="banner-text blank-cell no-border"></td>
@@ -278,7 +306,8 @@
 
         <div>Nota: Mapa de Preenchimento Obrigatório Mensal HdD em Conjunto com a Farmácia da Unidade Sanitária/ ou DPM
         </div>
-        <div>Versão no 5 14Nov 2012</div>
+        <div ng-if="rnr.reportType === 'new'">Versão nº 9 21 Fev2020 TLD90 DS</div>
+        <div ng-if="rnr.reportType === 'old'">Versão no 5 14Nov 2012</div>
     </div>
 
     <div class="align-right">

@@ -12,8 +12,10 @@ package org.openlmis.web.controller;
 
 import org.openlmis.core.domain.*;
 import org.openlmis.core.exception.DataException;
+import org.openlmis.core.message.OpenLmisMessage;
 import org.openlmis.core.service.*;
 import org.openlmis.core.web.controller.BaseController;
+import org.openlmis.stockmanagement.service.StockCardService;
 import org.openlmis.web.form.ProductDTO;
 import org.openlmis.core.web.OpenLmisResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +61,12 @@ public class ProductController extends BaseController {
 
   @Autowired
   private ProgramService programService;
+
+  @Autowired
+  private StockCardService stockCardService;
+
+  @Autowired
+  private MessageService messageService;
 
   @RequestMapping(value = "/groups", method = RequestMethod.GET, headers = ACCEPT_JSON)
   @PreAuthorize("@permissionEvaluator.hasPermission(principal,'MANAGE_PRODUCT')")
@@ -121,6 +129,18 @@ public class ProductController extends BaseController {
   public ResponseEntity<OpenLmisResponse> update(@RequestBody ProductDTO productDTO, @PathVariable(value = "id") Long id,
                                                  HttpServletRequest request) {
     Product product = productDTO.getProduct(programService);
+    Product queryFromDB = service.getProductByCode(product.getCode());
+    List<KitProduct> productsRelateToKit = service.getKitProductsByProductCode(product.getCode());
+    boolean isRelateToKit = productsRelateToKit != null && productsRelateToKit.size() > 0;
+    boolean isFromActiveToDeactive = queryFromDB != null && queryFromDB.getActive() && !product.getActive();
+    // active to deactivate
+    //1 normal product
+    //2 The product relate to kit pack
+    if (!(isFromActiveToDeactive && isRelateToKit)
+            && (isFromActiveToDeactive && stockCardService.getTotalFacilityWithProductSOHGreaterZero(product.getCode()) > 0)){
+      return OpenLmisResponse.error(messageService.message("error.deactivate.product.greater.zero"), BAD_REQUEST);
+    }
+
     List<ProgramProduct> programProducts = productDTO.getProgramProducts();
     List<ProductPriceSchedule> productPriceSchedules = productDTO.getProductPriceSchedules();
 
