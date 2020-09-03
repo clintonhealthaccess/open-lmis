@@ -6,9 +6,8 @@ import org.springframework.stereotype.Component;
 @Component(value = "tracerDrug")
 public class TracerDrugReportGenerator extends AbstractDrugReportGenerator {
 
-    private final static String WEEKLY_TRACER_SOH_CUBE = "vw_weekly_tracer_soh";
-    private final static String WEEKLY_TRACER_SOH_CUBE_AFTER = "vw_tracer_drugs_weekly_stock_history_after_2018_12_28";
-    private final static String WEEKLY_TRACER_SOH_CUBE_BEFORE = "vw_tracer_drugs_weekly_stock_history_before_2018_12_28";
+    private final static String WEEKLY_TRACER_SOH_CUBE_AFTER = "vw_weekly_tracer_soh_after_2020_05_31";
+    private final static String WEEKLY_TRACER_SOH_CUBE_BEFORE = "vw_weekly_tracer_soh_before_2020_05_31";
     private final static String SPLIT_TIME = "2020,05,31";
 
 
