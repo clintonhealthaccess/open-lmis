@@ -60,9 +60,9 @@ function AdjustmentOccurrencesReportController($scope, $controller, $filter, $ht
     var periodsInSelectedRange = $scope.splitPeriods($scope.reportParams.startTime, $scope.reportParams.endTime);
     return _.map(periodsInSelectedRange, function (period) {
       var cutParams = $scope.generateCutParamsByAdjustmentType(period, $scope.reportParams.adjustmentType);
-
+      var dataFromMV = $scope.pickMVs(period);
       return $http
-          .get(CubesGenerateUrlService.generateAggregateUrl("vw_period_movements", ["reason_code"], cutParams))
+          .get(CubesGenerateUrlService.generateAggregateUrl(dataFromMV, ["reason_code"], cutParams))
           .then(function (adjustmentData) {
 
             var adjustment = {

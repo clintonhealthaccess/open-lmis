@@ -130,6 +130,7 @@ function ConsumptionReportController($scope, $controller, $filter, $http, $q, Cu
   function requestConsumptionDataForEachPeriod() {
     var periodsInSelectedRange = $scope.splitPeriods($scope.reportParams.startTime, $scope.reportParams.endTime);
     return _.map(periodsInSelectedRange, function (period) {
+      var dataFromMV = $scope.pickMVs(period);
       var cutParams = CubesGenerateCutParamsService.generateCutsParams("periodstart",
         $filter('date')(period.periodStart, "yyyy,MM,dd"),
         $filter('date')(period.periodStart, "yyyy,MM,dd"),
@@ -163,10 +164,10 @@ function ConsumptionReportController($scope, $controller, $filter, $http, $q, Cu
         ]
       });
       return $http
-        .get(CubesGenerateUrlService.generateAggregateUrl("vw_period_movements", [], consumpParams))
+        .get(CubesGenerateUrlService.generateAggregateUrl(dataFromMV, [], consumpParams))
         .then(function (consumptionData) {
           return $http
-            .get(CubesGenerateUrlService.generateAggregateUrl("vw_period_movements", [], entryParams))
+            .get(CubesGenerateUrlService.generateAggregateUrl(dataFromMV, [], entryParams))
             .then(function (entryData) {
               consumptionData.data.summary.period =
                 DateFormatService.formatDateWithLocaleNoDay(period.periodStart) +

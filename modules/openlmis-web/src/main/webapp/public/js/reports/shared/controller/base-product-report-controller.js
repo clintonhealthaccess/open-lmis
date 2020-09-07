@@ -359,6 +359,14 @@ function BaseProductReportController($scope, $filter, ProductReportService, $cac
     return !$scope.invalidFacility;
   };
 
+  $scope.pickMVs = function(period) {
+    if (period.periodStart.getTime()  >= new Date("2020/05/21").getTime()){
+      return 'vw_period_movements_after_20200521';
+    }else {
+      return 'vw_period_movements_before_20200521';
+    }
+  };
+
   $scope.splitPeriods = function (start, end) {
     var previousMonth = -1, thisMonth = 0, nextMonth = 1, periodStartDay = 21, periodEndDay = 20;
 
