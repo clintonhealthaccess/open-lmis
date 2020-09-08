@@ -1,4 +1,4 @@
-function LotExpiryDatesReportController($scope, $controller, $http, CubesGenerateUrlService, messageService, CubesGenerateCutParamsService, $routeParams, DateFormatService, ReportExportExcelService) {
+function LotExpiryDatesReportController($scope, $controller, $http, $q, CubesGenerateUrlService, messageService, CubesGenerateCutParamsService, $routeParams, DateFormatService, ReportExportExcelService) {
   $controller('BaseProductReportController', {$scope: $scope});
 
   $scope.populateOptions = function () {
@@ -32,12 +32,17 @@ function LotExpiryDatesReportController($scope, $controller, $http, CubesGenerat
 
   function queryLotExpiryDatesReportDataFromCubes() {
     var params = getExpiryDateReportsParams();
-    var cutsParams = CubesGenerateCutParamsService.generateCutsParams('occurred', undefined, params.endTime, params.selectedFacility, undefined, params.selectedProvince, params.selectedDistrict);
+    var promises = _.map(params.combineMvs,function (item) {
+      var cutsParams = CubesGenerateCutParamsService.generateCutsParams('occurred',undefined, item.endTime, params.selectedFacility, undefined, params.selectedProvince, params.selectedDistrict);
+      return $http.get(CubesGenerateUrlService.generateFactsUrl(item.mv, cutsParams))
+          .then(function (data) {
+            return data;
+          });
+    });
 
-    $http.get(CubesGenerateUrlService.generateFactsUrl('vw_lot_expiry_dates', cutsParams))
-      .success(function (data) {
-        generateReportData(data);
-      });
+    $q.all(promises).then( function (lotDatas) {
+        generateReportData(Object.values(_.pluck(lotDatas,'data')).flat());
+    });
   }
 
   function generateReportData(data) {
@@ -125,7 +130,27 @@ function LotExpiryDatesReportController($scope, $controller, $http, CubesGenerat
 
   function getExpiryDateReportsParams() {
     var params = {};
-    params.endTime = new Date($scope.reportParams.endTime).setHours(23, 59, 59, 999);
+    var dividingDateTime = new Date('2020-05-31').setHours(23, 59, 59, 999);
+    var selectedTime = new Date($scope.reportParams.endTime).setHours(23, 59, 59, 999);
+    params.combineMvs=[];
+    if (selectedTime < dividingDateTime ) {
+      params.combineMvs.push({
+        endTime:selectedTime,
+        mv:"vw_lot_expiry_dates_before_20200531"
+      });
+    } else { // combine
+      params.combineMvs.push(
+          {
+            endTime: dividingDateTime,
+            mv: "vw_lot_expiry_dates_before_20200531"
+          },
+          {
+            endTime: selectedTime,
+            mv: "vw_lot_expiry_dates_after_20200531"
+          }
+      );
+    }
+
     $scope.locationIdToCode(params);
     return params;
   }
