@@ -118,7 +118,7 @@ function FacilityController($scope, facilityReferenceData, $routeParams, facilit
       return  _.filter(supportedReportTypes, function(supportReportType){
         return supportReportType.active;
       }).filter(function(activatedReport) {
-        return !getProgramByIdFrom(activatedReport.reportType.programId).active;
+        return !getProgramByIdFrom(activatedReport.reportType.programId || activatedReport.reportType.program.id).active;
       }).length > 0;
     }
 
