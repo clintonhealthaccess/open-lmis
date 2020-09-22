@@ -42,8 +42,7 @@ public interface RnrLineItemMapper {
   Integer insert(@Param("lineItem") RnrLineItem rnrLineItem, @Param("previousNormalizedConsumptions") String previousNormalizedConsumptions);
 
   @Select("SELECT DISTINCT ON (requisition_line_items.productdisplayorder, requisition_line_items.id) " +
-      "requisition_line_items.id, requisition_line_items.productcategory, requisition_line_items,previousNormalizedConsumptions," +
-      "products.isKit, products.strength,  products.primaryname " +
+      "requisition_line_items.*, products.isKit, products.strength,  products.primaryname " +
       "FROM requisition_line_items, products " +
       "INNER JOIN program_products ON products.id = program_products.productid " +
       "WHERE rnrId = #{rnrId} and requisition_line_items.fullSupply = true " +
@@ -51,16 +50,12 @@ public interface RnrLineItemMapper {
       "ORDER BY requisition_line_items.productdisplayorder, requisition_line_items.id")
   @Results(value = {
     @Result(property = "id", column = "id"),
-    @Result(property = "productCategory", column = "productcategory"),
     @Result(property = "previousNormalizedConsumptions", column = "previousNormalizedConsumptions", typeHandler = StringToList.class),
     @Result(property = "lossesAndAdjustments", javaType = List.class, column = "id",
       many = @Many(select = "org.openlmis.rnr.repository.mapper.LossesAndAdjustmentsMapper.getByRnrLineItem")),
     @Result(property = "serviceItems", javaType = List.class, column = "id",
       many = @Many(select = "org.openlmis.rnr.repository.mapper.ServiceItemMapper.getByRnrLineItem")
     ),
-    @Result(property = "isKit", column = "isKit"),
-    @Result(property = "productStrength", column = "strength"),
-    @Result(property = "productPrimaryName", column = "primaryname"),
   })
   List<RnrLineItem> getRnrLineItemsByRnrId(Long rnrId);
 

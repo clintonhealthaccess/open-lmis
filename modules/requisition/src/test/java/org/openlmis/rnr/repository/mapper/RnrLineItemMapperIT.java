@@ -189,7 +189,7 @@ public class RnrLineItemMapperIT {
     assertThat(rnrLineItem.getPrice().compareTo(new Money("12.5")), is(0));
     assertThat(rnrLineItem.getBeginningBalance(), is(5));
     assertThat(rnrLineItem.getPreviousStockInHand(), is(5));
-    assertThat(rnrLineItem.getProductCategory(), is("Category 1"));
+    assertThat(rnrLineItem.getProductCategory(), is("Other"));
     assertThat(rnrLineItem.getReportingDays(), is(10));
   }
 
@@ -342,8 +342,7 @@ public class RnrLineItemMapperIT {
     assertThat(rnrLineItemMapper.getRnrLineItemsByRnrId(rnr.getId()).size(), is(1));
     assertThat(rnrLineItemMapper.getRnrLineItemsByRnrId(rnr.getId()).get(0).getProductCode(),
       is(lineItem2.getProductCode()));
-    assertThat(rnrLineItemMapper.getRnrLineItemsByRnrId(rnr.getId()).get(0).getProductCategory(),
-      is("Category 1"));
+    assertThat(rnrLineItemMapper.getRnrLineItemsByRnrId(rnr.getId()).get(0).getProductCategory(), is("C1"));
   }
 
   @Test
