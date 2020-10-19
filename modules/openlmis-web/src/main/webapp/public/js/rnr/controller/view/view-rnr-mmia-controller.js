@@ -249,7 +249,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
 
     var formatTypeOfDispensed = function (patientQuantifications) {
         $scope.typeOfDispensed = _.filter(patientQuantifications,function (item) {
-            return item.tableName === "Type of Dispensed" || item.tableName === "Type of Dispensed"
+            return item.tableName === "Type of Dispensed" || item.tableName === "Type of Dispensed";
         });
         if ($scope.typeOfDispensed !== undefined) {
             $scope.totalTypeOfDispensedDS = getDataByKey('dispensed_ds5') +
@@ -274,7 +274,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
                 return $scope.typeOfDispensed[i].total;
             }
         }
-    };
+    }
 
     $scope.getDataByKey = function (nameKey, myArray) {
         for (var i =0; i< myArray.length; i++){
