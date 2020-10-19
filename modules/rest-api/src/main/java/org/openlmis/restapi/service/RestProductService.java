@@ -3,6 +3,7 @@ package org.openlmis.restapi.service;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.KitProduct;
 import org.openlmis.core.domain.Product;
 import org.openlmis.core.domain.ProgramProduct;
@@ -159,23 +160,22 @@ public class RestProductService {
         public boolean apply(ProgramProduct programProduct) {
           return programs.contains(programProduct.getProgram().getCode());
         }
+      }).filter(new Predicate<ProgramProduct>() {
+        @Override
+        public boolean apply(ProgramProduct programProduct) {
+          return (!"MMIA".equals(programProduct.getProductCategory().getName()) ||
+                  LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE).equals(programProduct.getVersionCode()));
+        }
       }).transform(new Function<ProgramProduct, ProgramProductResponse>() {
         @Override
         public ProgramProductResponse apply(ProgramProduct programProduct) {
           return new ProgramProductResponse(programProduct.getProgram().getCode(), product.getCode(),
-                  programProduct.getActive(), programProduct.getProductCategory().getName());
-        }
-      }).toList();
-
-      List<String> programCodes = FluentIterable.from(programProductSevice.getActiveProgramCodesByProductCode(product.getCode())).filter(new Predicate<String>() {
-        @Override
-        public boolean apply(String programProductCode) {
-          return programs.contains(programProductCode);
+                  programProduct.getActive(), programProduct.getProductCategory().getName(),programProduct.getVersionCode());
         }
       }).toList();
 
       if (!programsResponse.isEmpty()) {
-        productResponseList.add(new ProductResponse(product, programCodes, programsResponse));
+        productResponseList.add(new ProductResponse(product, programsResponse));
       }
     }
     return productResponseList;

@@ -125,6 +125,10 @@ public class ProgramProductRepository {
     return mapper.getByProductCode(code);
   }
 
+  public List<ProgramProduct> getByProductCodeAndVersion(String code,String versionCode) {
+    return mapper.getByProductCodeAndVersion(code,versionCode);
+  }
+
   public List<String> getActiveProgramCodesByProductCode(String code) {
     return mapper.getActiveProgramCodesByProductCode(code);
   }

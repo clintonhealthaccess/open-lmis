@@ -2,6 +2,7 @@ package org.openlmis.rnr.service;
 
 import com.google.common.collect.FluentIterable;
 import org.apache.commons.collections.CollectionUtils;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.BudgetLineItem;
 import org.openlmis.core.domain.Facility;
 import org.openlmis.core.domain.FacilityTypeApprovedProduct;
@@ -167,6 +168,9 @@ public class RequisitionService {
     ProcessingPeriod period = null == proposedPeriod ? findPeriod(facility, program, emergency) : proposedPeriod;
 
     List<FacilityTypeApprovedProduct> facilityTypeApprovedProducts;
+
+
+      String versionCode = LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE);
 
     if (!staticReferenceDataService.getBoolean("toggle.rnr.multiple.programs")) {
       facilityTypeApprovedProducts = facilityApprovedProductService.getFullSupplyFacilityApprovedProductByFacilityAndProgram(

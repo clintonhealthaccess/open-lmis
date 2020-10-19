@@ -16,4 +16,5 @@ public class ProgramProductResponse {
     private String productCode;
     private boolean isActive;
     private String category;
+    private Long versionCode;
 }

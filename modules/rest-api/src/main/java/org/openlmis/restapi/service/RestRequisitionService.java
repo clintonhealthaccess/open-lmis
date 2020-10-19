@@ -17,6 +17,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
 import org.joda.time.DateTime;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.*;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.core.repository.SyncUpHashRepository;
@@ -303,7 +304,7 @@ public class RestRequisitionService {
       for (RegimenLineItemForRest regimenLineItemForRest : report.getRegimens()) {
         RegimenCategory regimenCategory = regimenService.queryRegimenCategoryByName(regimenLineItemForRest.getCategoryName());
         regimenLineItemForRest.setCategory(regimenCategory);
-        Regimen regimen = regimenService.getRegimensByCategoryIdAndName(regimenCategory.getId(), regimenLineItemForRest.getName());
+        Regimen regimen = regimenService.getRegimensByCategoryIdAndNameAndVersion(regimenCategory.getId(), regimenLineItemForRest.getName(), LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE));
 
         if (regimen == null) {
           String regimenCode = null != regimenLineItemForRest.getCode() ? regimenLineItemForRest.getCode() : String.format("%03d", regimenService.listAll().size() + 1);

@@ -38,6 +38,9 @@ public interface ProgramProductMapper {
   @Select(("SELECT id FROM program_products WHERE programId = #{programId} AND productId = #{productId}"))
   Long getIdByProgramAndProductId(@Param("programId") Long programId, @Param("productId") Long productId);
 
+//  @Select(("SELECT id FROM program_products WHERE programId = #{programId} AND productId = #{productId} AND versionCode =#{versionCodes}"))
+//  Long getIdByProgramAndProductIdAndVersion(@Param("programId") Long programId, @Param("productId") Long productId,@Param("versionCode") String versionCode);
+
   @Update("UPDATE program_products SET currentPrice = #{currentPrice}, modifiedBy = #{modifiedBy}, modifiedDate = #{modifiedDate} WHERE id = #{id}")
   void updateCurrentPrice(ProgramProduct programProduct);
 
@@ -92,9 +95,23 @@ public interface ProgramProductMapper {
   })
   ProgramProduct getById(Long id);
 
+
+  @Select("SELECT pp.*, pr.code AS programCode, pr.name as programName, p.active AS productActive FROM " +
+          "program_products pp " +
+          "INNER JOIN products p ON pp.productId = p.id INNER JOIN programs pr ON pp.programId = pr.id WHERE p.code = #{code}")
+  @Results(value = {
+          @Result(property = "id", column = "id"),
+          @Result(property = "program.code", column = "programCode"),
+          @Result(property = "program.name", column = "programName"),
+          @Result(property = "product.active", column = "productActive"),
+          @Result(property = "productCategory", column = "productCategoryId", javaType = ProductCategory.class,
+                  one = @One(select = "org.openlmis.core.repository.mapper.ProductCategoryMapper.getById"))
+  })
+  List<ProgramProduct> getByProductCode(String code);
+
   @Select("SELECT pp.*, pr.code AS programCode, pr.name as programName, p.active AS productActive FROM " +
     "program_products pp " +
-    "INNER JOIN products p ON pp.productId = p.id INNER JOIN programs pr ON pp.programId = pr.id WHERE p.code = #{code}")
+    "INNER JOIN products p ON pp.productId = p.id INNER JOIN programs pr ON pp.programId = pr.id WHERE p.code = #{code} AND pp.versionCode=#{versionCode}")
   @Results(value = {
     @Result(property = "id", column = "id"),
     @Result(property = "program.code", column = "programCode"),
@@ -103,7 +120,7 @@ public interface ProgramProductMapper {
     @Result(property = "productCategory", column = "productCategoryId", javaType = ProductCategory.class,
       one = @One(select = "org.openlmis.core.repository.mapper.ProductCategoryMapper.getById"))
   })
-  List<ProgramProduct> getByProductCode(String code);
+  List<ProgramProduct> getByProductCodeAndVersion(@Param("code")String code, @Param("versionCode")String versionCode);
 
   @Select({"SELECT DISTINCT pp.active, pr.code AS programCode, pr.name AS programName, p.code AS productCode,",
     "p.primaryName AS productName, p.description, p.dosesPerDispensingUnit AS unit, pc.id AS categoryId",

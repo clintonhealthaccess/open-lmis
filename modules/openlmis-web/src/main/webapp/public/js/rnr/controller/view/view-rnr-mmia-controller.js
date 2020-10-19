@@ -6,7 +6,101 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
     $scope.therapeuticLines = [];
     $scope.therapeuticLinesTotalPatients = 0;
     $scope.therapeuticLinesTotalComunitaryPharmacy = 0;
+    $scope.typeOfDispensed = undefined;
+    $scope.totalTypeOfDispensedDS = undefined;
+    $scope.totalTypeOfDispensedDT = undefined;
+    $scope.totalTypeOfDispensedDM = undefined;
+    $scope.totalTypeOfDispensedWithInTotal = undefined;
+    $scope.totalTypeOfDispensedTotal = undefined;
 
+    var barCodeBackGround = {
+        'Adults':"#c7ddbb",
+        'Children':"#faf8c7",
+        'Solution':"#d3e9f0"
+    };
+    var openlmisMessageMap = {
+        "new": {messageName: "new", tableName: 'Type of patients in TARV'},
+        "novos": {messageName: "new", tableName: 'Type of patients in TARV'},
+        "maintenance": {messageName: "maintenance", tableName: 'Type of patients in TARV'},
+        "manutenção": {messageName: "maintenance", tableName: 'Type of patients in TARV'},
+        "alteration": {messageName: "alteration", tableName: 'Type of patients in TARV'},
+        "alteração": {messageName: "alteration", tableName: 'Type of patients in TARV'},
+        "transit": {messageName: "transit", tableName: 'Type of patients in TARV'},
+        "trânsito": {messageName: "transit", tableName: 'Type of patients in TARV'},
+        "transfers": {messageName: "transfers", tableName: 'Type of patients in TARV'},
+        "transferências": {messageName: "transfers", tableName: 'Type of patients in TARV'},
+        "adults": {messageName: "adults", tableName: 'age range of TARV patients'},
+        "adultos": {messageName: "adults", tableName: 'age range of TARV patients'},
+        "pediatric from 0 to 4 years": {messageName: "4pediatric", tableName: 'age range of TARV patients'},
+        "pediátricos 0 aos 4 anos": {messageName: "4pediatric", tableName: 'age range of TARV patients'},
+        "pediatric from 5 to 9 years": {messageName: "9pediatric", tableName: 'age range of TARV patients'},
+        "pediátricos 5 aos 9 anos": {messageName: "9pediatric", tableName: 'age range of TARV patients'},
+        "pediatric from 10 to 14 years": {messageName: "14pediatric", tableName: 'age range of TARV patients'},
+        "pediátricos 10 aos 14 anos": {messageName: "14pediatric", tableName: 'age range of TARV patients'},
+        "prep": {messageName: "prep", tableName: 'prophylaxis'},
+        "ppe": {messageName: "ppe", tableName: 'prophylaxis'},
+        "exposed child": {messageName: "exposed", tableName: 'prophylaxis'},
+        "criança exposta": {messageName: "exposed", tableName: 'prophylaxis'},
+        "total nr of patients in tarv at hf": {messageName: "totalNr", tableName: 'prophylaxis'},
+        "total de pacientes em tarv na us": {messageName: "totalNr", tableName: 'prophylaxis'},
+    };
+    var tableMap = {
+        'Type of patients in TRAV': 'patientsType',
+        'Tipo de pacientes em TARV': 'patientsType',
+        'age range of TRAV patients': 'TARVPatients',
+        'Faixa etária dos pacientes em TRAV': 'TARVPatients',
+        'prophylaxis': 'prophylaxis',
+        'Profilaxia': 'prophylaxis'
+    };
+    var therapeuticLinesMap = {
+        '1st Line': 'view.rnr.mmia.regime.therapeutic.line.1',
+        '1ª Linha': 'view.rnr.mmia.regime.therapeutic.line.1',
+        '2nd Line': 'view.rnr.mmia.regime.therapeutic.line.2',
+        '2ª Linha': 'view.rnr.mmia.regime.therapeutic.line.2',
+        '3rd Line': 'view.rnr.mmia.regime.therapeutic.line.3',
+        '3ª Linha': 'view.rnr.mmia.regime.therapeutic.line.3'
+    };
+
+    $scope.params = {
+        'barCodeOptions': {
+            lineColor: "#000",
+            width: 1,
+            height: 40,
+            fontSize: 10,
+            textAlign: "justify",
+            textMargin: 0,
+            margin: 0,
+            displayValue: true
+        },
+        'Adults':{
+            'productPrimaryName': "bg-color-green align-left",
+            'barcode': "bg-color-green",
+            'headerclass': "bg-color-green",
+            'headername':'Adultos & Adolescentes'
+        },
+        'Adult':{
+            'productPrimaryName': "bg-color-green align-left",
+            'barcode': "bg-color-green",
+            'headerclass': "bg-color-green",
+            'headername':'Adultos & Adolescentes'
+        },
+        'Children':{
+            'productPrimaryName': "bg-color-lightyellow align-left",
+            'barcode':"bg-color-lightyellow"
+        },
+        'Solution':{
+            'productPrimaryName': "bg-color-lightblue align-left",
+            'barcode':"bg-color-lightblue"
+        },
+        'Paediatrics':{
+            'productPrimaryName':"bg-color-yellow align-left",
+            'barcode':'bg-color-yellow',
+            'headerclass': "bg-color-yellow rowspan",
+            'headername':'Paediatrics'
+        },
+    };
+
+    $scope.patientsCategory=['patientsType','TARVPatients','prophylaxis'];
     $scope.patient = [];
 
     $scope.$on('$viewContentLoaded', function () {
@@ -41,26 +135,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
     };
 
     function getBarCodeOptions(product){
-        var baseOptions = {
-            lineColor: "#000",
-            width: 1,
-            height: 40,
-            fontSize: 10,
-            textAlign: "justify",
-            textMargin: 0,
-            margin: 0,
-            text: "* " + product.productCode + " *",
-            displayValue: true
-        };
-        var backgroundColor = "#fff";
-        if ('Adult' === product.productType) {
-            backgroundColor = "#c7ddbb";
-        } else if ('Children' === product.productType){
-            backgroundColor = "#faf8c7";
-        } else if ('Solution' === product.productType){
-            backgroundColor = "#d3e9f0";
-        }
-        return _.assign({}, baseOptions, {background: backgroundColor});
+        return _.assign({},$scope.params.barCodeOptions,{background: barCodeBackGround[product.productType], text: "* " + product.productCode + " *"});
     }
 
     $scope.generateBarcode = function (product) {
@@ -79,15 +154,6 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
     }
 
     $scope.initTherapeuticLines = function () {
-
-        var therapeuticLinesMap = {
-            '1st Line': 'view.rnr.mmia.regime.therapeutic.line.1',
-            '1ª Linha': 'view.rnr.mmia.regime.therapeutic.line.1',
-            '2nd Line': 'view.rnr.mmia.regime.therapeutic.line.2',
-            '2ª Linha': 'view.rnr.mmia.regime.therapeutic.line.2',
-            '3rd Line': 'view.rnr.mmia.regime.therapeutic.line.3',
-            '3ª Linha': 'view.rnr.mmia.regime.therapeutic.line.3'
-        };
         $scope.therapeuticLines = _.map($scope.rnr.therapeuticLines,
             function (value) {
                 value.code = therapeuticLinesMap[value.code];
@@ -161,51 +227,8 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
     };
 
     $scope.initPatient = function () {
-        var openlmisMessageMap = {
-            "new": {messageName: "new", tableName: 'Type of patients in TARV'},
-            "novos": {messageName: "new", tableName: 'Type of patients in TARV'},
-            "maintenance": {messageName: "maintenance", tableName: 'Type of patients in TARV'},
-            "manutenção": {messageName: "maintenance", tableName: 'Type of patients in TARV'},
-            "alteration": {messageName: "alteration", tableName: 'Type of patients in TARV'},
-            "alteração": {messageName: "alteration", tableName: 'Type of patients in TARV'},
-            "transit": {messageName: "transit", tableName: 'Type of patients in TARV'},
-            "trânsito": {messageName: "transit", tableName: 'Type of patients in TARV'},
-            "transfers": {messageName: "transfers", tableName: 'Type of patients in TARV'},
-            "transferências": {messageName: "transfers", tableName: 'Type of patients in TARV'},
-            "month dispense": {messageName: "md", tableName: 'Months dispensed'},
-            "mês dispensado": {messageName: "md", tableName: 'Months dispensed'},
-            "3 mopnths dispense (dt)": {messageName: "3dt", tableName: 'Months dispensed'},
-            "dispensa para 3 meses (dt)": {messageName: "3dt", tableName: 'Months dispensed'},
-            "dispensa para 6 Meses (ds)": {messageName: "6dt", tableName: 'Months dispensed'},
-            "6 mopnths dispense (ds)": {messageName: "6dt", tableName: 'Months dispensed'},
-            "# of therapeutic months dispensed": {messageName: "therapeuticDt", tableName: 'Months dispensed'},
-            "# de meses terapêuticos dispensados": {messageName: "therapeuticDt", tableName: 'Months dispensed'},
-            "adults": {messageName: "adults", tableName: 'age range of TARV patients'},
-            "adultos": {messageName: "adults", tableName: 'age range of TARV patients'},
-            "pediatric from 0 to 4 years": {messageName: "4pediatric", tableName: 'age range of TARV patients'},
-            "pediátricos 0 aos 4 anos": {messageName: "4pediatric", tableName: 'age range of TARV patients'},
-            "pediatric from 5 to 9 years": {messageName: "9pediatric", tableName: 'age range of TARV patients'},
-            "pediátricos 5 aos 9 anos": {messageName: "9pediatric", tableName: 'age range of TARV patients'},
-            "pediatric from 10 to 14 years": {messageName: "14pediatric", tableName: 'age range of TARV patients'},
-            "pediátricos 10 aos 14 anos": {messageName: "14pediatric", tableName: 'age range of TARV patients'},
-            "prep": {messageName: "prep", tableName: 'prophylaxis'},
-            "ppe": {messageName: "ppe", tableName: 'prophylaxis'},
-            "exposed child": {messageName: "exposed", tableName: 'prophylaxis'},
-            "criança exposta": {messageName: "exposed", tableName: 'prophylaxis'},
-            "total nr of patients in tarv at hf": {messageName: "totalNr", tableName: 'prophylaxis'},
-            "total de pacientes em tarv na us": {messageName: "totalNr", tableName: 'prophylaxis'},
-        };
-        var tableMap = {
-            'Type of patients in TRAV': 'patientsType',
-            'Tipo de pacientes em TARV': 'patientsType',
-            'Months dispensed': 'md',
-            'Meses dispensados': 'md',
-            'age range of TRAV patients': 'TARVPatients',
-            'Faixa etária dos pacientes em TRAV': 'TARVPatients',
-            'prophylaxis': 'prophylaxis',
-            'Profilaxia': 'prophylaxis'
-        };
         var invalideKey = _.keys(openlmisMessageMap);
+        formatTypeOfDispensed($scope.rnr.patientQuantifications);
         var patientQuantifications = _.filter($scope.rnr.patientQuantifications, function (value) {
             var lowerCategory = value.category && value.category.toLocaleLowerCase() || '';
             return _.includes(invalideKey, lowerCategory);
@@ -215,12 +238,54 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
             var tableName = value.tableName ? value.tableName : category.tableName;
             return _.assign({}, value, {
                 header: "view.rnr.mmia.patient.header." + tableMap[tableName],
-                messageName: "view.rnr.mmia.patient." + category.messageName,
+                messageName: "view.rnr.mmia.patient." + category.messageName
             });
         });
         patientQuantifications = _.groupBy(patientQuantifications, 'header');
         $scope.rnr.patientQuantifications = patientQuantifications;
+
         $scope.rnr.reportType = "new";
+    };
+
+    var formatTypeOfDispensed = function (patientQuantifications) {
+        $scope.typeOfDispensed = _.filter(patientQuantifications,function (item) {
+            return item.tableName === "Type of Dispensed" || item.tableName === "Type of Dispensed"
+        });
+        if ($scope.typeOfDispensed !== undefined) {
+            $scope.totalTypeOfDispensedDS = getDataByKey('dispensed_ds5') +
+                getDataByKey('dispensed_ds4') +
+                getDataByKey('dispensed_ds3') +
+                getDataByKey('dispensed_ds2') +
+                getDataByKey('dispensed_ds1') +
+                getDataByKey('dispensed_ds');
+            $scope.totalTypeOfDispensedDT = getDataByKey('dispensed_dt2') +
+                getDataByKey('dispensed_dt1') +
+                getDataByKey('dispensed_dt');
+            $scope.totalTypeOfDispensedDM = getDataByKey('dispensed_dm');
+            $scope.totalTypeOfDispensedWithInTotal = getDataByKey('dispensed_ds') +
+                getDataByKey('dispensed_dt') +
+                getDataByKey('dispensed_dm');
+        }
+    };
+
+    function getDataByKey(nameKey){
+        for (var i=0; i < $scope.typeOfDispensed.length; i++) {
+            if ($scope.typeOfDispensed[i].category === nameKey) {
+                return $scope.typeOfDispensed[i].total;
+            }
+        }
+    };
+
+    $scope.getDataByKey = function (nameKey, myArray) {
+        for (var i =0; i< myArray.length; i++){
+            if (myArray[i].category === nameKey){
+                return myArray[i].total;
+            }
+        }
+    };
+
+    $scope.formatAdjustMent = function(totalTreatments, totalWithInMonths){
+        return parseFloat(totalTreatments/totalWithInMonths).toFixed(2);
     };
 
     var formatExpirationDate = function (theOneItem) {
@@ -228,11 +293,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
             var splitDate = theOneItem.expirationDate.split('/');
             var yearNumber = splitDate[2];
             var monthNumber = splitDate[1];
-
-            var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-            ];
-
+            var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             theOneItem.expirationDate = monthNames[monthNumber - 1] + " " + yearNumber;
         }
     };
@@ -258,37 +319,21 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         regimens.Paediatrics.push({categoryName: 'Paediatrics'});
 
         $scope.regimens = $scope.rnr.reportType === 'new' ? regimens : $scope.regimens.concat(regimens.Adults, regimens.Paediatrics);
-        calculateRegimeTotalPatients($scope.rnr.regimenLineItems);
+        $scope.regimeTotalPatients= sumFunc($scope.rnr.regimenLineItems,'patientsOnTreatment');
         if ($scope.rnr.regimenLineItems[0].comunitaryPharmacy !== undefined) {
-            calculateRegimeTotalComunitaryPharmacy($scope.rnr.regimenLineItems);
+            $scope.regimeTotalComunitaryPharmacy = sumFunc($scope.rnr.regimenLineItems,'comunitaryPharmacy');
         }
         if ($scope.rnr.therapeuticLines !== undefined) {
-            calculateTherapeuticLinesTotalPatients($scope.rnr.therapeuticLines);
-            calculateTherapeuticLinesTotalComunitaryPharmacy($scope.rnr.therapeuticLines);
+            $scope.therapeuticLinesTotalPatients = sumFunc($scope.rnr.therapeuticLines,'patientsOnTreatment');
+            $scope.therapeuticLinesTotalComunitaryPharmacy = sumFunc($scope.rnr.therapeuticLines,'comunitaryPharmacy');
         }
     };
 
-    var calculateRegimeTotalPatients = function (regimens) {
-        for (var i = 0; i < regimens.length; i++) {
-            $scope.regimeTotalPatients += regimens[i].patientsOnTreatment;
-        }
-    };
-
-    var calculateRegimeTotalComunitaryPharmacy = function (regimens) {
-        for (var i = 0; i < regimens.length; i++) {
-            $scope.regimeTotalComunitaryPharmacy += regimens[i].comunitaryPharmacy;
-        }
-    };
-
-    var calculateTherapeuticLinesTotalPatients = function (therapeuticLines) {
-        for (var i = 0; i < therapeuticLines.length; i++) {
-            $scope.therapeuticLinesTotalPatients += therapeuticLines[i].patientsOnTreatment;
-        }
-    };
-
-    var calculateTherapeuticLinesTotalComunitaryPharmacy = function (therapeuticLines) {
-        for (var i = 0; i < therapeuticLines.length; i++) {
-            $scope.therapeuticLinesTotalComunitaryPharmacy += therapeuticLines[i].comunitaryPharmacy;
-        }
+    var sumFunc = function (keyValue, key) {
+        var sum = 0;
+        _.forEach(keyValue, function (item) {
+            sum +=item[key];
+        });
+        return sum;
     };
 }

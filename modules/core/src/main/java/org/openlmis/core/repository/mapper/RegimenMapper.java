@@ -82,4 +82,24 @@ public interface RegimenMapper {
   @Update({"UPDATE programs_supported SET active=#{active}, modifiedDate=NOW() WHERE programId=#{programId}"})
   void updateActiveByProgramId(@Param("programId") Long programId, @Param("active") Boolean active);
 
+  @Select({"SELECT * FROM regimens R INNER JOIN regimen_categories RC ON R.categoryId = RC.id ",
+          "WHERE R.programId=1 AND R.iscustom=#{isCustom} AND R.versionCode = 87 ORDER BY RC.displayOrder,R.displayOrder"})
+  @Results(value = {
+          @Result(property = "category", column = "categoryId", javaType = Long.class,
+                  one = @One(select = "org.openlmis.core.repository.mapper.RegimenCategoryMapper.getById"))})
+  List<Regimen> getAndroidV87MMIARegimes(@Param("isCustom") boolean isCustom);
+
+  @Select({"SELECT * FROM regimens R INNER JOIN regimen_categories RC ON R.categoryId = RC.id ",
+          "WHERE R.programId=1 AND R.iscustom=#{isCustom} AND R.versionCode = 86 ORDER BY RC.displayOrder,R.displayOrder"})
+  @Results(value = {
+          @Result(property = "category", column = "categoryId", javaType = Long.class,
+                  one = @One(select = "org.openlmis.core.repository.mapper.RegimenCategoryMapper.getById"))})
+  List<Regimen> getAndroidLess87MMIARegimes(@Param("isCustom") boolean isCustom);
+
+  @Select({"SELECT * FROM regimens R INNER JOIN regimen_categories RC ON R.categoryId = RC.id ",
+          "WHERE R.categoryId=#{categoryId} AND R.name=#{name} AND R.active = TRUE AND R.versionCode = #{versionCode}"})
+  @Results(value = {
+          @Result(property = "category", column = "categoryId", javaType = Long.class,
+          one = @One(select = "org.openlmis.core.repository.mapper.RegimenCategoryMapper.getById"))})
+  Regimen getRegimensByCategoryIdAndNameAndVersion(@Param("categoryId") Long categoryId, @Param("name") String name, @Param("versionCode") String versionCode);
 }

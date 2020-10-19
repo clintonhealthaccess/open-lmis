@@ -11,7 +11,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class LmisThreadLocalUtils {
 
     public static final int VERSION_87  = 87;
+    public static final String STR_VERSION_87  = "87";
     public static final int VERSION_86  = 86;
+    public static final String STR_VERSION_86  = "86";
 
     public static final String SESSION_USER = "USER";
     public static final String HEADER_USER_NAME = "UserName";

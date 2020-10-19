@@ -62,28 +62,8 @@
         <tbody>
         <tr ng-repeat="item in rnrLineItems">
             <td class="banner-text">{{$index+1}}</td>
-            <td ng-if="item.categoryName === 'Adult' && rnr.reportType === 'new'" class="bg-color-green" style="min-width: 20px" width="76px">
-                <svg width="76" height="20" id="barcode{{item.productCode===undefined? '': item.productCode }}">{{generateBarcode({productCode:item.productCode===undefined? '': item.productCode, productType: 'Adult'})}}</svg>
-            </td>
-            <td ng-if="item.categoryName === 'Adult' && rnr.reportType === 'old'" class="product-code bg-color-green">{{item.productCode===undefined? '': '*'+item.productCode+'*'}}</td>
-
-            <td ng-if="item.categoryName === 'Adult'" class="bg-color-green align-left">{{item.productPrimaryName}}</td>
-
-
-            <td ng-if="item.categoryName === 'Children' && rnr.reportType === 'new'" class="bg-color-lightyellow">
-                <svg  width="76" height="20" id="barcode{{item.productCode===undefined? '': item.productCode }}">{{generateBarcode({productCode:item.productCode===undefined? '': item.productCode, productType: 'Children'})}}</svg>
-            </td>
-            <td ng-if="item.categoryName === 'Children' && rnr.reportType === 'old'" class="product-code bg-color-lightyellow">{{item.productCode===undefined? '': '*'+item.productCode+'*'}}</td>
-
-            <td ng-if="item.categoryName === 'Children'" class="bg-color-lightyellow align-left">{{item.productPrimaryName}}</td>
-
-
-            <td ng-if="item.categoryName === 'Solution' && rnr.reportType === 'new'" class="bg-color-lightblue">
-                <svg width="76" height="20" id="barcode{{item.productCode===undefined? '': item.productCode }}">{{generateBarcode({productCode:item.productCode===undefined? '': item.productCode, productType: 'Solution'})}}</svg>
-            </td>
-            <td ng-if="item.categoryName === 'Solution' && rnr.reportType === 'old'" class="product-code bg-color-lightblue">{{item.productCode===undefined? '': '*'+item.productCode+'*'}}</td>
-            <td ng-if="item.categoryName === 'Solution'" class="bg-color-lightblue align-left">{{item.productPrimaryName}}</td>
-
+            <td class="{{params[item.categoryName]['barcode']}}">{{item.productCode===undefined? '': '*'+item.productCode+'*'}}</td>
+            <td class="{{params[item.categoryName]['productPrimaryName']}}">{{item.productPrimaryName}}</td>
             <td>{{item.productStrength}}</td>
             <td>{{item.beginningBalance}}</td>
             <td>{{item.quantityReceived}}</td>
@@ -99,12 +79,12 @@
     <div class="page-break"></div>
     <div class="middle-section">
         <table class="regime-form">
-                <thead>
+            <col width="3"><col width="10"><col width="500"><col width="10"><col width="10">
+            <thead>
                 <tr>
                     <th class="banner-text"></th>
                     <th ng-if="rnr.reportType === 'old'" openlmis-message="view.rnr.mmia.regime.code"></th>
-                    <th ng-if="rnr.reportType === 'old'" class="col-4" openlmis-message="view.rnr.mmia.regime.therapeutic"></th>
-                    <th ng-if="rnr.reportType === 'new'" class="col-4" openlmis-message="view.rnr.mmia.regime.therapeutic" colspan="2"></th>
+                    <th class="col-4" openlmis-message="view.rnr.mmia.regime.therapeutic" colspan="{{rnr.reportType === 'new' ? 2: 0}}"></th>
                     <th openlmis-message="view.rnr.mmia.regime.column.total"></th>
                     <th ng-if="rnr.reportType === 'new'" openlmis-message="view.rnr.mmia.regime.pharmacy"></th>
                 </tr>
@@ -112,35 +92,24 @@
                 <tbody>
                 <tr ng-if="rnr.reportType === 'old'" ng-repeat="item in regimens">
                     <td class="banner-text">{{$index+1}}</td>
-
-                    <td ng-if="item.categoryName === 'Adults'" class="bg-color-green"></td>
-                    <td ng-if="item.categoryName === 'Adults'" class="bg-color-green align-left">{{item.name}}</td>
-
-                    <td ng-if="item.categoryName === 'Paediatrics'" class="bg-color-yellow"></td>
-                    <td ng-if="item.categoryName === 'Paediatrics'" class="bg-color-yellow align-left">{{item.name}}</td>
-
+                    <td class="{{params[item.categoryName]['barcode']}}"></td>
+                    <td class="{{params[item.categoryName]['productPrimaryName']}}">{{item.name}}</td>
                     <td>{{item.patientsOnTreatment}}</td>
-                    <td ng-if="rnr.reportType === 'new'" >{{item.comunitaryPharmacy}}</td>
                 </tr>
-                <tr ng-if="rnr.reportType === 'new'" ng-repeat-start="(key, val) in regimens" width="50px" height="50px">
+                <tr ng-if="rnr.reportType === 'new'" ng-repeat-start="(key, val) in regimens" width="30px" height="30px">
                     <td class="banner-text">{{1}}</td>
-                    <td ng-if="key==='Adults'" class="bg-color-green" style="max-width: 50px" rowspan="{{val.length}}">
-                        <div ng-if="key==='Adults'" class="text-nowrap"><span>Adultos & Adolescentes</span></div>
+                    <td class="{{params[key]['headerclass']}}" style="max-width: 30px; width: 10px" rowspan="{{val.length}}">
+                        <div class="text-nowrap"><span>{{params[key]['headername']}}</span></div>
                     </td>
-                    <td ng-if="key==='Paediatrics'" class="bg-color-yellow rowspan" style="max-width: 50px" rowspan="{{val.length}}">
-                        <div class="text-nowrap"><span>Paediatrics</span></div>
-                    </td>
-                    <td ng-if="val[0].categoryName==='Adults'" class="bg-color-green align-left" >{{val[0].name}}</td>
-                    <td ng-if="val[0].categoryName==='Paediatrics'" class="bg-color-yellow align-left" >{{val[0].name}}</td>
+                    <td class="{{params[key]['productPrimaryName']}}" >{{val[0].name}}</td>
                     <td>{{val[0].patientsOnTreatment}}</td>
-                    <td ng-if="rnr.reportType === 'new'">{{val[0].comunitaryPharmacy}}</td>
+                    <td>{{val[0].comunitaryPharmacy}}</td>
                 </tr>
                 <tr ng-if="rnr.reportType === 'new'" ng-repeat-end ng-repeat="value in val.slice(1)">
                     <td class="banner-text">{{$index+2}}</td>
-                    <td ng-if="value.categoryName==='Paediatrics'" class="bg-color-yellow align-left" >{{value.name}} </td>
-                    <td ng-if="value.categoryName==='Adults'" class="bg-color-green align-left" >{{value.name}} </td>
+                    <td class="{{params[value.categoryName]['productPrimaryName']}}" >{{value.name}} </td>
                     <td>{{value.patientsOnTreatment}}</td>
-                    <td ng-if="rnr.reportType === 'new'" >{{value.comunitaryPharmacy}}</td>
+                    <td>{{value.comunitaryPharmacy}}</td>
                 </tr>
                 <tr>
                     <td class="banner-text blank-cell no-border"></td>
@@ -180,63 +149,76 @@
         </table>
         <div class="patient-section">
 
-            <table ng-if="rnr.reportType === 'new' && rnr.patientQuantifications['view.rnr.mmia.patient.header.patientsType']" class="patient-form">
+            <table ng-if="rnr.reportType === 'new'" ng-repeat="type in patientsCategory" class="patient-form">
                 <thead>
-                <tr>
-                    <th colspan="2" class="background-black" openlmis-message="view.rnr.mmia.patient.header.patientsType"></th>
-                </tr>
+                    <tr><th colspan="2" class="background-black" openlmis-message="view.rnr.mmia.patient.header.{{type}}"></th></tr>
                 </thead>
-
                 <tbody>
-                <tr ng-repeat="item in rnr.patientQuantifications['view.rnr.mmia.patient.header.patientsType']">
+                <tr ng-repeat="item in rnr.patientQuantifications['view.rnr.mmia.patient.header.'+ type ]">
                     <td openlmis-message={{item.messageName}}></td>
                     <td>{{item.total}}</td>
                 </tr>
                 </tbody>
             </table>
-            <table ng-if="rnr.reportType === 'new' && rnr.patientQuantifications['view.rnr.mmia.patient.header.md']" class="patient-form">
-                <thead>
-                <tr>
-                    <th colspan="2" class="background-black" openlmis-message="view.rnr.mmia.patient.header.md"></th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <tr ng-repeat="item in rnr.patientQuantifications['view.rnr.mmia.patient.header.md']">
-                    <td openlmis-message={{item.messageName}}></td>
-                    <td>{{item.total}}</td>
-                </tr>
-                </tbody>
+            <table ng-if="rnr.reportType === 'new'" class="patient-form-dispensed">
+            <tr><th colspan="5" class="background-black" openlmis-message="view.rnr.mmia.patient.header.md"></th></tr>
+            <tr width="30px" height="30px">
+                <td class="lefttop"></td>
+                <td>DS</td>
+                <td style="border: none"></td>
+                <td style="border: none"></td>
+                <td style="border: none">Adjustment</td>
+            </tr>
+            <tr width="30px" height="30px">
+                <td>5 Months ago</td>
+                <td>{{getDataByKey("dispensed_ds5",typeOfDispensed)}}</td>
+                <td style="border: none"></td>
+                <td style="border: none"></td>
+                <td>{{formatAdjustMent(totalTypeOfDispensedDS + totalTypeOfDispensedDT + totalTypeOfDispensedDM, totalTypeOfDispensedWithInTotal)}}</td>
+            </tr>
+            <tr width="30px" height="30px">
+                <td>4 Months ago</td>
+                <td>{{getDataByKey("dispensed_ds4",typeOfDispensed)}}</td>
+                <td style="border: none"></td>
+                <td style="border: none"></td>
+                <td style="border: none"></td>
+            </tr>
+            <tr width="30px" height="30px">
+                <td>3 Months ago</td>
+                <td>{{getDataByKey("dispensed_ds3",typeOfDispensed)}}</td>
+                <td>DT</td>
+                <td style="border: none"></td>
+                <td style="border: none"></td>
+            </tr>
+            <tr width="30px" height="30px">
+                <td>2 Months ago</td>
+                <td>{{getDataByKey("dispensed_ds2",typeOfDispensed)}}</td>
+                <td>{{getDataByKey("dispensed_dt2",typeOfDispensed)}}</td>
+                <td style="border: none"></td>
+                <td style="border: none"></td>
+            </tr>
+            <tr width="30px" height="30px">
+                <td>Last month</td>
+                <td>{{getDataByKey("dispensed_ds1",typeOfDispensed)}}</td>
+                <td>{{getDataByKey("dispensed_dt1",typeOfDispensed)}}</td>
+                <td>Dispensed for Month</td>
+                <td style="border: none">Total</td>
+            </tr>
+            <tr width="30px" height="30px">
+                <td>Within this month</td>
+                <td>{{getDataByKey("dispensed_ds",typeOfDispensed)}}</td>
+                <td>{{getDataByKey("dispensed_dt",typeOfDispensed)}}</td>
+                <td>{{getDataByKey("dispensed_dm",typeOfDispensed)}}</td>
+                <td>{{totalTypeOfDispensedWithInTotal}}</td>
+            </tr>
+            <tr width="30px" height="30px">
+                <td>Total patients with treatment</td>
+                <td>{{totalTypeOfDispensedDS}}</td>
+                <td>{{totalTypeOfDispensedDT}}</td>
+                <td>{{totalTypeOfDispensedDM}}</td>
+                <td>{{totalTypeOfDispensedDS + totalTypeOfDispensedDT + totalTypeOfDispensedDM}}</td>
+            </tr>
             </table>
-            <table ng-if="rnr.reportType === 'new' && rnr.patientQuantifications['view.rnr.mmia.patient.header.TARVPatients']" class="patient-form">
-                <thead>
-                <tr>
-                    <th colspan="2" class="background-black" openlmis-message="view.rnr.mmia.patient.header.TARVPatients"></th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <tr ng-repeat="item in rnr.patientQuantifications['view.rnr.mmia.patient.header.TARVPatients']">
-                    <td openlmis-message={{item.messageName}}></td>
-                    <td>{{item.total}}</td>
-                </tr>
-                </tbody>
-            </table>
-            <table ng-if="rnr.reportType === 'new' && rnr.patientQuantifications['view.rnr.mmia.patient.header.prophylaxis']" class="patient-form">
-                <thead>
-                <tr>
-                    <th colspan="2" class="background-black" openlmis-message="view.rnr.mmia.patient.header.prophylaxis"></th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <tr ng-repeat="item in rnr.patientQuantifications['view.rnr.mmia.patient.header.prophylaxis']">
-                    <td openlmis-message={{item.messageName}}></td>
-                    <td>{{item.total}}</td>
-                </tr>
-                </tbody>
-            </table>
-
             <table ng-if="rnr.reportType === 'old'" class="patient-form">
                 <thread>
                     <tr>
@@ -263,15 +245,6 @@
                     </tr>
                     <tr>
                         <td class="col-5"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
                     </tr>
                     <tr>
                         <td></td>
