@@ -163,8 +163,8 @@ public class RestProductService {
       }).filter(new Predicate<ProgramProduct>() {
         @Override
         public boolean apply(ProgramProduct programProduct) {
-          return (!"MMIA".equals(programProduct.getProductCategory().getName()) ||
-                  LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE).equals(programProduct.getVersionCode()));
+          return (!"MMIA".equals(programProduct.getProgram().getCode()) ||
+                  LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE).equals(String.valueOf(programProduct.getVersionCode())));
         }
       }).transform(new Function<ProgramProduct, ProgramProductResponse>() {
         @Override

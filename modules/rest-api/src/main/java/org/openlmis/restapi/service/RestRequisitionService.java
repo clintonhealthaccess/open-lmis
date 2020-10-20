@@ -304,7 +304,8 @@ public class RestRequisitionService {
       for (RegimenLineItemForRest regimenLineItemForRest : report.getRegimens()) {
         RegimenCategory regimenCategory = regimenService.queryRegimenCategoryByName(regimenLineItemForRest.getCategoryName());
         regimenLineItemForRest.setCategory(regimenCategory);
-        Regimen regimen = regimenService.getRegimensByCategoryIdAndNameAndVersion(regimenCategory.getId(), regimenLineItemForRest.getName(), LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE));
+        String code = LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE) == null  ? LmisThreadLocalUtils.STR_VERSION_86: LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE);
+        Regimen regimen = regimenService.getRegimensByCategoryIdAndNameAndVersion(regimenCategory.getId(), regimenLineItemForRest.getName(), Long.valueOf(code));
 
         if (regimen == null) {
           String regimenCode = null != regimenLineItemForRest.getCode() ? regimenLineItemForRest.getCode() : String.format("%03d", regimenService.listAll().size() + 1);

@@ -103,7 +103,7 @@ public class RegimenRepository {
     return mapper.getRegimensByCategoryIdAndName(categoryId, code);
   }
 
-  public Regimen getRegimensByCategoryIdAndNameAndVersion(Long categoryId, String code, String versionCode) {
+  public Regimen getRegimensByCategoryIdAndNameAndVersion(Long categoryId, String code, Long versionCode) {
     return mapper.getRegimensByCategoryIdAndNameAndVersion(categoryId, code,versionCode);
   }
 

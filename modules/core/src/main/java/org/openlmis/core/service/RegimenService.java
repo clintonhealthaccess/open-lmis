@@ -59,7 +59,7 @@ public class RegimenService {
   public Regimen getRegimensByCategoryIdAndName(Long categoryId, String name) {
     return repository.getRegimensByCategoryIdAndName(categoryId, name);
   }
-  public Regimen getRegimensByCategoryIdAndNameAndVersion(Long categoryId, String name,String versionCode) {
+  public Regimen getRegimensByCategoryIdAndNameAndVersion(Long categoryId, String name, Long versionCode) {
     return repository.getRegimensByCategoryIdAndNameAndVersion(categoryId, name,versionCode);
   }
 

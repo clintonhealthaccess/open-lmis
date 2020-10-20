@@ -179,6 +179,7 @@ public interface FacilityApprovedProductMapper {
                     "INNER JOIN product_categories pc ON pc.id = pp.productCategoryId",
                     "WHERE pp.programId = #{programId}",
                     "AND fap.facilityTypeId = (SELECT typeId FROM facilities WHERE id = #{facilityId})",
+                    "AND pp.versionCode='86'",
                     "ORDER BY LOWER(pc.name), LOWER(prod.primaryName), LOWER(prod.code)"})
     @Results(value = {
             @Result(property = "programProduct.id", column = "programProductId"),

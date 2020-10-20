@@ -101,5 +101,5 @@ public interface RegimenMapper {
   @Results(value = {
           @Result(property = "category", column = "categoryId", javaType = Long.class,
           one = @One(select = "org.openlmis.core.repository.mapper.RegimenCategoryMapper.getById"))})
-  Regimen getRegimensByCategoryIdAndNameAndVersion(@Param("categoryId") Long categoryId, @Param("name") String name, @Param("versionCode") String versionCode);
+  Regimen getRegimensByCategoryIdAndNameAndVersion(@Param("categoryId") Long categoryId, @Param("name") String name, @Param("versionCode") Long versionCode);
 }

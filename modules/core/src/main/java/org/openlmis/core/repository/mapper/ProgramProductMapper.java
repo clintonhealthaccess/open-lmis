@@ -57,7 +57,7 @@ public interface ProgramProductMapper {
     "WHERE programId = #{program.id} AND productId = #{product.id}"})
     void update(ProgramProduct programProduct);
 
-  @Select({"SELECT * FROM program_products pp INNER JOIN products p ON pp.productId = p.id WHERE pp.programId = #{id} ",
+  @Select({"SELECT * FROM program_products pp INNER JOIN products p ON pp.productId = p.id WHERE pp.programId = #{id} AND (pp.versionCode='86' OR pp.versionCode IS NULL)",
     "ORDER BY pp.displayOrder NULLS LAST, LOWER(p.code)"})
   @Results(value = {
     @Result(property = "id", column = "id"),
@@ -78,6 +78,7 @@ public interface ProgramProductMapper {
           "WHERE pp.programId = #{programId} ",
           "AND fap.facilitytypeid = #{facilityTypeId} ",
           "AND (p.modifieddate > #{afterUpdatedTime} OR fap.modifieddate >  #{afterUpdatedTime} OR pp.modifieddate > #{afterUpdatedTime})",
+          "AND (pp.versionCode='86' OR pp.versionCode IS NULL)",
           "ORDER BY p.code"})
   @Results(value = {
           @Result(property = "id", column = "id"),

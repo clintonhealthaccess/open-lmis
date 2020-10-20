@@ -48,91 +48,91 @@ $do$
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S18WI'),(SELECT id from product_categories WHERE "name"='Adult'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             FROM program_products pp JOIN products p ON pp.productid = p.id  JOIN product_categories pc ON pc.id = pp.productcategoryid  JOIN  programs p2 ON p2.id  = pp.programid
-            WHERE p.code='08S18WI';
+            WHERE p.code='08S18WI' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S18Y'),(SELECT id from product_categories WHERE "name"='Adult'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S18Y';
+            WHERE p.code='08S18Y' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S40'),(SELECT id from product_categories WHERE "name"='Adult'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S40';
+            WHERE p.code='08S40' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S18Z'),(SELECT id from product_categories WHERE "name"='Adult'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S18Z';
+            WHERE p.code='08S18Z'  AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S01ZY'),(SELECT id from product_categories WHERE "name"='Adult'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S01ZY';
+            WHERE p.code='08S01ZY' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S18W'),(SELECT id from product_categories WHERE "name"='Adult'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S18W';
+            WHERE p.code='08S18W' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S30WZ'),(SELECT id from product_categories WHERE "name"='Adult'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S30WZ';
+            WHERE p.code='08S30WZ' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S29'),(SELECT id from product_categories WHERE "name"='Adult'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            where p.code='08S29';
+            where p.code='08S29' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S30Y'),(SELECT id from product_categories WHERE "name"='Adult'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            where p.code='08S30Y';
+            where p.code='08S30Y' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S30ZY'),(SELECT id from product_categories WHERE "name"='Adult'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S30ZY';
+            WHERE p.code='08S30ZY' AND pp.programid =1;
 
 
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S30YX'),(SELECT id from product_categories WHERE "name"='Children'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S30YX';
+            WHERE p.code='08S30YX' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S42B'),(SELECT id from product_categories WHERE "name"='Children'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S42B';
+            WHERE p.code='08S42B' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S40Z'),(SELECT id from product_categories WHERE "name"='Children'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S40Z';
+            WHERE p.code='08S40Z' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S01ZZ'),(SELECT id from product_categories WHERE "name"='Children'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S01ZZ';
+            WHERE p.code='08S01ZZ' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S20'),(SELECT id from product_categories WHERE "name"='Children'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S20';
+            WHERE p.code='08S20' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S39Y'),(SELECT id from product_categories WHERE "name"='Children'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S39Y';
+            WHERE p.code='08S39Y' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S38Y'),(SELECT id from product_categories WHERE "name"='Children'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S38Y';
+            WHERE p.code='08S38Y' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S39B'),(SELECT id from product_categories WHERE "name"='Children'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S39B';
+            WHERE p.code='08S39B' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S01ZW'),(SELECT id from product_categories WHERE "name"='Children'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S01ZW';
+            WHERE p.code='08S01ZW' AND pp.programid =1;
 
 
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S23'),(SELECT id from product_categories WHERE "name"='Solution'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S23';
+            WHERE p.code='08S23' AND pp.programid =1;
             INSERT INTO program_products(versioncode,programid,productid,productcategoryid,dosespermonth,active,currentprice,createdby,createddate,modifiedby,modifieddate,displayorder,fullsupply,isacoefficientsid)
             SELECT '87',(SELECT id from programs WHERE code='MMIA'),(SELECT id from products WHERE code = '08S17'),(SELECT id from product_categories WHERE "name"='Solution'),pp.dosespermonth,true,pp.currentprice,pp.createdby,pp.createddate,pp.modifiedby,pp.modifieddate,pp.displayorder,pp.fullsupply,pp.isacoefficientsid
             from program_products pp join products p on pp.productid = p.id  join product_categories pc on pc.id = pp.productcategoryid  join  programs p2 on p2.id  = pp.programid
-            WHERE p.code='08S17';
+            WHERE p.code='08S17' AND pp.programid =1;
 
             -- '08S38Z' : Adults
             -- '08S10B': Children
