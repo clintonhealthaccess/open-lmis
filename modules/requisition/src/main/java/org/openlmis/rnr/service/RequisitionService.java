@@ -176,17 +176,21 @@ public class RequisitionService {
       facilityTypeApprovedProducts = facilityApprovedProductService.getFullSupplyFacilityApprovedProductByFacilityAndProgram(
           facility.getId(), program.getId());
     } else {
-      facilityTypeApprovedProducts = facilityApprovedProductService.getFullSupplyFacilityApprovedProductByFacilityAndProgramIncludingSubPrograms(
-          facility.getId(), program.getId());
-
-      //if there are multiple programs for the same product, in order not to have that item show up twice in the form
-      //we pick a program randomly; since none of the program product attributes are used in Mozambique, this is ok.
-      //if we want to start using program product attributes, then we need talk about the requirements.
-      Map<String, FacilityTypeApprovedProduct> programProductMap = new HashMap<>();
-      for (FacilityTypeApprovedProduct facilityTypeApprovedProduct: facilityTypeApprovedProducts) {
-        programProductMap.put(facilityTypeApprovedProduct.getProgramProduct().getProduct().getCode(), facilityTypeApprovedProduct);
+      if ("MMIA".equals(program.getCode())){
+        facilityTypeApprovedProducts = facilityApprovedProductService
+                .getFullSupplyFacilityApprovedProductByFacilityAndProgramIncludingSubProgramsAndVersion(facility.getId(), program.getId());
+      } else {
+        facilityTypeApprovedProducts = facilityApprovedProductService.getFullSupplyFacilityApprovedProductByFacilityAndProgramIncludingSubPrograms(
+                facility.getId(), program.getId());
       }
-      facilityTypeApprovedProducts = FluentIterable.from(programProductMap.values()).toList();
+        //if there are multiple programs for the same product, in order not to have that item show up twice in the form
+        //we pick a program randomly; since none of the program product attributes are used in Mozambique, this is ok.
+        //if we want to start using program product attributes, then we need talk about the requirements.
+        Map<String, FacilityTypeApprovedProduct> programProductMap = new HashMap<>();
+        for (FacilityTypeApprovedProduct facilityTypeApprovedProduct : facilityTypeApprovedProducts) {
+          programProductMap.put(facilityTypeApprovedProduct.getProgramProduct().getProduct().getCode(), facilityTypeApprovedProduct);
+        }
+        facilityTypeApprovedProducts = FluentIterable.from(programProductMap.values()).toList();
     }
 
      //N:B If usePriceSchedule is selected for the selected program, use the product price from price_schedule table
