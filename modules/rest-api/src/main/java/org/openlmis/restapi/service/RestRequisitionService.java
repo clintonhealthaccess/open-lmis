@@ -58,6 +58,7 @@ public class RestRequisitionService {
 
   public static final boolean EMERGENCY = false;
   private static final String RAPID_TEST_PROGRAM_CODE = "TEST_KIT";
+  private static final String MMIA_PROGRAM_CODE = "MMIA";
   private static final Logger logger = LoggerFactory.getLogger(RestRequisitionService.class);
   @Autowired
   private RequisitionService requisitionService;
@@ -305,8 +306,12 @@ public class RestRequisitionService {
         RegimenCategory regimenCategory = regimenService.queryRegimenCategoryByName(regimenLineItemForRest.getCategoryName());
         regimenLineItemForRest.setCategory(regimenCategory);
         String code = LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE) == null  ? LmisThreadLocalUtils.STR_VERSION_86: LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE);
-        Regimen regimen = regimenService.getRegimensByCategoryIdAndNameAndVersion(regimenCategory.getId(), regimenLineItemForRest.getName(), Long.valueOf(code));
-
+        Regimen regimen = null;
+        if (MMIA_PROGRAM_CODE.equals(report.getProgramCode())) {
+          regimen = regimenService.getRegimensByCategoryIdAndNameAndVersion(regimenCategory.getId(), regimenLineItemForRest.getName(), Long.valueOf(code));
+        } else {
+          regimen = regimenService.getRegimensByCategoryIdAndName(regimenCategory.getId(), regimenLineItemForRest.getName());
+        }
         if (regimen == null) {
           String regimenCode = null != regimenLineItemForRest.getCode() ? regimenLineItemForRest.getCode() : String.format("%03d", regimenService.listAll().size() + 1);
           regimen = new Regimen(regimenLineItemForRest.getName(), regimenCode, programId, true, regimenCategory, regimenService.getRegimensByCategory(regimenCategory).size(), true, false);
