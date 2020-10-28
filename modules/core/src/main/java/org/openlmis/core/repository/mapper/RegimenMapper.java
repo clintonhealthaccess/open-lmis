@@ -102,4 +102,7 @@ public interface RegimenMapper {
           @Result(property = "category", column = "categoryId", javaType = Long.class,
           one = @One(select = "org.openlmis.core.repository.mapper.RegimenCategoryMapper.getById"))})
   Regimen getRegimensByCategoryIdAndNameAndVersion(@Param("categoryId") Long categoryId, @Param("name") String name, @Param("versionCode") Long versionCode);
+
+  @Select({"SELECT * FROM regimens R WHERE R.programId=1 AND R.versionCode = 87 ORDER BY R.displayOrder"})
+  List<Regimen> getNewVersionRegimes();
 }

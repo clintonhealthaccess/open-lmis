@@ -18,6 +18,8 @@ import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.*;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.core.repository.helper.CommaSeparator;
+import org.openlmis.core.repository.mapper.ProductMapper;
+import org.openlmis.core.repository.mapper.RegimenMapper;
 import org.openlmis.core.repository.mapper.SignatureMapper;
 import org.openlmis.core.utils.DateUtil;
 import org.openlmis.equipment.domain.EquipmentInventoryStatus;
@@ -85,6 +87,12 @@ public class RequisitionRepository {
 
   @Autowired
   private ServiceItemMapper serviceItemMapper;
+
+  @Autowired
+  private ProductMapper productMapper;
+
+  @Autowired
+  private RegimenMapper regimenMapper;
 
   public void insert(Rnr requisition) {
     requisition.setStatus(INITIATED);
@@ -287,6 +295,8 @@ public class RequisitionRepository {
   public Rnr getById(Long rnrId) {
     Rnr requisition = requisitionMapper.getById(rnrId);
     if (requisition == null) throw new DataException("error.rnr.not.found");
+    requisition.setNewProducts(productMapper.getProductListForNewVersion());
+    requisition.setNewRegimes(regimenMapper.getNewVersionRegimes());
     return requisition;
   }
 

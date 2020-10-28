@@ -23,6 +23,8 @@ import org.openlmis.core.domain.*;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.core.repository.SupervisoryNodeRepository;
 import org.openlmis.core.repository.helper.CommaSeparator;
+import org.openlmis.core.repository.mapper.ProductMapper;
+import org.openlmis.core.repository.mapper.RegimenMapper;
 import org.openlmis.core.repository.mapper.SignatureMapper;
 import org.openlmis.core.utils.DateUtil;
 import org.openlmis.db.categories.UnitTests;
@@ -100,6 +102,10 @@ public class RequisitionRepositoryTest {
 
   @Mock
   private SignatureMapper signatureMapper;
+  @Mock
+  private ProductMapper productMapper;
+  @Mock
+  private RegimenMapper regimenMapper;
 
   @Before
   public void setUp() throws Exception {

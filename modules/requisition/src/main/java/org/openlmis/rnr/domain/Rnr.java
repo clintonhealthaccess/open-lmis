@@ -13,17 +13,13 @@ package org.openlmis.rnr.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang3.StringUtils;
 import org.openlmis.core.domain.*;
+import org.openlmis.core.domain.NewProductsItem;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.rnr.dto.ProgramDataColumnDTO;
 import org.openlmis.rnr.dto.ServiceDTO;
@@ -69,6 +65,8 @@ public class Rnr extends BaseModel {
   private List<EquipmentLineItem> equipmentLineItems = new ArrayList<>();
   private List<PatientQuantificationLineItem> patientQuantifications = new ArrayList<>();
   private List<TherapeuticLinesItem> therapeuticLines = new ArrayList<>();
+  private List<NewProductsItem> newProducts = new ArrayList<>();
+  private List<Regimen> newRegimes = new ArrayList<>();
   private BigDecimal allocatedBudget;
   @Transient
   @JsonIgnore
@@ -485,6 +483,13 @@ public class Rnr extends BaseModel {
   @JsonIgnore
   public boolean isBudgetingApplicable() {
     return !this.emergency && this.program.getBudgetingApplies();
+  }
+
+  public void setNewProducts(List<NewProductsItem> products){
+    this.newProducts = products;
+  }
+  public void setNewRegimes(List<Regimen> regimes){
+    this.newRegimes = regimes;
   }
 }
 

@@ -12,6 +12,9 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
     $scope.totalTypeOfDispensedDM = undefined;
     $scope.totalTypeOfDispensedWithInTotal = undefined;
     $scope.totalTypeOfDispensedTotal = undefined;
+    $scope.newRegimes = [];
+    $scope.newProducts = [];
+    $scope.isBetweenWebUpgradeAndMobileUpgrade = false;
 
     var barCodeBackGround = {
         'Adults':"#c7ddbb",
@@ -117,21 +120,148 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         Requisitions.get({ id: $route.current.params.rnr, operation: "skipped" }, function (data) {
             $scope.rnr = data.rnr;
             $scope.year = data.rnr.period.stringYear;
-
+            $scope.newProducts = data.rnr.newProducts;
+            $scope.newRegimes = data.rnr.newRegimes;
+            $scope.isBetweenWebUpgradeAndMobileUpgrade = data.rnr.patientQuantifications.length === 7 ? data.rnr.clientSubmittedTime > (new Date(messageService.get("app.mmia.layout.number.nine"))).getTime() /*Release date*/ : false;
             $scope.initMonth();
-            $scope.initProduct();
-            if (data.rnr.patientQuantifications.length === 7) {
+            console.log("isBetweenWebUpgradeAndMobileUpgrade="+$scope.isBetweenWebUpgradeAndMobileUpgrade);
+            if ($scope.isBetweenWebUpgradeAndMobileUpgrade){
+                $scope.rnr.reportType = "new";
+                $scope.initMockedPatient();
+                $scope.initMockedProuct();
+                $scope.initMockedRegime();
+                $scope.initMockedTherapeuticLines();
+            } else if (data.rnr.patientQuantifications.length === 7){
+                $scope.rnr.reportType = "old";
                 $scope.initOldPatient();
+                $scope.initProduct();
+                $scope.initRegime();
+                $scope.initTherapeuticLines();
             } else {
+                $scope.rnr.reportType = "new";
                 $scope.initPatient();
+                $scope.initProduct();
+                $scope.initRegime();
+                $scope.initTherapeuticLines();
             }
-            $scope.initRegime();
-            $scope.initTherapeuticLines();
+
             parseSignature($scope.rnr.rnrSignatures);
 
             downloadPdfService.init($scope, $scope.rnr.id);
             downloadSimamService.init($scope, $scope.rnr.id);
         });
+    };
+
+    function  pickProductsFromResponse(fullSupplyLineItems,productItem, category) {
+        var matched = _.find(fullSupplyLineItems, function (item) {
+            return item.productCode === productItem.code;
+        });
+        if (matched){
+            return  _.assign({}, matched,{categoryName: category});
+        } else {
+            return {
+                productCode:productItem.code,
+                productPrimaryName: productItem.primaryName,
+                productStrength: productItem.strength,
+                beginningBalance: "N/A",
+                quantityReceived: "N/A",
+                quantityDispensed: "N/A",
+                totalLossesAndAdjustments: "N/A",
+                stockInHand: "N/A",
+                expirationDate: "",
+                categoryName: category
+            };
+        }
+    }
+
+    function  pickRegimeFromResponse(regimenLineItems, regimeItem) {
+        var matched = _.find(regimenLineItems, function (item) {
+            return item.name === regimeItem.name;
+        });
+        if (matched) {
+            return _.assign({},matched,{comunitaryPharmacy: "N/A"});
+        } else {
+            return {
+                categoryName: regimeItem.code.startsWith("Adults") ? "Adults" : "Paediatrics",
+                name: regimeItem.name,
+                comunitaryPharmacy: "N/A",
+                patientsOnTreatment: "N/A"
+            };
+        }
+    }
+
+    $scope.initMockedPatient = function () {
+        var messageMap = [
+            {messageName: "view.rnr.mmia.patient.new", header: 'view.rnr.mmia.patient.header.patientsType', total: "N/A"},
+            {messageName: "view.rnr.mmia.patient.maintenance", header: 'view.rnr.mmia.patient.header.patientsType', total: "N/A"},
+            {messageName: "view.rnr.mmia.patient.alteration", header: 'view.rnr.mmia.patient.header.patientsType', total: "N/A"},
+            {messageName: "view.rnr.mmia.patient.transit", header: 'view.rnr.mmia.patient.header.patientsType', total: "N/A"},
+            {messageName: "view.rnr.mmia.patient.transfers", header: 'view.rnr.mmia.patient.header.patientsType', total: "N/A"},
+            {messageName: "view.rnr.mmia.patient.adults", header: 'view.rnr.mmia.patient.header.TARVPatients', total: "N/A"},
+            {messageName: "view.rnr.mmia.patient.4pediatric", header: 'view.rnr.mmia.patient.header.TARVPatients', total: "N/A"},
+            {messageName: "view.rnr.mmia.patient.9pediatric", header: 'view.rnr.mmia.patient.header.TARVPatients', total: "N/A"},
+            {messageName: "view.rnr.mmia.patient.14pediatric", header: 'view.rnr.mmia.patient.header.TARVPatients', total: "N/A"},
+            {messageName: "view.rnr.mmia.patient.prep", header: 'view.rnr.mmia.patient.header.prophylaxis', total: "N/A"},
+            {messageName: "view.rnr.mmia.patient.ppe", header: 'view.rnr.mmia.patient.header.prophylaxis', total: "N/A"},
+            {messageName: "view.rnr.mmia.patient.exposed", header: 'view.rnr.mmia.patient.header.prophylaxis', total: "N/A"},
+            {messageName: "view.rnr.mmia.patient.totalNr", header: 'view.rnr.mmia.patient.header.prophylaxis', total: "N/A"}
+        ];
+        $scope.rnr.patientQuantifications = _.groupBy(messageMap, 'header');
+        $scope.totalTypeOfDispensedDS = "N/A";
+        $scope.totalTypeOfDispensedDT = "N/A";
+        $scope.totalTypeOfDispensedDM = "N/A";
+        $scope.totalTypeOfDispensedWithInTotal = "N/A";
+        $scope.totalTypeOfDispensedTotal = "N/A";
+
+    };
+
+    var addEmptyLinesForRegimes = function(regimens) {
+        if (regimens.Adults === undefined) {
+            regimens.Adults = [];
+        }
+
+        if (regimens.Paediatrics === undefined) {
+            regimens.Paediatrics = [];
+        }
+
+        regimens.Adults.push({categoryName: 'Adults'});
+        regimens.Adults.push({categoryName: 'Adults'});
+
+        regimens.Paediatrics.push({categoryName: 'Paediatrics'});
+        regimens.Paediatrics.push({categoryName: 'Paediatrics'});
+    };
+
+    $scope.initMockedRegime = function () {
+        var regimens1 = _.map($scope.newRegimes, function (item) {
+            return pickRegimeFromResponse($scope.rnr.regimenLineItems, item);
+        });
+        regimens = _.groupBy(regimens1, function (item) {
+            return item.categoryName;
+        });
+        addEmptyLinesForRegimes(regimens);
+        $scope.regimens = regimens;
+        if ($scope.rnr.regimenLineItems[0].comunitaryPharmacy !== undefined) {
+            $scope.regimeTotalComunitaryPharmacy = sumFunc($scope.rnr.regimenLineItems,'comunitaryPharmacy');
+        }
+        if ($scope.rnr.therapeuticLines !== undefined) {
+            $scope.therapeuticLinesTotalPatients = sumFunc($scope.rnr.therapeuticLines,'patientsOnTreatment');
+            $scope.therapeuticLinesTotalComunitaryPharmacy = sumFunc($scope.rnr.therapeuticLines,'comunitaryPharmacy');
+        }
+    };
+
+    $scope.initMockedTherapeuticLines =  function () {
+        $scope.therapeuticLines =[
+            {code: 'view.rnr.mmia.regime.therapeutic.line.1',comunitaryPharmacy: 'N/A', patientsOnTreatment: 'N/A'},
+            {code: 'view.rnr.mmia.regime.therapeutic.line.2', comunitaryPharmacy: 'N/A', patientsOnTreatment: 'N/A'},
+            {code: 'view.rnr.mmia.regime.therapeutic.line.3',comunitaryPharmacy: 'N/A', patientsOnTreatment: 'N/A'}
+        ];
+    };
+    $scope.initMockedProuct = function () {
+        var fullSupplyLineItems = _.sortBy($scope.newProducts,'code');
+        fullSupplyLineItems = _.map(fullSupplyLineItems, function (item) {
+            return pickProductsFromResponse($scope.rnr.fullSupplyLineItems, item.productItem, item.categoryName);
+        });
+        addEmptyLine(fullSupplyLineItems);
     };
 
     function getBarCodeOptions(product){
@@ -223,7 +353,6 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
             var item = patientQuantifications[i];
             item.category = "view.rnr.mmia.patient." + openlmisMessageMap[item.category];
         }
-        $scope.rnr.reportType = "old";
     };
 
     $scope.initPatient = function () {
@@ -243,8 +372,6 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         });
         patientQuantifications = _.groupBy(patientQuantifications, 'header');
         $scope.rnr.patientQuantifications = patientQuantifications;
-
-        $scope.rnr.reportType = "new";
     };
 
     var formatTypeOfDispensed = function (patientQuantifications) {
@@ -269,6 +396,9 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
     };
 
     function getDataByKey(nameKey){
+        if ($scope.isBetweenWebUpgradeAndMobileUpgrade) {
+            return "N/A";
+        }
         for (var i=0; i < $scope.typeOfDispensed.length; i++) {
             if ($scope.typeOfDispensed[i].category === nameKey) {
                 return $scope.typeOfDispensed[i].total;
@@ -277,6 +407,9 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
     }
 
     $scope.getDataByKey = function (nameKey, myArray) {
+        if ($scope.isBetweenWebUpgradeAndMobileUpgrade) {
+            return "N/A";
+        }
         for (var i =0; i< myArray.length; i++){
             if (myArray[i].category === nameKey){
                 return myArray[i].total;
@@ -298,26 +431,11 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         }
     };
 
-
     $scope.initRegime = function () {
         var regimens = _.groupBy($scope.rnr.regimenLineItems, function (item) {
             return item.categoryName;
         });
-
-        if (regimens.Adults === undefined) {
-            regimens.Adults = [];
-        }
-
-        if (regimens.Paediatrics === undefined) {
-            regimens.Paediatrics = [];
-        }
-
-        regimens.Adults.push({categoryName: 'Adults'});
-        regimens.Adults.push({categoryName: 'Adults'});
-
-        regimens.Paediatrics.push({categoryName: 'Paediatrics'});
-        regimens.Paediatrics.push({categoryName: 'Paediatrics'});
-
+        addEmptyLinesForRegimes(regimens);
         $scope.regimens = $scope.rnr.reportType === 'new' ? regimens : $scope.regimens.concat(regimens.Adults, regimens.Paediatrics);
         $scope.regimeTotalPatients= sumFunc($scope.rnr.regimenLineItems,'patientsOnTreatment');
         if ($scope.rnr.regimenLineItems[0].comunitaryPharmacy !== undefined) {

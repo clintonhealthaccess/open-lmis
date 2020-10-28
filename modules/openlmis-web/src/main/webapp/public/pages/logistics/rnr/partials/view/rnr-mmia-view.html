@@ -174,7 +174,7 @@
                 <td>{{getDataByKey("dispensed_ds5",typeOfDispensed)}}</td>
                 <td style="border: none"></td>
                 <td style="border: none"></td>
-                <td>{{formatAdjustMent(totalTypeOfDispensedDS + totalTypeOfDispensedDT + totalTypeOfDispensedDM, totalTypeOfDispensedWithInTotal)}}</td>
+                <td>{{isBetweenWebUpgradeAndMobileUpgrade ? "N/A" :formatAdjustMent(totalTypeOfDispensedDS + totalTypeOfDispensedDT + totalTypeOfDispensedDM, totalTypeOfDispensedWithInTotal)}}</td>
             </tr>
             <tr width="30px" height="30px">
                 <td>4 Months ago</td>
@@ -216,7 +216,7 @@
                 <td>{{totalTypeOfDispensedDS}}</td>
                 <td>{{totalTypeOfDispensedDT}}</td>
                 <td>{{totalTypeOfDispensedDM}}</td>
-                <td>{{totalTypeOfDispensedDS + totalTypeOfDispensedDT + totalTypeOfDispensedDM}}</td>
+                <td>{{isBetweenWebUpgradeAndMobileUpgrade ? "N/A" : totalTypeOfDispensedDS + totalTypeOfDispensedDT + totalTypeOfDispensedDM}}</td>
             </tr>
             </table>
             <table ng-if="rnr.reportType === 'old'" class="patient-form">
