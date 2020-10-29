@@ -240,6 +240,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         });
         addEmptyLinesForRegimes(regimens);
         $scope.regimens = regimens;
+        $scope.regimeTotalPatients= sumFunc($scope.rnr.regimenLineItems,'patientsOnTreatment');
         if ($scope.rnr.regimenLineItems[0].comunitaryPharmacy !== undefined) {
             $scope.regimeTotalComunitaryPharmacy = sumFunc($scope.rnr.regimenLineItems,'comunitaryPharmacy');
         }

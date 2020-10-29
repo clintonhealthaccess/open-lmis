@@ -167,52 +167,52 @@
                 <td>DS</td>
                 <td style="border: none"></td>
                 <td style="border: none"></td>
-                <td style="border: none">Adjustment</td>
+                <td style="border: none" openlmis-message="view.rnr.mmia.patient.md.adjustment"></td>
             </tr>
             <tr width="30px" height="30px">
-                <td>5 Months ago</td>
+                <td openlmis-message="view.rnr.mmia.patient.md.5m"></td>
                 <td>{{getDataByKey("dispensed_ds5",typeOfDispensed)}}</td>
                 <td style="border: none"></td>
                 <td style="border: none"></td>
                 <td>{{isBetweenWebUpgradeAndMobileUpgrade ? "N/A" :formatAdjustMent(totalTypeOfDispensedDS + totalTypeOfDispensedDT + totalTypeOfDispensedDM, totalTypeOfDispensedWithInTotal)}}</td>
             </tr>
             <tr width="30px" height="30px">
-                <td>4 Months ago</td>
+                <td openlmis-message="view.rnr.mmia.patient.md.4m"></td>
                 <td>{{getDataByKey("dispensed_ds4",typeOfDispensed)}}</td>
                 <td style="border: none"></td>
                 <td style="border: none"></td>
                 <td style="border: none"></td>
             </tr>
             <tr width="30px" height="30px">
-                <td>3 Months ago</td>
+                <td openlmis-message="view.rnr.mmia.patient.md.3m"></td>
                 <td>{{getDataByKey("dispensed_ds3",typeOfDispensed)}}</td>
                 <td>DT</td>
                 <td style="border: none"></td>
                 <td style="border: none"></td>
             </tr>
             <tr width="30px" height="30px">
-                <td>2 Months ago</td>
+                <td openlmis-message="view.rnr.mmia.patient.md.2m"></td>
                 <td>{{getDataByKey("dispensed_ds2",typeOfDispensed)}}</td>
                 <td>{{getDataByKey("dispensed_dt2",typeOfDispensed)}}</td>
                 <td style="border: none"></td>
                 <td style="border: none"></td>
             </tr>
             <tr width="30px" height="30px">
-                <td>Last month</td>
+                <td openlmis-message="view.rnr.mmia.patient.md.1m"></td>
                 <td>{{getDataByKey("dispensed_ds1",typeOfDispensed)}}</td>
                 <td>{{getDataByKey("dispensed_dt1",typeOfDispensed)}}</td>
                 <td>Dispensed for Month</td>
                 <td style="border: none">Total</td>
             </tr>
             <tr width="30px" height="30px">
-                <td>Within this month</td>
+                <td openlmis-message="view.rnr.mmia.patient.md.withm"></td>
                 <td>{{getDataByKey("dispensed_ds",typeOfDispensed)}}</td>
                 <td>{{getDataByKey("dispensed_dt",typeOfDispensed)}}</td>
                 <td>{{getDataByKey("dispensed_dm",typeOfDispensed)}}</td>
                 <td>{{totalTypeOfDispensedWithInTotal}}</td>
             </tr>
             <tr width="30px" height="30px">
-                <td>Total patients with treatment</td>
+                <td openlmis-message="view.rnr.mmia.patient.md.total"></td>
                 <td>{{totalTypeOfDispensedDS}}</td>
                 <td>{{totalTypeOfDispensedDT}}</td>
                 <td>{{totalTypeOfDispensedDM}}</td>
