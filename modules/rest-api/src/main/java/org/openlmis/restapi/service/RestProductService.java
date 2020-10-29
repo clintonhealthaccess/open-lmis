@@ -174,7 +174,7 @@ public class RestProductService {
         }
       }).toList();
 
-      if (!programsResponse.isEmpty()) {
+      if (!programsResponse.isEmpty() || LmisThreadLocalUtils.STR_VERSION_87.equals(LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE))) {
         productResponseList.add(new ProductResponse(product, programsResponse));
       }
     }
