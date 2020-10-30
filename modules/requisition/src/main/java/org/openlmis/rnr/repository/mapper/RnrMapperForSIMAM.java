@@ -45,7 +45,11 @@ public interface RnrMapperForSIMAM {
     )
     List<Map<String, String>> getRegimenItemsForSIMAMImport(@Param("rnr") Rnr rnr);
 
-    @Select("SELECT p.code FROM programs p" +
+    /*
+     * MMIA ,08Sxxxxx, 87
+     * MMIA ,08Sxxxxx, 86
+     * */
+    @Select("SELECT DISTINCT p.code FROM programs p" +
         "   LEFT JOIN program_products pp" +
         "   ON pp.programid = p.id" +
         "   LEFT JOIN products pr" +

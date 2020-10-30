@@ -182,7 +182,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
             return _.assign({},matched,{comunitaryPharmacy: "N/A"});
         } else {
             return {
-                categoryName: regimeItem.code.startsWith("Adults") ? "Adults" : "Paediatrics",
+                categoryName: "Adults" === regimeItem.code.substring(0,6) ? "Adults" : "Paediatrics",
                 name: regimeItem.name,
                 comunitaryPharmacy: "N/A",
                 patientsOnTreatment: "N/A"
