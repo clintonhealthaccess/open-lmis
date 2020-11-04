@@ -96,9 +96,9 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
             'barcode':"bg-color-lightblue"
         },
         'Paediatrics':{
-            'productPrimaryName':"bg-color-yellow align-left",
-            'barcode':'bg-color-yellow',
-            'headerclass': "bg-color-yellow rowspan",
+            'productPrimaryName':"bg-color-lightyellow align-left",
+            'barcode':'bg-color-lightyellow',
+            'headerclass': "bg-color-lightyellow rowspan",
             'headername':'Paediatrics'
         },
     };

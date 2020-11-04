@@ -62,7 +62,8 @@
         <tbody>
         <tr ng-repeat="item in rnrLineItems">
             <td class="banner-text">{{$index+1}}</td>
-            <td class="{{params[item.categoryName]['barcode']}}">{{item.productCode===undefined? '': '*'+item.productCode+'*'}}</td>
+            <td ng-if="rnr.reportType === 'old'" style="border: none" class="{{params[item.categoryName]['barcode']}}">{{item.productCode===undefined? '': '*'+item.productCode+'*'}}</td>
+            <td ng-if="rnr.reportType === 'new'" class="{{params[item.categoryName]['barcode']}}">{{item.productCode===undefined? '': '*'+item.productCode+'*'}}</td>
             <td class="{{params[item.categoryName]['productPrimaryName']}}">{{item.productPrimaryName}}</td>
             <td>{{item.productStrength}}</td>
             <td>{{item.beginningBalance}}</td>
@@ -84,8 +85,10 @@
                 <tr>
                     <th class="banner-text"></th>
                     <th ng-if="rnr.reportType === 'old'" openlmis-message="view.rnr.mmia.regime.code"></th>
-                    <th class="col-4" openlmis-message="view.rnr.mmia.regime.therapeutic" colspan="{{rnr.reportType === 'new' ? 2: 0}}"></th>
-                    <th openlmis-message="view.rnr.mmia.regime.column.total"></th>
+                    <th ng-if="rnr.reportType === 'old'" class="col-4" openlmis-message="view.rnr.mmia.regime.therapeutic.old" ></th>
+                    <th ng-if="rnr.reportType === 'new'" class="col-4" openlmis-message="view.rnr.mmia.regime.therapeutic" colspan="2"></th>
+                    <th ng-if="rnr.reportType === 'old'" openlmis-message="view.rnr.mmia.regime.total.old"></th>
+                    <th ng-if="rnr.reportType === 'new'" openlmis-message="view.rnr.mmia.regime.total.new"></th>
                     <th ng-if="rnr.reportType === 'new'" openlmis-message="view.rnr.mmia.regime.pharmacy"></th>
                 </tr>
                 </thead>
@@ -164,59 +167,59 @@
             <tr><th colspan="5" class="background-black" openlmis-message="view.rnr.mmia.patient.header.md"></th></tr>
             <tr width="30px" height="30px">
                 <td class="lefttop"></td>
-                <td>DS</td>
+                <td class="bg-color-darkgray">DS</td>
                 <td style="border: none"></td>
                 <td style="border: none"></td>
                 <td style="border: none" openlmis-message="view.rnr.mmia.patient.md.adjustment"></td>
             </tr>
             <tr width="30px" height="30px">
                 <td openlmis-message="view.rnr.mmia.patient.md.5m"></td>
-                <td>{{getDataByKey("dispensed_ds5",typeOfDispensed)}}</td>
+                <td class="bg-color-gray">{{getDataByKey("dispensed_ds5",typeOfDispensed)}}</td>
                 <td style="border: none"></td>
                 <td style="border: none"></td>
-                <td>{{isBetweenWebUpgradeAndMobileUpgrade ? "N/A" :formatAdjustMent(totalTypeOfDispensedDS + totalTypeOfDispensedDT + totalTypeOfDispensedDM, totalTypeOfDispensedWithInTotal)}}</td>
+                <td class="bg-color-gray">{{isBetweenWebUpgradeAndMobileUpgrade ? "N/A" :formatAdjustMent(totalTypeOfDispensedDS + totalTypeOfDispensedDT + totalTypeOfDispensedDM, totalTypeOfDispensedWithInTotal)}}</td>
             </tr>
             <tr width="30px" height="30px">
                 <td openlmis-message="view.rnr.mmia.patient.md.4m"></td>
-                <td>{{getDataByKey("dispensed_ds4",typeOfDispensed)}}</td>
+                <td class="bg-color-gray">{{getDataByKey("dispensed_ds4",typeOfDispensed)}}</td>
                 <td style="border: none"></td>
                 <td style="border: none"></td>
                 <td style="border: none"></td>
             </tr>
             <tr width="30px" height="30px">
                 <td openlmis-message="view.rnr.mmia.patient.md.3m"></td>
-                <td>{{getDataByKey("dispensed_ds3",typeOfDispensed)}}</td>
-                <td>DT</td>
+                <td class="bg-color-gray">{{getDataByKey("dispensed_ds3",typeOfDispensed)}}</td>
+                <td class="bg-color-darkgray">DT</td>
                 <td style="border: none"></td>
                 <td style="border: none"></td>
             </tr>
             <tr width="30px" height="30px">
                 <td openlmis-message="view.rnr.mmia.patient.md.2m"></td>
-                <td>{{getDataByKey("dispensed_ds2",typeOfDispensed)}}</td>
-                <td>{{getDataByKey("dispensed_dt2",typeOfDispensed)}}</td>
+                <td class="bg-color-gray">{{getDataByKey("dispensed_ds2",typeOfDispensed)}}</td>
+                <td class="bg-color-gray">{{getDataByKey("dispensed_dt2",typeOfDispensed)}}</td>
                 <td style="border: none"></td>
                 <td style="border: none"></td>
             </tr>
             <tr width="30px" height="30px">
                 <td openlmis-message="view.rnr.mmia.patient.md.1m"></td>
-                <td>{{getDataByKey("dispensed_ds1",typeOfDispensed)}}</td>
-                <td>{{getDataByKey("dispensed_dt1",typeOfDispensed)}}</td>
-                <td>Dispensed for Month</td>
+                <td class="bg-color-gray">{{getDataByKey("dispensed_ds1",typeOfDispensed)}}</td>
+                <td class="bg-color-gray">{{getDataByKey("dispensed_dt1",typeOfDispensed)}}</td>
+                <td class="bg-color-darkgray">Dispensed for Month</td>
                 <td style="border: none">Total</td>
             </tr>
             <tr width="30px" height="30px">
                 <td openlmis-message="view.rnr.mmia.patient.md.withm"></td>
-                <td>{{getDataByKey("dispensed_ds",typeOfDispensed)}}</td>
-                <td>{{getDataByKey("dispensed_dt",typeOfDispensed)}}</td>
-                <td>{{getDataByKey("dispensed_dm",typeOfDispensed)}}</td>
-                <td>{{totalTypeOfDispensedWithInTotal}}</td>
+                <td class="bg-color-gray">{{getDataByKey("dispensed_ds",typeOfDispensed)}}</td>
+                <td class="bg-color-gray">{{getDataByKey("dispensed_dt",typeOfDispensed)}}</td>
+                <td class="bg-color-gray">{{getDataByKey("dispensed_dm",typeOfDispensed)}}</td>
+                <td class="bg-color-gray">{{totalTypeOfDispensedWithInTotal}}</td>
             </tr>
             <tr width="30px" height="30px">
                 <td openlmis-message="view.rnr.mmia.patient.md.total"></td>
-                <td>{{totalTypeOfDispensedDS}}</td>
-                <td>{{totalTypeOfDispensedDT}}</td>
-                <td>{{totalTypeOfDispensedDM}}</td>
-                <td>{{isBetweenWebUpgradeAndMobileUpgrade ? "N/A" : totalTypeOfDispensedDS + totalTypeOfDispensedDT + totalTypeOfDispensedDM}}</td>
+                <td class="bg-color-darkgray">{{totalTypeOfDispensedDS}}</td>
+                <td class="bg-color-darkgray">{{totalTypeOfDispensedDT}}</td>
+                <td class="bg-color-darkgray">{{totalTypeOfDispensedDM}}</td>
+                <td class="bg-color-darkgray">{{isBetweenWebUpgradeAndMobileUpgrade ? "N/A" : totalTypeOfDispensedDS + totalTypeOfDispensedDT + totalTypeOfDispensedDM}}</td>
             </tr>
             </table>
             <table ng-if="rnr.reportType === 'old'" class="patient-form">
@@ -225,13 +228,13 @@
                         <th colspan="2" class="background-black" openlmis-message="view.rnr.mmia.patient.header"></th>
                     </tr>
                     <tr>
-                        <th class="col-2" openlmis-message="view.rnr.mmia.patient.type"></th>
-                        <th class="col-3" openlmis-message="view.rnr.mmia.patient.title.total"></th>
+                        <th class="col-2" style="background-color: #d0d0d0" openlmis-message="view.rnr.mmia.patient.type"></th>
+                        <th class="col-3" style="background-color: #d0d0d0" openlmis-message="view.rnr.mmia.patient.title.total"></th>
                     </tr>
                 </thread>
                 <tbody>
                     <tr ng-repeat="item in rnr.patientQuantifications">
-                        <td openlmis-message={{item.category}}></td>
+                        <td style="text-align: center" openlmis-message={{item.category}}></td>
                         <td>{{item.total}}</td>
                     </tr>
                 </tbody>
