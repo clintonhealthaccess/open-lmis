@@ -491,5 +491,12 @@ public class Rnr extends BaseModel {
   public void setNewRegimes(List<Regimen> regimes){
     this.newRegimes = regimes;
   }
+
+  public boolean isFromOldMMIALayout(){
+    return this.patientQuantifications.size() == 7;
+  }
+  public boolean isMMIALayout(){
+    return this.program.isMmiaRequisition();
+  }
 }
 

@@ -28,9 +28,10 @@ $do$
             , (1 /*programid*/, 2/*1- adults, 2-Paediatrics*/, 'PaediatricsTO813'/*code*/, 'ABC+3TC+LPV/r (2DFC ped + LPV/r 40/10)'/*name*/, TRUE/*active*/, 13/*displayorder*/, 1, 1, FALSE/*iscustom*/, FALSE/*skipped*/, NOW(), NOW(),87)
             , (1 /*programid*/, 2/*1- adults, 2-Paediatrics*/, 'PaediatricsTO814'/*code*/, 'ABC+3TC+EFV (2DFC ped + EFV200)'/*name*/, TRUE/*active*/, 14/*displayorder*/, 1, 1, FALSE/*iscustom*/, FALSE/*skipped*/, NOW(), NOW(),87)
             , (1 /*programid*/, 2/*1- adults, 2-Paediatrics*/, 'PaediatricsTO815'/*code*/, 'AZT 60+3TC 30+NVP 50 (3DFC)'/*name*/, TRUE/*active*/, 15/*displayorder*/, 1, 1, FALSE/*iscustom*/, FALSE/*skipped*/, NOW(), NOW(),87)
-            , (1 /*programid*/, 2/*1- adults, 2-Paediatrics*/, 'PaediatricsTO816'/*code*/, 'AZT 60+3TC 30+LPV/r (2DFC + LPV/r 100/25)'/*name*/, TRUE/*active*/, 16/*displayorder*/, 1, 1, FALSE/*iscustom*/, FALSE/*skipped*/, NOW(), NOW(),87)
-            , (1 /*programid*/, 2/*1- adults, 2-Paediatrics*/, 'PaediatricsTO817'/*code*/, 'AZT 60+3TC 30+LPV/r (2DFC + LPV/r 80/20)'/*name*/, TRUE/*active*/, 17/*displayorder*/, 1, 1, FALSE/*iscustom*/, FALSE/*skipped*/, NOW(), NOW(),87)
-            , (1 /*programid*/, 2/*1- adults, 2-Paediatrics*/, 'PaediatricsTO818'/*code*/, 'AZT 60+3TC 30+LPV/r (2DFC + LPV/r 40/10)'/*name*/, TRUE/*active*/, 18/*displayorder*/, 1, 1, FALSE/*iscustom*/, FALSE/*skipped*/, NOW(), NOW(),87);
+            , (1 /*programid*/, 2/*1- adults, 2-Paediatrics*/, 'PaediatricsTO816'/*code*/, 'ABC+3TC+DTG (2DFC ped + DTG50)'/*name*/, TRUE/*active*/, 16/*displayorder*/, 1, 1, FALSE/*iscustom*/, FALSE/*skipped*/, NOW(), NOW(),87)
+            , (1 /*programid*/, 2/*1- adults, 2-Paediatrics*/, 'PaediatricsTO817'/*code*/, 'AZT 60+3TC 30+LPV/r (2DFC + LPV/r 100/25)'/*name*/, TRUE/*active*/, 17/*displayorder*/, 1, 1, FALSE/*iscustom*/, FALSE/*skipped*/, NOW(), NOW(),87)
+            , (1 /*programid*/, 2/*1- adults, 2-Paediatrics*/, 'PaediatricsTO818'/*code*/, 'AZT 60+3TC 30+LPV/r (2DFC + LPV/r 80/20)'/*name*/, TRUE/*active*/, 18/*displayorder*/, 1, 1, FALSE/*iscustom*/, FALSE/*skipped*/, NOW(), NOW(),87)
+            , (1 /*programid*/, 2/*1- adults, 2-Paediatrics*/, 'PaediatricsTO819'/*code*/, 'AZT 60+3TC 30+LPV/r (2DFC + LPV/r 40/10)'/*name*/, TRUE/*active*/, 19/*displayorder*/, 1, 1, FALSE/*iscustom*/, FALSE/*skipped*/, NOW(), NOW(),87);
     END IF;
 END
 $do$

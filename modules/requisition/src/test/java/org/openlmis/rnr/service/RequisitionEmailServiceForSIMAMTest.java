@@ -79,7 +79,7 @@ public class RequisitionEmailServiceForSIMAMTest {
     initUsers();
     when(settingService.getConfigurationStringValue(anyString())).thenReturn("email content");
     requisitionEmailServiceForSIMAM =
-            new RequisitionEmailServiceForSIMAM(rnrMapperForSIMAM, emailService, settingService,singleListSheetExcelHandler, PDFGenerator, staticReferenceDataService, "pdfPath");
+            new RequisitionEmailServiceForSIMAM(rnrMapperForSIMAM, emailService, settingService,singleListSheetExcelHandler, PDFGenerator, staticReferenceDataService, "pdfPath","2020-11-04");
   }
 
   private void initRnrItems(String programCode) {
