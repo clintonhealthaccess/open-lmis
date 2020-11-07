@@ -22,46 +22,29 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         'Solution':"#d3e9f0"
     };
     var openlmisMessageMap = {
-        "new": {messageName: "new", tableName: 'Type of patients in TARV'},
-        "novos": {messageName: "new", tableName: 'Type of patients in TARV'},
-        "maintenance": {messageName: "maintenance", tableName: 'Type of patients in TARV'},
-        "manutenção": {messageName: "maintenance", tableName: 'Type of patients in TARV'},
-        "alteration": {messageName: "alteration", tableName: 'Type of patients in TARV'},
-        "alteração": {messageName: "alteration", tableName: 'Type of patients in TARV'},
-        "transit": {messageName: "transit", tableName: 'Type of patients in TARV'},
-        "trânsito": {messageName: "transit", tableName: 'Type of patients in TARV'},
-        "transfers": {messageName: "transfers", tableName: 'Type of patients in TARV'},
-        "transferências": {messageName: "transfers", tableName: 'Type of patients in TARV'},
-        "adults": {messageName: "adults", tableName: 'age range of TARV patients'},
-        "adultos": {messageName: "adults", tableName: 'age range of TARV patients'},
-        "pediatric from 0 to 4 years": {messageName: "4pediatric", tableName: 'age range of TARV patients'},
-        "pediátricos 0 aos 4 anos": {messageName: "4pediatric", tableName: 'age range of TARV patients'},
-        "pediatric from 5 to 9 years": {messageName: "9pediatric", tableName: 'age range of TARV patients'},
-        "pediátricos 5 aos 9 anos": {messageName: "9pediatric", tableName: 'age range of TARV patients'},
-        "pediatric from 10 to 14 years": {messageName: "14pediatric", tableName: 'age range of TARV patients'},
-        "pediátricos 10 aos 14 anos": {messageName: "14pediatric", tableName: 'age range of TARV patients'},
-        "prep": {messageName: "prep", tableName: 'prophylaxis'},
-        "ppe": {messageName: "ppe", tableName: 'prophylaxis'},
-        "exposed child": {messageName: "exposed", tableName: 'prophylaxis'},
-        "criança exposta": {messageName: "exposed", tableName: 'prophylaxis'},
-        "total nr of patients in tarv at hf": {messageName: "totalNr", tableName: 'prophylaxis'},
-        "total de pacientes em tarv na us": {messageName: "totalNr", tableName: 'prophylaxis'},
+        "table_trav_label_new_key": {messageName: "new", tableName: 'table_arvt_key'},
+        "table_trav_label_maintenance_key": {messageName: "maintenance", tableName: 'table_arvt_key'},
+        "table_trav_label_alteration_key": {messageName: "alteration", tableName: 'table_arvt_key'},
+        "table_trav_label_transit_key": {messageName: "transit", tableName: 'table_arvt_key'},
+        "table_trav_label_transfers_key": {messageName: "transfers", tableName: 'table_arvt_key'},
+        "table_patients_adults_key": {messageName: "adults", tableName: 'table_patients_key'},
+        "table_patients_0to4_key": {messageName: "4pediatric", tableName: 'table_patients_key'},
+        "table_patients_5to9_key": {messageName: "9pediatric", tableName: 'table_patients_key'},
+        "table_patients_10to14_key": {messageName: "14pediatric", tableName: 'table_patients_key'},
+        "table_prophylaxis_prep_key": {messageName: "prep", tableName: 'table_prophylaxy_key'},
+        "table_prophylaxis_ppe_key": {messageName: "ppe", tableName: 'table_prophylaxy_key'},
+        "table_prophylaxis_child_key": {messageName: "exposed", tableName: 'table_prophylaxy_key'},
+        "table_prophylaxis_total_key": {messageName: "totalNr", tableName: 'table_prophylaxy_key'}
     };
     var tableMap = {
-        'Type of patients in TRAV': 'patientsType',
-        'Tipo de pacientes em TARV': 'patientsType',
-        'age range of TRAV patients': 'TARVPatients',
-        'Faixa etária dos pacientes em TRAV': 'TARVPatients',
-        'prophylaxis': 'prophylaxis',
-        'Profilaxia': 'prophylaxis'
+        'table_arvt_key': 'patientsType',
+        'table_patients_key': 'TARVPatients',
+        'table_prophylaxy_key': 'prophylaxis'
     };
     var therapeuticLinesMap = {
-        '1st Line': 'view.rnr.mmia.regime.therapeutic.line.1',
-        '1ª Linha': 'view.rnr.mmia.regime.therapeutic.line.1',
-        '2nd Line': 'view.rnr.mmia.regime.therapeutic.line.2',
-        '2ª Linha': 'view.rnr.mmia.regime.therapeutic.line.2',
-        '3rd Line': 'view.rnr.mmia.regime.therapeutic.line.3',
-        '3ª Linha': 'view.rnr.mmia.regime.therapeutic.line.3'
+        'key_regime_3lines_1': 'view.rnr.mmia.regime.therapeutic.line.1',
+        'key_regime_3lines_2': 'view.rnr.mmia.regime.therapeutic.line.2',
+        'key_regime_3lines_3': 'view.rnr.mmia.regime.therapeutic.line.3'
     };
 
     $scope.params = {
@@ -154,7 +137,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
 
     function  pickProductsFromResponse(fullSupplyLineItems,productItem, category) {
         var matched = _.find(fullSupplyLineItems, function (item) {
-            return item.productCode === productItem.code;
+            return item.productCode === productItem.code && item.categoryName === category;
         });
         if (matched){
             return  _.assign({}, matched,{categoryName: category});
@@ -240,7 +223,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         });
         addEmptyLinesForRegimes(regimens);
         $scope.regimens = regimens;
-        $scope.regimeTotalPatients= sumFunc($scope.rnr.regimenLineItems,'patientsOnTreatment');
+        $scope.regimeTotalPatients= sumFunc(regimens1,'patientsOnTreatment');
         if ($scope.rnr.regimenLineItems[0].comunitaryPharmacy !== undefined) {
             $scope.regimeTotalComunitaryPharmacy = sumFunc($scope.rnr.regimenLineItems,'comunitaryPharmacy');
         }
@@ -377,7 +360,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
 
     var formatTypeOfDispensed = function (patientQuantifications) {
         $scope.typeOfDispensed = _.filter(patientQuantifications,function (item) {
-            return item.tableName === "Type of Dispensed" || item.tableName === "Type of Dispensed";
+            return item.tableName === "table_dispensed_key";
         });
         if ($scope.typeOfDispensed !== undefined) {
             $scope.totalTypeOfDispensedDS = getDataByKey('dispensed_ds5') +
@@ -451,7 +434,9 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
     var sumFunc = function (keyValue, key) {
         var sum = 0;
         _.forEach(keyValue, function (item) {
-            sum +=item[key];
+            if (_.isNumber(item[key])) {
+                sum += item[key];
+            }
         });
         return sum;
     };

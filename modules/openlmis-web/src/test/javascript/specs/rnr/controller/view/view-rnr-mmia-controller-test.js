@@ -118,23 +118,24 @@ describe('ViewRnrViaDetailController', function () {
         {id: 4982758,rnrId:500915,code:"011",name:"Paediatrics 4",categoryName: "Paediatrics", patientsOnTreatment: 1,comunitaryPharmacy:1,regimenDisplayOrder:1},
         {id: 4982759,rnrId:500915,code:"012",name:"Paediatrics 5",categoryName: "Paediatrics", patientsOnTreatment: 1,comunitaryPharmacy:1,regimenDisplayOrder:1},
       ],
-      patientQuantifications: [{id: 969235, rnrId: 500915, category: "New", total: 12, tableName: "Type of patients in TRAV", categoryName: "New"},
-        {id: 969236, rnrId: 500915,category: "Maintenance", total: 3, tableName: "Type of patients in TRAV", categoryName: "Maintenance"},
-        {id: 969237, rnrId: 500915, category: "Alteration", total: 3, tableName: "Type of patients in TRAV",  categoryName: "Alteration"},
-        {id: 969238, rnrId: 500915, category: "Transit",  total: 3,  tableName: "Type of patients in TRAV",categoryName: "Transit"},
-        {id: 969239,rnrId: 500915, category: "Transfers", total: 3, tableName: "Type of patients in TRAV", categoryName: "Transfers"},
+      patientQuantifications: [
+          {id: 969235, rnrId: 500915, category: "table_trav_label_new_key", total: 12, tableName: "table_arvt_key", categoryName: "table_trav_label_new_key"},
+        {id: 969236, rnrId: 500915, category: "table_trav_label_maintenance_key", total: 3, tableName: "table_arvt_key", categoryName: "table_trav_label_maintenance_key"},
+        {id: 969237, rnrId: 500915, category: "table_trav_label_alteration_key", total: 3, tableName: "table_arvt_key",  categoryName: "table_trav_label_alteration_key"},
+        {id: 969238, rnrId: 500915, category: "table_trav_label_transit_key",  total: 3,  tableName: "table_arvt_key",categoryName: "table_trav_label_transit_key"},
+        {id: 969239,rnrId: 500915, category: "table_trav_label_transfers_key", total: 3, tableName: "table_arvt_key", categoryName: "table_trav_label_transfers_key"},
         {id: 969240, rnrId: 500915, category: "Month dispense", total: 1, tableName: "Months dispensed", categoryName: "Month dispense"},
         {id: 969241, rnrId: 500915, category: "3 mopnths dispense (DT)", total: 2, tableName: "Months dispensed", categoryName: "3 mopnths dispense (DT)"},
         {id: 969242, rnrId: 500915, category: "6 mopnths dispense (DS)", total: 33, tableName: "Months dispensed", categoryName: "6 mopnths dispense (DS)"},
         {id: 969243, rnrId: 500915, category: "# of therapeutic months dispensed", total: 3, tableName: "Months dispensed", categoryName: "# of therapeutic months dispensed"},
-        {id: 969244, rnrId: 500915, category: "Adults", total: 4, tableName: "age range of TRAV patients", categoryName: "Adults"},
-        {id: 969245, rnrId: 500915, category: "Pediatric from 0 to 4 years", total: 3, tableName: "age range of TRAV patients", categoryName: "Pediatric from 0 to 4 years"},
-        {id: 969246, rnrId: 500915, category: "Pediatric from 5 to 9 years", total: 3, tableName: "age range of TRAV patients", categoryName: "Pediatric from 5 to 9 years"},
-        {id: 969247, rnrId: 500915, category: "Pediatric from 10 to 14 years", total: 3, tableName: "age range of TRAV patients", categoryName: "Pediatric from 10 to 14 years"},
-        {id: 969248, rnrId: 500915, category: "PPE", total: 3, tableName: "prophylaxis", categoryName: "PPE" },
-        {id: 969249,rnrId: 500915,  category: "PrEP",total: 33, tableName: "prophylaxis", categoryName: "PrEP"},
-        {id: 969250,   rnrId: 500915, category: "Exposed child", total: 3, tableName: "prophylaxis",  categoryName: "Exposed child" },
-        { id: 969251,  rnrId: 500915,  category: "Total Nr of Patients In TARV at HF",  total: 3,  tableName: "prophylaxis", categoryName: "Total Nr of Patients In TARV at HF"}],
+        {id: 969244, rnrId: 500915, category: "table_patients_adults_key", total: 4, tableName: "table_patients_key", categoryName: "table_patients_adults_key"},
+        {id: 969245, rnrId: 500915, category: "table_patients_0to4_key", total: 3, tableName: "table_patients_key", categoryName: "table_patients_0to4_key"},
+        {id: 969246, rnrId: 500915, category: "table_patients_5to9_key", total: 3, tableName: "table_patients_key", categoryName: "table_patients_5to9_key"},
+        {id: 969247, rnrId: 500915, category: "table_patients_10to14_key", total: 3, tableName: "table_patients_key", categoryName: "table_patients_10to14_key"},
+        {id: 969248, rnrId: 500915, category: "table_prophylaxis_ppe_key", total: 3, tableName: "table_prophylaxy_key", categoryName: "table_prophylaxis_ppe_key" },
+        {id: 969249,rnrId: 500915,  category: "table_prophylaxis_prep_key",total: 33, tableName: "table_prophylaxy_key", categoryName: "table_prophylaxis_prep_key"},
+        {id: 969250,   rnrId: 500915, category: "table_prophylaxis_child_key", total: 3, tableName: "table_prophylaxy_key",  categoryName: "table_prophylaxis_child_key" },
+        { id: 969251,  rnrId: 500915,  category: "table_prophylaxis_total_key",  total: 3,  tableName: "table_prophylaxy_key", categoryName: "table_prophylaxis_total_key"}],
       therapeuticLines:[
           {id: 37, rnrId: 500915, code: "1st Line", patientsOnTreatment: 1,comunitaryPharmacy: 1},
         {id: 38, rnrId: 500915, code: "2nd Line",patientsOnTreatment: 3, comunitaryPharmacy: 1},
@@ -252,13 +253,11 @@ describe('ViewRnrViaDetailController', function () {
     expect(scope.therapeuticLinesTotalPatients).toBe(8)
     expect(scope.therapeuticLinesTotalComunitaryPharmacy).toBe(5)
     expect(scope.rnr.patientQuantifications['view.rnr.mmia.patient.header.patientsType'].length).toBe(5)
-    expect(scope.rnr.patientQuantifications['view.rnr.mmia.patient.header.patientsType'][0]['categoryName']).toBe("New")
-    //expect(scope.rnr.patientQuantifications['view.rnr.mmia.patient.header.md'].length).toBe(4)
-    //expect(scope.rnr.patientQuantifications['view.rnr.mmia.patient.header.md'][1]['categoryName']).toBe("3 mopnths dispense (DT)")
+    expect(scope.rnr.patientQuantifications['view.rnr.mmia.patient.header.patientsType'][0]['categoryName']).toBe("table_trav_label_new_key")
     expect(scope.rnr.patientQuantifications['view.rnr.mmia.patient.header.TARVPatients'].length).toBe(4)
-    expect(scope.rnr.patientQuantifications['view.rnr.mmia.patient.header.TARVPatients'][2]['categoryName']).toBe('Pediatric from 5 to 9 years')
+    expect(scope.rnr.patientQuantifications['view.rnr.mmia.patient.header.TARVPatients'][2]['categoryName']).toBe('table_patients_5to9_key')
     expect(scope.rnr.patientQuantifications['view.rnr.mmia.patient.header.prophylaxis'].length).toBe(4)
-    expect(scope.rnr.patientQuantifications['view.rnr.mmia.patient.header.prophylaxis'][3]['categoryName']).toBe('Total Nr of Patients In TARV at HF')
+    expect(scope.rnr.patientQuantifications['view.rnr.mmia.patient.header.prophylaxis'][3]['categoryName']).toBe('table_prophylaxis_total_key')
   });
 
   it('should calculate regime total',function(){
