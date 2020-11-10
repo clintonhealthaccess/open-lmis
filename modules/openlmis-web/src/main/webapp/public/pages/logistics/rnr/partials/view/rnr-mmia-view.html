@@ -106,13 +106,13 @@
                     </td>
                     <td class="{{params[key]['productPrimaryName']}}" >{{val[0].name}}</td>
                     <td>{{val[0].patientsOnTreatment}}</td>
-                    <td>{{val[0].comunitaryPharmacy}}</td>
+                    <td>{{val[0].comunitaryPharmacy === undefined ? "N/A" : val[0].comunitaryPharmacy}}</td>
                 </tr>
                 <tr ng-if="rnr.reportType === 'new'" ng-repeat-end ng-repeat="value in val.slice(1)">
                     <td class="banner-text">{{$index+2}}</td>
                     <td class="{{params[value.categoryName]['productPrimaryName']}}" >{{value.name}} </td>
                     <td>{{value.patientsOnTreatment}}</td>
-                    <td>{{value.comunitaryPharmacy}}</td>
+                    <td>{{value.comunitaryPharmacy === undefined && value.patientsOnTreatment != undefined ? "N/A" : value.comunitaryPharmacy}}</td>
                 </tr>
                 <tr>
                     <td class="banner-text blank-cell no-border"></td>

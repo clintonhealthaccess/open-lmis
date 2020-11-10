@@ -8,7 +8,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.joda.time.DateTime;
 import org.openlmis.core.domain.User;
 import org.openlmis.core.service.ConfigurationSettingService;
 import org.openlmis.core.service.StaticReferenceDataService;
@@ -67,9 +66,6 @@ public class RequisitionEmailServiceForSIMAM {
 
     @Value("${email.attachment.cache.path}")
     protected String pdfDirectory;
-
-    @Value("${app.mmia.layout.number.nine}")
-	private String newMMIALayoutGoLive;
 
 	public static final Map<String, String> SIMAM_PROGRAMS_MAP = MapUtils.putAll(new HashMap(),
 										new String[][]{
@@ -151,41 +147,15 @@ public class RequisitionEmailServiceForSIMAM {
 		return generateEmailAttachment(fileNameForRequiItems(requisition), filePath, FILE_APPLICATION_VND_MS_EXCEL);
 	}
 
-	private boolean isShouldMockedData(Rnr requisition){
-		DateTime reportSubmittedDate = new DateTime(requisition.getSubmittedDate());
-		DateTime newMMIALayoutGoLiveDate = new DateTime(newMMIALayoutGoLive);
-		return requisition.isMMIALayout() && reportSubmittedDate.isAfter(newMMIALayoutGoLiveDate) && requisition.isFromOldMMIALayout();
-	}
-
-	private List<Map<String, String>> pickFromOriginData(List<Map<String, String>> newItems, List<Map<String, String>> oldItems, final String key){
-		List<Map<String, String>> finalItems = new ArrayList<>();
-		for (final Map<String,String> shouldItem: newItems){
-			Object matched = CollectionUtils.find(oldItems, new org.apache.commons.collections.Predicate() {
-				@Override
-				public boolean evaluate(Object input) {
-					return ((Map<String, String>)input).get(key).equals(shouldItem.get(key));
-				}
-			});
-			finalItems.add(matched != null ? ((Map<String, String>)matched): shouldItem);
-		}
-		return  finalItems;
-	}
-
-
 	public String generateRequisitionExcelForSIMAM(Rnr requisition) {
 		List<Map<String, String>> requisitionItemsData = rnrMapperForSIMAM.getRnrItemsForSIMAMImport(requisition);
-		List<Map<String, String>> mockedRequisitionItemsData = new ArrayList<>();
-		if (isShouldMockedData(requisition)) {
-			List<Map<String, String>> newRequisitionItemsData = rnrMapperForSIMAM.getNewProductList(requisition);
-			mockedRequisitionItemsData = pickFromOriginData(newRequisitionItemsData, requisitionItemsData, "product_code");
-		}
 
 		if(requisition.getProgram().getCode().equals("PTV")) {
 			for(Map<String, String> requisitionItem : requisitionItemsData) {
 				requisitionItem.put("quantity_dispensed", requisitionItem.get("total_service_quantity"));
 			}
 		}
-		CollectionUtils.collect(isShouldMockedData(requisition) ? mockedRequisitionItemsData: requisitionItemsData, new Transformer() {
+		CollectionUtils.collect(requisitionItemsData, new Transformer() {
 			@Override
 			public Map<String, String> transform(Object input) {
 				((Map<String, String>) input).put("emprest", "0");
@@ -193,12 +163,12 @@ public class RequisitionEmailServiceForSIMAM {
 			}
 		});
 		Workbook workbook;
-		if((isShouldMockedData(requisition) ? mockedRequisitionItemsData: requisitionItemsData).isEmpty()) {
+		if(requisitionItemsData.isEmpty()) {
 			workbook = singleListSheetExcelHandler.readXssTemplateFile(TEMPLATE_IMPORT_RNR_XLSX_EMPTY, ExcelHandler.PathType.FILE);
 		} else {
-			convertOpenLMISProgramCodeToSIMAMCode(isShouldMockedData(requisition) ? mockedRequisitionItemsData: requisitionItemsData);
+			convertOpenLMISProgramCodeToSIMAMCode( requisitionItemsData);
 			workbook = singleListSheetExcelHandler.readXssTemplateFile(TEMPLATE_IMPORT_RNR_XLSX, ExcelHandler.PathType.FILE);
-			singleListSheetExcelHandler.createDataRows(workbook.getSheetAt(0), isShouldMockedData(requisition) ? mockedRequisitionItemsData: requisitionItemsData);
+			singleListSheetExcelHandler.createDataRows(workbook.getSheetAt(0), requisitionItemsData);
 		}
 
 		return singleListSheetExcelHandler.createXssFile(workbook, fileNameForRequiItems(requisition));
@@ -211,25 +181,20 @@ public class RequisitionEmailServiceForSIMAM {
 
 	public String generateRegimenExcelForSIMAM(Rnr requisition) {
 		List<Map<String, String>> regimenItemsData = rnrMapperForSIMAM.getRegimenItemsForSIMAMImport(requisition);
-		List<Map<String, String>> mockedRegimeItemsData = new ArrayList<>();
-		if (isShouldMockedData(requisition)){
-			List<Map<String, String>> newRegimeItemsData = rnrMapperForSIMAM.getNewRegimenItemsForSIMAMImport(requisition);
-			mockedRegimeItemsData = pickFromOriginData(newRegimeItemsData, regimenItemsData, "regimen_name");
-		}
 
 		//Requested by SIMAM support to specifically convert "ABC+3TC+LPV/r" to a different name to be able to import into SIMAM
-		for (Map<String, String> regimenItem : (isShouldMockedData(requisition) ? mockedRegimeItemsData : regimenItemsData)) {
+		for (Map<String, String> regimenItem : (regimenItemsData)) {
 			if ("ABC+3TC+LPV/r".equals(regimenItem.get("regimen_name")) && "Paediatrics".equals(regimenItem.get("category"))) {
 				regimenItem.put("regimen_name", "ABC+3TC+LPV/r (2FC+LPV/r)");
 			}
 		}
 
 		Workbook workbook;
-		if ((isShouldMockedData(requisition) ? mockedRegimeItemsData : regimenItemsData).isEmpty()) {
+		if (regimenItemsData.isEmpty()) {
 			workbook = singleListSheetExcelHandler.readXssTemplateFile(TEMPLATE_IMPORT_REGIMEN_XLSX_EMPTY, ExcelHandler.PathType.FILE);
 		} else {
 
-			CollectionUtils.collect(isShouldMockedData(requisition) ? mockedRegimeItemsData : regimenItemsData, new Transformer() {
+			CollectionUtils.collect(regimenItemsData, new Transformer() {
 				@Override
 				public Map<String, String> transform(Object input) {
 					//OpenLMIS 2.0 does not assign program codes to regimens, use form code and map to SIMAM code
@@ -241,7 +206,7 @@ public class RequisitionEmailServiceForSIMAM {
 			});
 
 			workbook = singleListSheetExcelHandler.readXssTemplateFile(TEMPLATE_IMPORT_REGIMEN_XLSX, ExcelHandler.PathType.FILE);
-			singleListSheetExcelHandler.createDataRows(workbook.getSheetAt(0), isShouldMockedData(requisition) ? mockedRegimeItemsData : regimenItemsData);
+			singleListSheetExcelHandler.createDataRows(workbook.getSheetAt(0),regimenItemsData);
 		}
 
 		return singleListSheetExcelHandler.createXssFile(workbook, fileNameForRegimens(requisition));

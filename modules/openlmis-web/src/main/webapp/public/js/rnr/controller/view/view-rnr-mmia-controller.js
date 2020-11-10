@@ -111,8 +111,9 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
             if ($scope.isBetweenWebUpgradeAndMobileUpgrade){
                 $scope.rnr.reportType = "new";
                 $scope.initMockedPatient();
-                $scope.initMockedProuct();
-                $scope.initMockedRegime();
+                $scope.initProduct();
+                // $scope.initMockedRegime();
+                $scope.initRegime();
                 $scope.initMockedTherapeuticLines();
             } else if (data.rnr.patientQuantifications.length === 7){
                 $scope.rnr.reportType = "old";
@@ -173,11 +174,22 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         }
     }
 
+    function pickPatientFromOld( category){
+        var matched = _.find($scope.rnr.patientQuantifications, function (item) {
+            return item.category ===  category;
+        });
+        if (matched){
+            return matched.total;
+        }else {
+            "N/A";
+        }
+    }
+
     $scope.initMockedPatient = function () {
         var messageMap = [
-            {messageName: "view.rnr.mmia.patient.new", header: 'view.rnr.mmia.patient.header.patientsType', total: "N/A"},
-            {messageName: "view.rnr.mmia.patient.maintenance", header: 'view.rnr.mmia.patient.header.patientsType', total: "N/A"},
-            {messageName: "view.rnr.mmia.patient.alteration", header: 'view.rnr.mmia.patient.header.patientsType', total: "N/A"},
+            {messageName: "view.rnr.mmia.patient.new", header: 'view.rnr.mmia.patient.header.patientsType', total: pickPatientFromOld("New")},
+            {messageName: "view.rnr.mmia.patient.maintenance", header: 'view.rnr.mmia.patient.header.patientsType', total: pickPatientFromOld("Maintenance")},
+            {messageName: "view.rnr.mmia.patient.alteration", header: 'view.rnr.mmia.patient.header.patientsType', total: pickPatientFromOld("Alteration")},
             {messageName: "view.rnr.mmia.patient.transit", header: 'view.rnr.mmia.patient.header.patientsType', total: "N/A"},
             {messageName: "view.rnr.mmia.patient.transfers", header: 'view.rnr.mmia.patient.header.patientsType', total: "N/A"},
             {messageName: "view.rnr.mmia.patient.adults", header: 'view.rnr.mmia.patient.header.TARVPatients', total: "N/A"},
@@ -185,9 +197,9 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
             {messageName: "view.rnr.mmia.patient.9pediatric", header: 'view.rnr.mmia.patient.header.TARVPatients', total: "N/A"},
             {messageName: "view.rnr.mmia.patient.14pediatric", header: 'view.rnr.mmia.patient.header.TARVPatients', total: "N/A"},
             {messageName: "view.rnr.mmia.patient.prep", header: 'view.rnr.mmia.patient.header.prophylaxis', total: "N/A"},
-            {messageName: "view.rnr.mmia.patient.ppe", header: 'view.rnr.mmia.patient.header.prophylaxis', total: "N/A"},
+            {messageName: "view.rnr.mmia.patient.ppe", header: 'view.rnr.mmia.patient.header.prophylaxis', total: pickPatientFromOld("PPE")},
             {messageName: "view.rnr.mmia.patient.exposed", header: 'view.rnr.mmia.patient.header.prophylaxis', total: "N/A"},
-            {messageName: "view.rnr.mmia.patient.totalNr", header: 'view.rnr.mmia.patient.header.prophylaxis', total: "N/A"}
+            {messageName: "view.rnr.mmia.patient.totalNr", header: 'view.rnr.mmia.patient.header.prophylaxis', total: pickPatientFromOld("Total Patients")}
         ];
         $scope.rnr.patientQuantifications = _.groupBy(messageMap, 'header');
         $scope.totalTypeOfDispensedDS = "N/A";
@@ -195,7 +207,6 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
         $scope.totalTypeOfDispensedDM = "N/A";
         $scope.totalTypeOfDispensedWithInTotal = "N/A";
         $scope.totalTypeOfDispensedTotal = "N/A";
-
     };
 
     var addEmptyLinesForRegimes = function(regimens) {
