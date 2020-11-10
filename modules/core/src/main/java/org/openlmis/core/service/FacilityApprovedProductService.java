@@ -58,7 +58,8 @@ public class FacilityApprovedProductService {
   }
 
   public List<FacilityTypeApprovedProduct> getFullSupplyFacilityApprovedProductByFacilityAndProgramIncludingSubProgramsAndVersion(Long facilityId, Long programId) {
-    String versioncode = LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE) == null  ? LmisThreadLocalUtils.STR_VERSION_86: LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE);
+    String versionCodeFromHeader = LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE);
+    String versioncode = versionCodeFromHeader == null || Integer.valueOf(versionCodeFromHeader) < 87  ? LmisThreadLocalUtils.STR_VERSION_86 : LmisThreadLocalUtils.STR_VERSION_87;
     return repository.getFullSupplyFacilityApprovedProductByFacilityAndProgramIncludingSubProgramsAndVersion(facilityId, programId,versioncode);
   }
 
