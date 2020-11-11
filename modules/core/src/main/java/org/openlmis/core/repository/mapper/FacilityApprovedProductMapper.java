@@ -302,7 +302,7 @@ public interface FacilityApprovedProductMapper {
             sql.append(" INNER JOIN product_categories pc ON pc.id = pp.productCategoryId ");
             sql.append(" INNER JOIN programs pgm ON pp.programId = pgm.id");
             if (((Long) params.get("programId")) == 1) {
-                sql.append(" WHERE (pgm.id = #{programId} OR pgm.parentId = #{programId})");
+                sql.append(" WHERE (pgm.id = #{programId}) ");
                 sql.append(" AND fap.versionCode = #{version}");
             } else {
                 sql.append(" WHERE (pgm.id = #{programId} OR pgm.parentId = #{programId})");
