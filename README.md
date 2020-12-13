@@ -17,7 +17,7 @@ __Project Links:__
 
 System Requirements
 ---------------------------
-- JDK 7
+- Java 8
 - Postgresql 9.2+
 - Git
 - Firefox
