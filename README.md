@@ -135,7 +135,7 @@ This can be caused by the timezone in `postgresql.conf` being different than you
 
 Tech Stack
 ---------------------------------
- - Java 1.7
+ - Java 1.8
  - Gradle 2.3
  - Postgres 9.2
  - Spring
