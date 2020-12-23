@@ -58,6 +58,7 @@ public class RegimenRepository {
       regimen.setModifiedBy(userId);
       if (regimen.getId() == null) {
         regimen.setCreatedBy(userId);
+        regimen.setVersionCode(Long.valueOf(LmisThreadLocalUtils.STR_VERSION_87));
         mapper.insert(regimen);
       }
       mapper.update(regimen);

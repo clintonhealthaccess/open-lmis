@@ -314,7 +314,7 @@ public class RestRequisitionService {
         }
         if (regimen == null) {
           String regimenCode = null != regimenLineItemForRest.getCode() ? regimenLineItemForRest.getCode() : String.format("%03d", regimenService.listAll().size() + 1);
-          regimen = new Regimen(regimenLineItemForRest.getName(), regimenCode, programId, true, regimenCategory, regimenService.getRegimensByCategory(regimenCategory).size(), true, false);
+          regimen = new Regimen(regimenLineItemForRest.getName(), regimenCode, programId, true, regimenCategory, regimenService.getRegimensByCategory(regimenCategory).size(), true, false, Long.valueOf(code));
           regimenService.save(regimen, userId);
         }
 

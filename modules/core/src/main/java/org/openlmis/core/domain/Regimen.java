@@ -42,6 +42,7 @@ public class Regimen extends BaseModel {
   //if skipped is true, will not send this regimen to SIMMAN
   private boolean skipped;
 
+  private Long versionCode;
 
   @JsonIgnore
   public int isEqualForFCRegimen(Regimen regimen) {

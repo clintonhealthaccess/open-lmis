@@ -22,8 +22,8 @@ import java.util.List;
 @Repository
 public interface RegimenMapper {
 
-  @Insert({"INSERT INTO regimens (code, name, active, programId, categoryId, displayOrder, iscustom, createdBy, modifiedBy) ",
-    "VALUES (#{code}, #{name}, #{active}, #{programId}, #{category.id}, #{displayOrder}, #{isCustom}, #{createdBy}, #{modifiedBy})"})
+  @Insert({"INSERT INTO regimens (code, name, active, programId, categoryId, displayOrder, iscustom, createdBy, modifiedBy, versionCode) ",
+    "VALUES (#{code}, #{name}, #{active}, #{programId}, #{category.id}, #{displayOrder}, #{isCustom}, #{createdBy}, #{modifiedBy}, #{versionCode})"})
   @Options(useGeneratedKeys = true)
   public void insert(Regimen regimen);
 
