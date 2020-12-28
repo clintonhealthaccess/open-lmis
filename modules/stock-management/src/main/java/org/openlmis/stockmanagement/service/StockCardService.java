@@ -13,11 +13,13 @@ package org.openlmis.stockmanagement.service;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import lombok.NoArgsConstructor;
+import org.openlmis.core.domain.Product;
 import org.openlmis.core.repository.ProductRepository;
 import org.openlmis.core.repository.mapper.ProductMapper;
 import org.openlmis.core.service.FacilityService;
 import org.openlmis.stockmanagement.domain.*;
 import org.openlmis.stockmanagement.dto.StockCardBakDTO;
+import org.openlmis.stockmanagement.dto.StockCardDeleteDTO;
 import org.openlmis.stockmanagement.repository.LotRepository;
 import org.openlmis.stockmanagement.repository.StockCardRepository;
 import org.openlmis.stockmanagement.repository.mapper.StockCardBakMapper;
@@ -232,7 +234,6 @@ public class StockCardService {
     return productMapper.getProductIdByCode(productCode);
   }
 
-
   public boolean tryLock(Long facilityId, String productCode, String actionType) {
     Long productId = productMapper.getProductIdByCode(productCode);
     return tryLock(facilityId, productId, actionType);
@@ -267,5 +268,64 @@ public class StockCardService {
 
   public StockCard getStockCard(Long facilityId, Long productId) {
     return stockCardMapper.getStockCard(facilityId, productId);
+  }
+
+  public Map<String, Long> getProductsByCodes(List<String> productCodes) {
+    String codes = productCodes.toString().replace("[", "{").replace("]", "}");
+    List<Product> products =productMapper.getProductsByCodes(codes);
+    Map<String, Long> codeToId = new HashMap<>();
+    for (Product product : products) {
+      codeToId.put(product.getCode(), product.getId());
+    }
+    return codeToId;
+  }
+
+  public void backupStockCards(List<StockCardBakDTO> stockCardBakDTOs) {
+    stockCardBakMapper.backupStockCards(stockCardBakDTOs);
+  }
+  @Transactional
+  public void partialDeleteStockCards(Long facilityId, Map<String, Long> needDeletedProductCodeAndIds, List<StockCardDeleteDTO> stockCardDeleteDTOs) {
+    List<Long> partialDeletedProductIds = new ArrayList<>();
+    for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
+      if (!stockCardDeleteDTO.isFullyDelete()) {
+        partialDeletedProductIds.add(needDeletedProductCodeAndIds.get(stockCardDeleteDTO.getProductCode()));
+      }
+    }
+    String productIds = partialDeletedProductIds.toString().replace("[", "{").replace("]", "}");
+    List<Long> stockCardIds = stockCardMapper.getStockCardEntriesIds(facilityId, productIds);
+    String ids = stockCardIds.toString().replace("[", "{").replace("]", "}");
+    stockCardMapper.deleteStockCardEntryKeyValues(ids);
+    stockCardMapper.deleteStockCardEntryLotItemsKeyValues(ids);
+    stockCardMapper.deleteStockCardEntryLotItems(ids);
+    stockCardMapper.deleteStockCardEntry(ids);
+  }
+
+  public List<StockCard> getStockCardSByProductIds(Long facilityId, Collection<Long> productIds) {
+    String ids = productIds.toString().replace("[", "{").replace("]", "}");
+    return stockCardMapper.getStockCardsByProductIds(facilityId, ids);
+  }
+
+  public void fullyDeleteStockCards(Long facilityId, List<StockCardDeleteDTO> stockCardDeleteDTOs, Map<String, Long> needDeletedProductCodeAndIds) {
+    List<Long> fullyDeletedProductIds = new ArrayList<>();
+    for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
+      if (stockCardDeleteDTO.isFullyDelete()) {
+        fullyDeletedProductIds.add(needDeletedProductCodeAndIds.get(stockCardDeleteDTO.getProductCode()));
+      }
+    }
+    stockCardMapper.deleteCMMEntries(facilityId, convertToArrayString(fullyDeletedProductIds));
+
+    List<Long> stockCardEntryIds = stockCardMapper.getStockCardEntriesIds(facilityId, convertToArrayString(fullyDeletedProductIds));
+    stockCardMapper.deleteStockCardEntryKeyValues(convertToArrayString(stockCardEntryIds));
+    stockCardMapper.deleteStockCardEntryLotItemsKeyValues(convertToArrayString(stockCardEntryIds));
+    stockCardMapper.deleteStockCardEntryLotItems(convertToArrayString(stockCardEntryIds));
+
+    List<Long> stockCardIds = stockCardMapper.getStockCardIds(facilityId, convertToArrayString(fullyDeletedProductIds));
+    stockCardMapper.deleteLotsOnHand(convertToArrayString(stockCardIds));
+    stockCardMapper.deleteStockCardEntry(convertToArrayString(stockCardIds));
+    stockCardMapper.deleteStockCards(convertToArrayString(stockCardIds));
+  }
+
+  private String convertToArrayString(Collection collection) {
+    return collection.toString().replace("[", "{").replace("]", "}");
   }
 }

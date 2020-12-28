@@ -128,14 +128,15 @@ public class RestStockCardController extends BaseController {
     List<String> errorCodes = new ArrayList<>();
     Long userId = loggedInUserId(principal);
     try {
-      for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
-        if (!restStockCardService.deleteStockCard(facilityId, stockCardDeleteDTO, userId)) {
-          errorCodes.add(stockCardDeleteDTO.getProductCode());
-        }
-      }
+//      for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
+//        if (!restStockCardService.deleteStockCard(facilityId, stockCardDeleteDTO, userId)) {
+//          errorCodes.add(stockCardDeleteDTO.getProductCode());
+//        }
+//      }
+      restStockCardService.deleteStockCards(facilityId, stockCardDeleteDTOs, userId);
+      return ResponseEntity.ok(null);
     } catch (DataException e) {
       return ResponseEntity.badRequest().build();
     }
-    return response("errorCodes", errorCodes);
   }
 }

@@ -280,6 +280,23 @@ public interface StockCardMapper {
   StockCard getStockCard(@Param("facilityId") Long facilityId, @Param("productId") Long productId);
 
   @Select("SELECT *" +
+          " FROM stock_cards" +
+          " WHERE facilityid = #{facilityId}" +
+          "   AND productid = ANY (#{productIds}::INT[])")
+  @Results({
+          @Result(property = "id", column = "id"),
+          @Result(property = "facility", column = "facilityId", javaType = Facility.class,
+                  one = @One(select = "org.openlmis.core.repository.mapper.FacilityMapper.getById")),
+          @Result(property = "product", column = "productId", javaType = Product.class,
+                  one = @One(select = "org.openlmis.core.repository.mapper.ProductMapper.getById")),
+          @Result(property = "entries", column = "id", javaType = List.class,
+                  many = @Many(select = "getAllEntries")),
+          @Result(property = "lotsOnHand", column = "id", javaType = List.class,
+                  many = @Many(select = "getLotsOnHand"))
+  })
+  List<StockCard> getStockCardsByProductIds(@Param("facilityId") Long facilityId, @Param("productIds") String productIds);
+
+  @Select("SELECT *" +
       " FROM stock_card_entries" +
       " WHERE stockcardid = #{stockCardId}" +
       " ORDER BY createddate")
@@ -305,4 +322,31 @@ public interface StockCardMapper {
           " AND sc.totalquantityonhand > 0" ,
           " GROUP BY sc.facilityid) as tmp"})
   int getTotalFacilityWithProductSOHGreaterZero(@Param("productCode") String productCode);
+
+  @Select("SELECT id FROM stock_card_entries WHERE stockcardid IN ( SELECT id FROM stock_cards WHERE stock_cards.facilityid = #{facilityId} AND stock_cards.productid = ANY (#{deletedProductIds}::INT[]))")
+  List<Long> getStockCardEntriesIds(@Param("facilityId") Long facilityId, @Param("deletedProductIds") String deletedProductIds);
+
+  @Select("SELECT id FROM stock_cards WHERE stock_cards.facilityid = #{facilityId} AND stock_cards.productid = ANY (#{deletedProductIds}::INT[])")
+  List<Long> getStockCardIds(@Param("facilityId") Long facilityId, @Param("deletedProductIds") String deletedProductIds);
+
+  @Delete("DELETE FROM cmm_entries WHERE stockcardid IN (SELECT id FROM stock_cards WHERE stock_cards.facilityid = #{facilityId} AND stock_cards.productid = ANY (#{productIds}::INT[]))")
+  void deleteCMMEntries(@Param("facilityId") Long facilityId, @Param("productIds") String productIds);
+
+  @Delete("DELETE from stock_card_entry_key_values where stockcardentryid = ANY (#{stockCardIds}::INT[])")
+  void deleteStockCardEntryKeyValues(@Param("stockCardIds") String stockCardIds);
+
+  @Delete("DELETE from stock_card_entry_lot_items_key_values where stockcardentrylotitemid IN (SELECT id FROM stock_card_entry_lot_items WHERE stockcardentryid = ANY (#{stockCardIds}::INT[]))")
+  void deleteStockCardEntryLotItemsKeyValues(@Param("stockCardIds") String stockCardIds);
+
+  @Delete("DELETE from stock_card_entry_lot_items where stockcardentryid = ANY (#{stockCardIds}::INT[])")
+  void deleteStockCardEntryLotItems(@Param("stockCardIds") String stockCardIds);
+
+  @Delete("DELETE FROM lots_on_hand WHERE stockcardid = ANY (#{stockCardIds}::INT[])")
+  void deleteLotsOnHand(@Param("stockCardIds") String stockCardIds);
+
+  @Delete("DELETE from stock_card_entries where stockcardid = ANY (#{stockCardIds}::INT[])")
+  void deleteStockCardEntry(@Param("stockCardIds") String stockCardIds);
+
+  @Select("DELETE from stock_cards where id = ANY (#{stockCardIds}::INT[])")
+  void deleteStockCards(@Param("stockCardIds") String stockCardIds);
 }

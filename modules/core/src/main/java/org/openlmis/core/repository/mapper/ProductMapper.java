@@ -200,4 +200,7 @@ public interface ProductMapper {
 
   @Select("SELECT id FROM products WHERE code = #{code} ")
   Long getProductIdByCode(String code);
+
+  @Select("SELECT id,code FROM products WHERE code = ANY (#{productCodes}::VARCHAR[])")
+  List<Product> getProductsByCodes(@Param("productCodes") String productCodes);
 }

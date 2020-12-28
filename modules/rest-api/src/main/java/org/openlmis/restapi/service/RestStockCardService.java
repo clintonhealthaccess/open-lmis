@@ -282,9 +282,42 @@ public class RestStockCardService {
     return false;
   }
 
+  @Transactional
+  public boolean deleteStockCards(Long facilityId, List<StockCardDeleteDTO> stockCardDeleteDTOs, Long userId) {
+    List<String> productCodes = new ArrayList<>();
+    for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
+        productCodes.add(stockCardDeleteDTO.getProductCode());
+    }
+    Map<String, Long> needDeletedProductCodeAndIds = stockCardService.getProductsByCodes(productCodes);
+    backupStockCards(facilityId, stockCardDeleteDTOs, needDeletedProductCodeAndIds, userId);
+    stockCardService.fullyDeleteStockCards(facilityId, stockCardDeleteDTOs, needDeletedProductCodeAndIds);
+    stockCardService.partialDeleteStockCards(facilityId, needDeletedProductCodeAndIds, stockCardDeleteDTOs);
+    return true;
+  }
+
+  private void backupStockCards(Long facilityId, List<StockCardDeleteDTO> stockCardDeleteDTOs, Map<String, Long> needDeletedProductCodeAndIds, Long userId) {
+    List<StockCard> stockCards = stockCardService.getStockCardSByProductIds(facilityId, needDeletedProductCodeAndIds.values());
+    List<StockCardBakDTO> stockCardBakDTOs = new ArrayList<>();
+    for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
+      for (StockCard stockCard : stockCards) {
+        if (stockCard.getProduct().getCode().equals(stockCardDeleteDTO.getProductCode())) {
+          StockCardBakDTO stockCardBakDTO = StockCardBakDTO.builder()
+                  .facilityId(facilityId)
+                  .productId(stockCard.getProduct().getId())
+                  .fullyDelete(stockCardDeleteDTO.isFullyDelete())
+                  .userId(userId)
+                  .clientMovements(stockCardDeleteDTO.getClientMovements())
+                  .serverMovements(JsonUtils.toJsonString(transformStockCardsToDTO(stockCard)))
+                  .build();
+          stockCardBakDTOs.add(stockCardBakDTO);
+        }
+      }
+    }
+    stockCardService.backupStockCards(stockCardBakDTOs);
+  }
+
   private String convertStockCardToJsonString(Long facilityId, Long productId) {
     StockCard stockCard = stockCardService.getStockCard(facilityId, productId);
     return stockCard == null ? null : JsonUtils.toJsonString(transformStockCardsToDTO(stockCard));
   }
-
 }
