@@ -199,10 +199,6 @@ public class StockCardService {
     repository.updateAllStockCardSyncTimeForFacility(facilityId);
   }
 
-  public void updateStockCardSyncTimeToNow(long facilityId, String productCode) {
-      repository.updateStockCardSyncTimeToNow(facilityId, productCode);
-  }
-
   public void updateStockCardSyncTimeToNowExclude(long facilityId, final List<String> unSyncProductCodeList) {
     for (StockCard stockCard : getStockCardsNotInList(facilityId, unSyncProductCodeList)) {
       repository.updateStockCardSyncTimeToNow(facilityId, stockCard.getProduct().getCode());
@@ -222,16 +218,8 @@ public class StockCardService {
     return lotRepository.getLotOnHandByLotNumberAndProductCodeAndFacilityId(lotNumber, code, facilityId);
   }
 
-  public void deleteStockCard(Long facilityId, Long productId) {
-    stockCardMapper.deleteStockCard(facilityId, productId);
-  }
-
   public int getTotalFacilityWithProductSOHGreaterZero(String productCode){
     return stockCardMapper.getTotalFacilityWithProductSOHGreaterZero(productCode);
-  }
-
-  public Long getProductIdByCode(String productCode){
-    return productMapper.getProductIdByCode(productCode);
   }
 
   public boolean tryLock(Long facilityId, String productCode, String actionType) {
@@ -253,10 +241,6 @@ public class StockCardService {
     return false;
   }
 
-  public void backupStockCard(StockCardBakDTO stockCardBakDto) {
-    stockCardBakMapper.backupStockCard(stockCardBakDto);
-  }
-
   public void release(Long facilityId, String productCode, String actionType) {
     Long productId = productMapper.getProductIdByCode(productCode);
     release(facilityId, productId, actionType);
@@ -264,10 +248,6 @@ public class StockCardService {
 
   public void release(Long facilityId, Long productId, String actionType) {
     stockCardLockMapper.release(facilityId, productId, actionType);
-  }
-
-  public StockCard getStockCard(Long facilityId, Long productId) {
-    return stockCardMapper.getStockCard(facilityId, productId);
   }
 
   public Map<String, Long> getProductsByCodes(List<String> productCodes) {

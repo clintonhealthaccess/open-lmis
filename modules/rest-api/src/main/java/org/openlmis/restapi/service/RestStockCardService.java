@@ -257,32 +257,6 @@ public class RestStockCardService {
   }
 
   @Transactional
-  public boolean deleteStockCard(Long facilityId, StockCardDeleteDTO stockCardDeleteDTO,
-      Long userId) {
-    Long productId = stockCardService.getProductIdByCode(stockCardDeleteDTO.getProductCode());
-    try {
-      if (productId != null && stockCardService.tryLock(facilityId, productId,
-          StockCardLockConstants.DELETE)) {
-        StockCardBakDTO stockCardBakDTO = StockCardBakDTO.builder()
-            .facilityId(facilityId)
-            .productId(productId).userId(userId)
-            .clientMovements(stockCardDeleteDTO.getClientMovements())
-            .serverMovements(convertStockCardToJsonString(facilityId, productId))
-            .build();
-        stockCardService.backupStockCard(stockCardBakDTO);
-        stockCardService.deleteStockCard(facilityId, productId);
-        return true;
-      }
-    } catch (Exception e) {
-      LOG.error("delete stock card error, facilityId is {}, productCode is {}", facilityId,
-          stockCardDeleteDTO.getProductCode(), e);
-    } finally {
-      stockCardService.release(facilityId, productId, StockCardLockConstants.DELETE);
-    }
-    return false;
-  }
-
-  @Transactional
   public void deleteStockCards(Long facilityId, List<StockCardDeleteDTO> stockCardDeleteDTOs, Long userId) {
     List<String> productCodes = new ArrayList<>();
     for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
@@ -313,10 +287,5 @@ public class RestStockCardService {
       }
     }
     stockCardService.backupStockCards(stockCardBakDTOs);
-  }
-
-  private String convertStockCardToJsonString(Long facilityId, Long productId) {
-    StockCard stockCard = stockCardService.getStockCard(facilityId, productId);
-    return stockCard == null ? null : JsonUtils.toJsonString(transformStockCardsToDTO(stockCard));
   }
 }
