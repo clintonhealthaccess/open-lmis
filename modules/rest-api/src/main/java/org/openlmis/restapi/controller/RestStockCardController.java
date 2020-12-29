@@ -13,6 +13,7 @@ import org.openlmis.stockmanagement.domain.StockCardEntry;
 import org.openlmis.stockmanagement.dto.StockCardDeleteDTO;
 import org.openlmis.stockmanagement.dto.StockEvent;
 import org.openlmis.stockmanagement.service.StockCardService;
+import org.openlmis.stockmanagement.util.JsonUtils;
 import org.openlmis.stockmanagement.util.StockCardLockConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,17 +126,12 @@ public class RestStockCardController extends BaseController {
   @RequestMapping(value = "/rest-api/facilities/{facilityId}/deleteStockCards", method = POST, headers = ACCEPT_JSON)
   public ResponseEntity deleteStockCards(@PathVariable long facilityId,
       @RequestBody List<StockCardDeleteDTO> stockCardDeleteDTOs, Principal principal) {
-    List<String> errorCodes = new ArrayList<>();
     Long userId = loggedInUserId(principal);
     try {
-//      for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
-//        if (!restStockCardService.deleteStockCard(facilityId, stockCardDeleteDTO, userId)) {
-//          errorCodes.add(stockCardDeleteDTO.getProductCode());
-//        }
-//      }
       restStockCardService.deleteStockCards(facilityId, stockCardDeleteDTOs, userId);
       return ResponseEntity.ok(null);
     } catch (DataException e) {
+      logger.error("Failed to delete stock cards, facilityId {}, stockCardDeleteDTOs is {}", facilityId, JsonUtils.toJsonString(stockCardDeleteDTOs));
       return ResponseEntity.badRequest().build();
     }
   }

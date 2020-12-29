@@ -283,7 +283,7 @@ public class RestStockCardService {
   }
 
   @Transactional
-  public boolean deleteStockCards(Long facilityId, List<StockCardDeleteDTO> stockCardDeleteDTOs, Long userId) {
+  public void deleteStockCards(Long facilityId, List<StockCardDeleteDTO> stockCardDeleteDTOs, Long userId) {
     List<String> productCodes = new ArrayList<>();
     for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
         productCodes.add(stockCardDeleteDTO.getProductCode());
@@ -292,7 +292,6 @@ public class RestStockCardService {
     backupStockCards(facilityId, stockCardDeleteDTOs, needDeletedProductCodeAndIds, userId);
     stockCardService.fullyDeleteStockCards(facilityId, stockCardDeleteDTOs, needDeletedProductCodeAndIds);
     stockCardService.partialDeleteStockCards(facilityId, needDeletedProductCodeAndIds, stockCardDeleteDTOs);
-    return true;
   }
 
   private void backupStockCards(Long facilityId, List<StockCardDeleteDTO> stockCardDeleteDTOs, Map<String, Long> needDeletedProductCodeAndIds, Long userId) {
