@@ -251,6 +251,21 @@ public interface StockCardMapper {
       "WHERE id = #{id}")
   int update(StockCard card);
 
+  @Select("SELECT *" +
+          " FROM stock_card_entries" +
+          " WHERE stockcardid = #{stockCardId}" +
+          " ORDER BY createddate")
+  @Results({
+          @Result(property = "id", column = "id"),
+          @Result(property = "adjustmentReason", column = "adjustmentType", javaType = StockAdjustmentReason.class,
+                  one = @One(select = "org.openlmis.core.repository.mapper.StockAdjustmentReasonMapper.getByName")),
+          @Result(property = "extensions", column = "id", javaType = List.class,
+                  many = @Many(select = "getStockCardEntryExtensionAttributes")),
+          @Result(property = "stockCardEntryLotItems", column = "id", javaType = List.class,
+                  many = @Many(select = "org.openlmis.stockmanagement.repository.mapper.LotMapper.getLotMovementItemsByStockEntry"))
+  })
+  List<StockCardEntry> getAllEntries(@Param("stockCardId") Long stockCardId);
+
   @Update("UPDATE stock_cards " +
       "SET modifieddate = NOW() " +
       "WHERE facilityid = #{facilityId}")
