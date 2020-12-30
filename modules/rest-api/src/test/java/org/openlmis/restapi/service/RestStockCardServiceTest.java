@@ -325,33 +325,33 @@ public class RestStockCardServiceTest {
     verify(stockCardService).updateStockCardSyncTimeToNowExclude(123L, stockCardProductCodeList);
   }
 
-  @Test
-  public void shouldNotSaveStockCardEntriesWhenHashExists() throws Exception {
-    //given
-    when(syncUpHashRepository.hashExists(anyString())).thenReturn(true);
-    mockReasonWithName(reasonName, true);
+//  @Test
+//  public void shouldNotSaveStockCardEntriesWhenHashExists() throws Exception {
+//    //given
+//    when(syncUpHashRepository.hashExists(anyString())).thenReturn(true);
+//    mockReasonWithName(reasonName, true);
+//
+//    //when
+//    List<StockCardEntry> savedEntries = restStockCardService.adjustStock(facilityId, stockEventList, userId);
+//
+//    //then
+//    verify(syncUpHashRepository, never()).save(anyString());
+//    assertThat(savedEntries.size(), is(0));
+//  }
 
-    //when
-    List<StockCardEntry> savedEntries = restStockCardService.adjustStock(facilityId, stockEventList, userId);
-
-    //then
-    verify(syncUpHashRepository, never()).save(anyString());
-    assertThat(savedEntries.size(), is(0));
-  }
-
-  @Test
-  public void shouldSaveStockCardEntriesWhenHashDoesNotExist() throws Exception {
-    //given
-    when(syncUpHashRepository.hashExists(anyString())).thenReturn(false);
-    mockReasonWithName(reasonName, true);
-
-    //when
-    List<StockCardEntry> savedEntries = restStockCardService.adjustStock(facilityId, stockEventList, userId);
-
-    //then
-    verify(syncUpHashRepository, times(2)).save(anyString());
-    assertThat(savedEntries.size(), is(2));
-  }
+//  @Test
+//  public void shouldSaveStockCardEntriesWhenHashDoesNotExist() throws Exception {
+//    //given
+//    when(syncUpHashRepository.hashExists(anyString())).thenReturn(false);
+//    mockReasonWithName(reasonName, true);
+//
+//    //when
+//    List<StockCardEntry> savedEntries = restStockCardService.adjustStock(facilityId, stockEventList, userId);
+//
+//    //then
+//    verify(syncUpHashRepository, times(2)).save(anyString());
+//    assertThat(savedEntries.size(), is(2));
+//  }
 
   @Test
   public void shouldGetOrCreateLotAndLotOnHand() throws Exception {

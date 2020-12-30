@@ -2,6 +2,7 @@ package org.openlmis.restapi.service;
 
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
+import org.jfree.util.Log;
 import org.openlmis.core.domain.Product;
 import org.openlmis.core.domain.StockAdjustmentReason;
 import org.openlmis.core.exception.DataException;
@@ -105,15 +106,15 @@ public class RestStockCardService {
 
     List<StockCardEntry> entries = new ArrayList<>();
     for (StockEvent stockEvent : stockEvents) {
-      if (syncUpHashRepository.hashExists(stockEvent.getSyncUpHash())) {
-        continue;
-      }
+//      if (syncUpHashRepository.hashExists(stockEvent.getSyncUpHash())) {
+//        continue;
+//      }
 
       if (!validProduct(stockEvent)) {
         continue;
       }
 
-      syncUpHashRepository.save(stockEvent.getSyncUpHash());
+//      syncUpHashRepository.save(stockEvent.getSyncUpHash());
       String errorInStockEvent = validateStockEvent(stockEvent);
       if (errorInStockEvent != null) {
         throw new DataException(errorInStockEvent);
@@ -260,12 +261,16 @@ public class RestStockCardService {
   public void deleteStockCards(Long facilityId, List<StockCardDeleteDTO> stockCardDeleteDTOs, Long userId) {
     List<String> productCodes = new ArrayList<>();
     for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
+      if (stockCardDeleteDTO.isFullyDelete()) {
         productCodes.add(stockCardDeleteDTO.getProductCode());
+      }
     }
     Map<String, Long> needDeletedProductCodeAndIds = stockCardService.getProductsByCodes(productCodes);
-    backupStockCards(facilityId, stockCardDeleteDTOs, needDeletedProductCodeAndIds, userId);
-    stockCardService.fullyDeleteStockCards(facilityId, stockCardDeleteDTOs, needDeletedProductCodeAndIds);
-    stockCardService.partialDeleteStockCards(facilityId, needDeletedProductCodeAndIds, stockCardDeleteDTOs);
+    if (needDeletedProductCodeAndIds.size() > 0) {
+      backupStockCards(facilityId, stockCardDeleteDTOs, needDeletedProductCodeAndIds, userId);
+      stockCardService.fullyDeleteStockCards(facilityId, stockCardDeleteDTOs, needDeletedProductCodeAndIds);
+    }
+//    stockCardService.partialDeleteStockCards(facilityId, needDeletedProductCodeAndIds, stockCardDeleteDTOs);
   }
 
   private void backupStockCards(Long facilityId, List<StockCardDeleteDTO> stockCardDeleteDTOs, Map<String, Long> needDeletedProductCodeAndIds, Long userId) {

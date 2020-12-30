@@ -324,8 +324,11 @@ public interface StockCardMapper {
   @Delete("DELETE FROM lots_on_hand WHERE stockcardid = ANY (#{stockCardIds}::INT[])")
   void deleteLotsOnHand(@Param("stockCardIds") String stockCardIds);
 
+  @Delete("DELETE from stock_card_entries where id = ANY (#{ids}::INT[])")
+  void deleteStockCardEntry(@Param("ids") String ids);
+
   @Delete("DELETE from stock_card_entries where stockcardid = ANY (#{stockCardIds}::INT[])")
-  void deleteStockCardEntry(@Param("stockCardIds") String stockCardIds);
+  void deleteStockCardEntryByStockCardIds(@Param("stockCardIds") String stockCardIds);
 
   @Select("DELETE from stock_cards where id = ANY (#{stockCardIds}::INT[])")
   void deleteStockCards(@Param("stockCardIds") String stockCardIds);

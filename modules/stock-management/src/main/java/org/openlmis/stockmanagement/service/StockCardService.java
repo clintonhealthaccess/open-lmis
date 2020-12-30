@@ -271,12 +271,12 @@ public class StockCardService {
         partialDeletedProductIds.add(needDeletedProductCodeAndIds.get(stockCardDeleteDTO.getProductCode()));
       }
     }
-    List<Long> stockCardIds = stockCardMapper.getStockCardEntriesIds(facilityId, convertToArrayString(partialDeletedProductIds));
-    String ids = convertToArrayString(stockCardIds);
-    stockCardMapper.deleteStockCardEntryKeyValues(ids);
-    stockCardMapper.deleteStockCardEntryLotItemsKeyValues(ids);
-    stockCardMapper.deleteStockCardEntryLotItems(ids);
-    stockCardMapper.deleteStockCardEntry(ids);
+    List<Long> stockCardEntriesIds = stockCardMapper.getStockCardEntriesIds(facilityId, convertToArrayString(partialDeletedProductIds));
+    String sceIds = convertToArrayString(stockCardEntriesIds);
+    stockCardMapper.deleteStockCardEntryKeyValues(sceIds);
+    stockCardMapper.deleteStockCardEntryLotItemsKeyValues(sceIds);
+    stockCardMapper.deleteStockCardEntryLotItems(sceIds);
+    stockCardMapper.deleteStockCardEntry(sceIds);
   }
 
   public List<StockCard> getStockCardSByProductIds(Long facilityId, Collection<Long> productIds) {
@@ -302,7 +302,7 @@ public class StockCardService {
     List<Long> stockCardIds = stockCardMapper.getStockCardIds(facilityId, deletedProductIds);
     String scIds = convertToArrayString(stockCardIds);
     stockCardMapper.deleteLotsOnHand(scIds);
-    stockCardMapper.deleteStockCardEntry(scIds);
+    stockCardMapper.deleteStockCardEntryByStockCardIds(scIds);
     stockCardMapper.deleteStockCards(scIds);
   }
 
