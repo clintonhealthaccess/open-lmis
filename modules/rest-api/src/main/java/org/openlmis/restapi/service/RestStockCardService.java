@@ -291,6 +291,8 @@ public class RestStockCardService {
         }
       }
     }
-    stockCardService.backupStockCards(stockCardBakDTOs);
+    if (stockCardBakDTOs.size() > 0) {
+      stockCardService.backupStockCards(stockCardBakDTOs);
+    }
   }
 }
