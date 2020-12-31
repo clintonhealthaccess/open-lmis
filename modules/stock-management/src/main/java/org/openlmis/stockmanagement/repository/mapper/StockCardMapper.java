@@ -332,4 +332,16 @@ public interface StockCardMapper {
 
   @Select("DELETE from stock_cards where id = ANY (#{stockCardIds}::INT[])")
   void deleteStockCards(@Param("stockCardIds") String stockCardIds);
+
+  @Select("SELECT result.id, result.stockcardid, result.createddate FROM\n" +
+          "(SELECT sce.id, sce.stockcardid, sce.createddate, row_number() over(partition by sce.stockcardid order by sce.createddate DESC, sce.occurred DESC, sce.id DESC) AS num\n" +
+          "FROM stock_card_entries AS sce\n" +
+          "LEFT JOIN \n" +
+          "(SELECT stockcardid, min(occurred) AS minOccurred, min(createddate) AS minCreateDate FROM stock_card_entries\n" +
+          "WHERE stockcardid IN \n" +
+          "(SELECT id FROM stock_cards AS sc WHERE sc.facilityid = #{facilityId} AND sc.productid = ANY (#{productIds}::INT[]))\n" +
+          "AND id IN \n" +
+          "(SELECT stockcardentryid FROM stock_card_entry_key_values WHERE keycolumn = 'signature') GROUP BY stockcardid) AS temp ON temp.stockcardid = sce.stockcardid\n" +
+          "WHERE sce.createddate < temp.minCreateDate AND sce.occurred <= temp.minOccurred) AS result WHERE num > 1")
+  List<Long> getNeedPartialDeletedStockCardEntriesIds(@Param("facilityId") Long facilityId, @Param("productIds") String productIds);
 }

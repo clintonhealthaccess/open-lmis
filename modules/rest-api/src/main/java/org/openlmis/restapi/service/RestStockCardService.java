@@ -261,16 +261,14 @@ public class RestStockCardService {
   public void deleteStockCards(Long facilityId, List<StockCardDeleteDTO> stockCardDeleteDTOs, Long userId) {
     List<String> productCodes = new ArrayList<>();
     for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
-      if (stockCardDeleteDTO.isFullyDelete()) {
         productCodes.add(stockCardDeleteDTO.getProductCode());
-      }
     }
     Map<String, Long> needDeletedProductCodeAndIds = stockCardService.getProductsByCodes(productCodes);
     if (needDeletedProductCodeAndIds.size() > 0) {
       backupStockCards(facilityId, stockCardDeleteDTOs, needDeletedProductCodeAndIds, userId);
       stockCardService.fullyDeleteStockCards(facilityId, stockCardDeleteDTOs, needDeletedProductCodeAndIds);
+      stockCardService.partialDeleteStockCards(facilityId, needDeletedProductCodeAndIds, stockCardDeleteDTOs);
     }
-//    stockCardService.partialDeleteStockCards(facilityId, needDeletedProductCodeAndIds, stockCardDeleteDTOs);
   }
 
   private void backupStockCards(Long facilityId, List<StockCardDeleteDTO> stockCardDeleteDTOs, Map<String, Long> needDeletedProductCodeAndIds, Long userId) {

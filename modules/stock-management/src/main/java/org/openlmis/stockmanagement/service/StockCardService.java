@@ -271,7 +271,10 @@ public class StockCardService {
         partialDeletedProductIds.add(needDeletedProductCodeAndIds.get(stockCardDeleteDTO.getProductCode()));
       }
     }
-    List<Long> stockCardEntriesIds = stockCardMapper.getStockCardEntriesIds(facilityId, convertToArrayString(partialDeletedProductIds));
+    if (partialDeletedProductIds.size() <= 0) {
+      return;
+    }
+    List<Long> stockCardEntriesIds = stockCardMapper.getNeedPartialDeletedStockCardEntriesIds(facilityId, convertToArrayString(partialDeletedProductIds));
     String sceIds = convertToArrayString(stockCardEntriesIds);
     stockCardMapper.deleteStockCardEntryKeyValues(sceIds);
     stockCardMapper.deleteStockCardEntryLotItemsKeyValues(sceIds);
@@ -289,6 +292,9 @@ public class StockCardService {
       if (stockCardDeleteDTO.isFullyDelete()) {
         fullyDeletedProductIds.add(needDeletedProductCodeAndIds.get(stockCardDeleteDTO.getProductCode()));
       }
+    }
+    if (fullyDeletedProductIds.size() <= 0) {
+      return;
     }
     String deletedProductIds = convertToArrayString(fullyDeletedProductIds);
     stockCardMapper.deleteCMMEntries(facilityId, deletedProductIds);
