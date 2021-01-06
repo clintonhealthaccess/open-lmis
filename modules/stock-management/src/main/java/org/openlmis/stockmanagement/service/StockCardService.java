@@ -15,11 +15,14 @@ import com.google.common.collect.FluentIterable;
 import lombok.NoArgsConstructor;
 import org.openlmis.core.domain.Product;
 import org.openlmis.core.repository.ProductRepository;
+import org.openlmis.core.repository.SyncUpHashRepository;
 import org.openlmis.core.repository.mapper.ProductMapper;
 import org.openlmis.core.service.FacilityService;
 import org.openlmis.stockmanagement.domain.*;
 import org.openlmis.stockmanagement.dto.StockCardBakDTO;
 import org.openlmis.stockmanagement.dto.StockCardDeleteDTO;
+import org.openlmis.stockmanagement.dto.StockEvent;
+import org.openlmis.stockmanagement.dto.StockEventType;
 import org.openlmis.stockmanagement.repository.LotRepository;
 import org.openlmis.stockmanagement.repository.StockCardRepository;
 import org.openlmis.stockmanagement.repository.mapper.StockCardBakMapper;
@@ -64,6 +67,9 @@ public class StockCardService {
   StockCardBakMapper stockCardBakMapper;
   @Autowired
   ProductMapper productMapper;
+
+  @Autowired
+  private SyncUpHashRepository syncUpHashRepository;
 
   StockCardService(FacilityService facilityService,
                    ProductRepository productRepository,
@@ -286,7 +292,7 @@ public class StockCardService {
     return stockCardMapper.getStockCardsByProductIds(facilityId, convertToArrayString(productIds));
   }
 
-  public void fullyDeleteStockCards(Long facilityId, List<StockCardDeleteDTO> stockCardDeleteDTOs, Map<String, Long> needDeletedProductCodeAndIds) {
+  public void fullyDeleteStockCards(Long facilityId, List<StockCardDeleteDTO> stockCardDeleteDTOs, Map<String, Long> needDeletedProductCodeAndIds, List<StockCard> stockCards) {
     List<Long> fullyDeletedProductIds = new ArrayList<>();
     for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
       if (stockCardDeleteDTO.isFullyDelete()) {
@@ -296,6 +302,9 @@ public class StockCardService {
     if (fullyDeletedProductIds.size() <= 0) {
       return;
     }
+
+    deleteSyncUpHash(facilityId, needDeletedProductCodeAndIds, stockCards);
+
     String deletedProductIds = convertToArrayString(fullyDeletedProductIds);
     stockCardMapper.deleteCMMEntries(facilityId, deletedProductIds);
 
@@ -311,6 +320,36 @@ public class StockCardService {
     stockCardMapper.deleteStockCardEntryByStockCardIds(scIds);
     stockCardMapper.deleteStockCards(scIds);
   }
+
+  private void deleteSyncUpHash(Long facilityId, Map<String, Long> needDeletedProductCodeAndIds, List<StockCard> stockCards) {
+    List<String> syncUpHashes = new ArrayList<>();
+    for (StockCard sc : stockCards) {
+      if (needDeletedProductCodeAndIds.containsKey(sc.getProduct().getCode())) {
+        for (StockCardEntry sce : sc.getEntries()) {
+          StockEvent stockEvent = new StockEvent();
+          stockEvent.setFacilityId(facilityId);
+          stockEvent.setType(StockEventType.ADJUSTMENT);
+          stockEvent.setProductCode(sc.getProduct().getCode());
+          stockEvent.setOccurred(sce.getOccurred());
+          stockEvent.setCreatedTime(sce.getCreatedDate());
+          stockEvent.setQuantity(sce.getQuantity());
+          stockEvent.setReasonName(sce.getAdjustmentReason().getName());
+          stockEvent.setReferenceNumber(sce.getReferenceNumber());
+          Map<String, String> customProps = new HashMap<>();
+          for (StockCardEntryKV kv : sce.getExtensions()) {
+            if (kv.getKey().equals("soh")) {
+              customProps.put("SOH", kv.getValue());
+            }
+          }
+          stockEvent.setCustomProps(customProps);
+          syncUpHashes.add(stockEvent.getSyncUpHash());
+        }
+      }
+    }
+
+    syncUpHashRepository.deleteSyncUpHashes(syncUpHashes);
+  }
+
 
   private String convertToArrayString(Collection collection) {
     return collection.toString().replace("[", "{").replace("]", "}");
