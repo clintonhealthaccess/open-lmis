@@ -2,6 +2,7 @@ package org.openlmis.stockmanagement.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.google.common.collect.Sets;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -15,16 +16,14 @@ import org.openlmis.stockmanagement.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false)
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class StockCardEntry extends BaseModel {
+  private static final Set<String> RIGHT_KIT_PRODUCTS_SET = Sets.newHashSet("26A01", "26B01", "26A02", "26B02");
 
   @JsonIgnore
   private StockCard stockCard;
@@ -87,7 +86,9 @@ public class StockCardEntry extends BaseModel {
   public void validStockCardEntry() {
     if ((CollectionUtils.isEmpty(this.getStockCard().getEntries())
         && this.getStockCard().getLastestStockCardEntry() == null)) {
-      this.validFirstInventory();
+      if (!RIGHT_KIT_PRODUCTS_SET.contains(this.getStockCard().getProduct().getCode())) {
+        this.validFirstInventory();
+      }
     } else {
       List<StockCardEntry> stockCardEntries = stockCard.getEntries();
       StockCardEntry latestStockCardEntry =
