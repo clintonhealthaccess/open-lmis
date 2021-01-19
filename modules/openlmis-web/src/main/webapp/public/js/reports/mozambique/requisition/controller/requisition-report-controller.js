@@ -374,7 +374,7 @@ function RequisitionReportController($scope, $controller, RequisitionReportServi
       "ESS_MEDS": "view-requisition-via/",
       "MMIA": "view-requisition-mmia/",
       "AL": "view-requisition-al/",
-      "Repaid Test": "view-requisition-rapid-test/",
+      "Rapid Test": "view-requisition-rapid-test/",
       "Testes Rápidos Diag": "view-requisition-rapid-test/",
       "PTV": "view-requisition-ptv/"
     };

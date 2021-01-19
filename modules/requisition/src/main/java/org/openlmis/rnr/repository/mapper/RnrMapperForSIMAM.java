@@ -45,7 +45,11 @@ public interface RnrMapperForSIMAM {
     )
     List<Map<String, String>> getRegimenItemsForSIMAMImport(@Param("rnr") Rnr rnr);
 
-    @Select("SELECT p.code FROM programs p" +
+    /*
+     * MMIA ,08Sxxxxx, 87
+     * MMIA ,08Sxxxxx, 86
+     * */
+    @Select("SELECT DISTINCT p.code FROM programs p" +
         "   LEFT JOIN program_products pp" +
         "   ON pp.programid = p.id" +
         "   LEFT JOIN products pr" +
@@ -54,4 +58,40 @@ public interface RnrMapperForSIMAM {
         "   AND pp.active = TRUE" +
         "   AND (p.id = #{formProgramId} OR p.parentid = #{formProgramId})")
     List<String> getProductProgramCode(@Param("productCode") String productCode, @Param("formProgramId") int formProgramId);
+
+    @Select("SELECT   #{rnr.id} id, " +
+            "    '' || pp.programid form_program_id, " +
+            "     #{rnr.facility.name} facility_name, " +
+            "    date(#{rnr.clientSubmittedTime}) date, " +
+            "    p2.code AS product_code, " +
+            "    '0' beginning_balance, " +
+            "    '0' quantity_dispensed, " +
+            "    '0' quantity_received, " +
+            "    '0' total_losses_and_adjustments, " +
+            "    '0' stock_in_hand, " +
+            "    '0' inventory, " +
+            "    '0' quantity_requested, " +
+            "    '0' quantity_approved, " +
+            "    '0' total_service_quantity " +
+            "FROM  program_products AS pp " +
+            "LEFT JOIN products p2 ON " +
+            "    pp.productid  = p2.id " +
+            "WHERE pp.versioncode ='87' ;")
+    List<Map<String, String>> getNewProductList(@Param("rnr") Rnr rnr);
+
+
+    @Select("SELECT #{rnr.id} requisition_id," +
+            "    p.code program_code ," +
+            "    date(#{rnr.clientSubmittedTime}) date,"+
+            "    r.name regimen_name," +
+            "    '0' total," +
+            "    rc.name category " +
+            " FROM regimens r" +
+            " JOIN regimen_categories rc ON" +
+            "    rc.id = r.categoryid" +
+            " JOIN programs p ON" +
+            "    p.id = r.programid" +
+            " WHERE r.versioncode = 87;"
+    )
+    List<Map<String, String>> getNewRegimenItemsForSIMAMImport(@Param("rnr") Rnr rnr);
 }

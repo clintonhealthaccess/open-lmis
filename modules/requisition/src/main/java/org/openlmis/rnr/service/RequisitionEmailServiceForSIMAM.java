@@ -25,10 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @NoArgsConstructor
@@ -169,7 +166,7 @@ public class RequisitionEmailServiceForSIMAM {
 		if(requisitionItemsData.isEmpty()) {
 			workbook = singleListSheetExcelHandler.readXssTemplateFile(TEMPLATE_IMPORT_RNR_XLSX_EMPTY, ExcelHandler.PathType.FILE);
 		} else {
-			convertOpenLMISProgramCodeToSIMAMCode(requisitionItemsData);
+			convertOpenLMISProgramCodeToSIMAMCode( requisitionItemsData);
 			workbook = singleListSheetExcelHandler.readXssTemplateFile(TEMPLATE_IMPORT_RNR_XLSX, ExcelHandler.PathType.FILE);
 			singleListSheetExcelHandler.createDataRows(workbook.getSheetAt(0), requisitionItemsData);
 		}
@@ -186,7 +183,7 @@ public class RequisitionEmailServiceForSIMAM {
 		List<Map<String, String>> regimenItemsData = rnrMapperForSIMAM.getRegimenItemsForSIMAMImport(requisition);
 
 		//Requested by SIMAM support to specifically convert "ABC+3TC+LPV/r" to a different name to be able to import into SIMAM
-		for (Map<String, String> regimenItem : regimenItemsData) {
+		for (Map<String, String> regimenItem : (regimenItemsData)) {
 			if ("ABC+3TC+LPV/r".equals(regimenItem.get("regimen_name")) && "Paediatrics".equals(regimenItem.get("category"))) {
 				regimenItem.put("regimen_name", "ABC+3TC+LPV/r (2FC+LPV/r)");
 			}
@@ -209,7 +206,7 @@ public class RequisitionEmailServiceForSIMAM {
 			});
 
 			workbook = singleListSheetExcelHandler.readXssTemplateFile(TEMPLATE_IMPORT_REGIMEN_XLSX, ExcelHandler.PathType.FILE);
-			singleListSheetExcelHandler.createDataRows(workbook.getSheetAt(0), regimenItemsData);
+			singleListSheetExcelHandler.createDataRows(workbook.getSheetAt(0),regimenItemsData);
 		}
 
 		return singleListSheetExcelHandler.createXssFile(workbook, fileNameForRegimens(requisition));

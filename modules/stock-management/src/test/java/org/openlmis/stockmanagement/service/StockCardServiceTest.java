@@ -1,16 +1,12 @@
 package org.openlmis.stockmanagement.service;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.openlmis.core.builder.FacilityBuilder;
 import org.openlmis.core.builder.ProductBuilder;
 import org.openlmis.core.domain.Facility;
@@ -30,7 +26,6 @@ import java.util.List;
 
 import static com.natpryce.makeiteasy.MakeItEasy.*;
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -204,7 +199,7 @@ public class StockCardServiceTest {
     stockCard2.setProduct(make(a(ProductBuilder.defaultProduct, with(ProductBuilder.code, "P2"))));
     when(repository.getStockCards(123L)).thenReturn(asList(stockCard1, stockCard2));
 
-    service.updateStockCardSyncTimeToNow(123L, asList("P1"));
+    service.updateStockCardSyncTimeToNowExclude(123L, asList("P1"));
     verify(repository, never()).updateStockCardSyncTimeToNow(123L, "P1");
     verify(repository).updateStockCardSyncTimeToNow(123L, "P2");
   }
@@ -249,17 +244,17 @@ public class StockCardServiceTest {
     lotOnHand2.setStockCard(stockCard);
 
     StockCardEntryLotItem stockCardEntryLotItem1 = new StockCardEntryLotItem(lot, 10L);
+    stockCardEntryLotItem1.addKeyValue("soh","110");
     StockCardEntryLotItem stockCardEntryLotItem2 = new StockCardEntryLotItem(lot2, 100L);
-    StockCardEntryLotItem stockCardEntryLotItem3 = new StockCardEntryLotItem(lot, -30L);
+    stockCardEntryLotItem2.addKeyValue("soh","100");
 
     stockCard.setLotsOnHand(asList(lotOnHand, lotOnHand2));
-    stockCardEntry.setStockCardEntryLotItems(asList(stockCardEntryLotItem1, stockCardEntryLotItem2, stockCardEntryLotItem3));
-
+    stockCardEntry.setStockCardEntryLotItems(asList(stockCardEntryLotItem1, stockCardEntryLotItem2));
+    stockCardEntry.addKeyValue("soh", "210");
     service.addStockCardEntry(stockCardEntry);
 
     verify(lotRepository).createStockCardEntryLotItem(stockCardEntryLotItem1);
     verify(lotRepository).createStockCardEntryLotItem(stockCardEntryLotItem2);
-    verify(lotRepository).createStockCardEntryLotItem(stockCardEntryLotItem3);
 
     verify(repository, times(2)).insertLotOnHandValuesForStockEntry(org.mockito.Matchers.any(LotOnHand.class), org.mockito.Matchers.any(StockCardEntry.class));
 
@@ -267,7 +262,7 @@ public class StockCardServiceTest {
     verify(lotRepository, times(2)).saveLotOnHand(lotOnHandArgumentCaptor.capture());
     List<LotOnHand> allValues = lotOnHandArgumentCaptor.getAllValues();
     if (allValues.get(0).getLot().getLotCode().equals("AAA")) {
-      assertThat(allValues.get(0).getQuantityOnHand(), is(80L));
+      assertThat(allValues.get(0).getQuantityOnHand(), is(110L));
       assertThat(allValues.get(1).getQuantityOnHand(), is(100L));
     } else {
       assertThat(allValues.get(0).getQuantityOnHand(), is(100L));

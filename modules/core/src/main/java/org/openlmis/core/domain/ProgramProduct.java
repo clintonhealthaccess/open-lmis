@@ -49,6 +49,8 @@ public class ProgramProduct extends BaseModel implements Importable {
 
   private Long productCategoryId;
 
+  private Long versionCode;
+
   @ImportField(name = "Full Supply", type = "boolean", mandatory = true)
   private boolean fullSupply;
 

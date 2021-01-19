@@ -13,6 +13,7 @@ package org.openlmis.core.service;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.openlmis.core.message.ExposedMessageSource;
 import org.openlmis.core.message.ExposedMessageSourceImpl;
 import org.openlmis.core.message.OpenLmisMessage;
@@ -69,6 +70,14 @@ public class MessageService {
     return message(openLmisMessage.getCode(), (Object[]) openLmisMessage.getParams());
   }
 
+  public String message(OpenLmisMessage openLmisMessage, String language) {
+    Locale locale = currentLocale;
+    if (StringUtils.isNotBlank(language)) {
+      locale = new Locale(language);
+    }
+    return message(openLmisMessage.getCode(), locale, (Object[]) openLmisMessage.getParams());
+  }
+
   @SuppressWarnings("non-varargs")
   public String message(String key, Object... args) {
     return message(key, currentLocale, args);
@@ -107,6 +116,6 @@ public class MessageService {
    * @return a map of all messages for the given locale.
    */
   public Map<String, String> allMessages(Locale locale) {
-    return messageSource.getAll(currentLocale);
+    return messageSource.getAll(locale);
   }
 }

@@ -1,7 +1,5 @@
 package org.openlmis.restapi.service;
 
-import com.google.common.base.Function;
-import com.google.common.collect.FluentIterable;
 import org.openlmis.core.domain.Program;
 import org.openlmis.core.domain.ProgramSupported;
 import org.openlmis.core.domain.Regimen;
@@ -10,9 +8,6 @@ import org.openlmis.core.repository.ProgramSupportedRepository;
 import org.openlmis.core.repository.RegimenRepository;
 import org.openlmis.restapi.domain.ProgramWithRegimens;
 import org.openlmis.restapi.domain.RegimenForRest;
-import org.openlmis.restapi.domain.RegimenLineItemForRest;
-import org.openlmis.restapi.domain.Report;
-import org.openlmis.rnr.domain.Rnr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

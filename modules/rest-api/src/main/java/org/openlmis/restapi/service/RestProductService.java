@@ -3,6 +3,7 @@ package org.openlmis.restapi.service;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.KitProduct;
 import org.openlmis.core.domain.Product;
 import org.openlmis.core.domain.ProgramProduct;
@@ -10,6 +11,7 @@ import org.openlmis.core.domain.ProgramSupported;
 import org.openlmis.core.service.*;
 import org.openlmis.restapi.domain.ProductResponse;
 import org.openlmis.restapi.domain.ProgramProductResponse;
+import org.openlmis.restapi.utils.KitProductFilterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.openlmis.restapi.config.FilterProductConfig.*;
+import static org.openlmis.restapi.utils.KitProductFilterUtils.*;
 
 @Service
 public class RestProductService {
@@ -98,22 +100,24 @@ public class RestProductService {
     return isContainedInLatestProduct;
   }
 
-  private List<Product> getLatestProducts(Date afterUpdatedTime, String versionCode, Long facilityId) {
-
+  private List<Product> getLatestProducts(Date afterUpdatedTime, String versionCode,
+      Long facilityId) {
     if (afterUpdatedTime == null) {
+      final List<String> archivedProductCodes = archivedProductService
+          .getAllArchivedProducts(facilityId);
 
-      final List<String> archivedProductCodes = archivedProductService.getAllArchivedProducts(facilityId);
-
-      return FluentIterable.from(productService.getAllProducts()).transform(new Function<Product, Product>() {
-        @Override
-        public Product apply(Product product) {
-          product.setArchived(archivedProductCodes.contains(product.getCode()));
-          return product;
-        }
-      }).toList();
+      return FluentIterable.from(productService.getAllProducts())
+          .transform(new Function<Product, Product>() {
+            @Override
+            public Product apply(Product product) {
+              product.setArchived(archivedProductCodes.contains(product.getCode()));
+              return product;
+            }
+          }).toList();
     } else {
       List<Product> products = productService.getProductsAfterUpdatedDate(afterUpdatedTime);
-      if (isVersionCodeMoreThanFilterThresholdVersion(versionCode)) {
+      if (KitProductFilterUtils
+          .isBiggerThanThresholdVersion(versionCode, KIT_CODE_CHANGE_VERSION)) {
         return filterProductFromGetProductsAfterUpdatedDate(products);
       }
       return products;
@@ -156,23 +160,22 @@ public class RestProductService {
         public boolean apply(ProgramProduct programProduct) {
           return programs.contains(programProduct.getProgram().getCode());
         }
+      }).filter(new Predicate<ProgramProduct>() {
+        @Override
+        public boolean apply(ProgramProduct programProduct) {
+          return (!"MMIA".equals(programProduct.getProgram().getCode()) ||
+                  LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE).equals(String.valueOf(programProduct.getVersionCode())));
+        }
       }).transform(new Function<ProgramProduct, ProgramProductResponse>() {
         @Override
         public ProgramProductResponse apply(ProgramProduct programProduct) {
           return new ProgramProductResponse(programProduct.getProgram().getCode(), product.getCode(),
-                  programProduct.getActive(), programProduct.getProductCategory().getName());
+                  programProduct.getActive(), programProduct.getProductCategory().getName(),programProduct.getVersionCode());
         }
       }).toList();
 
-      List<String> programCodes = FluentIterable.from(programProductSevice.getActiveProgramCodesByProductCode(product.getCode())).filter(new Predicate<String>() {
-        @Override
-        public boolean apply(String programProductCode) {
-          return programs.contains(programProductCode);
-        }
-      }).toList();
-
-      if (!programsResponse.isEmpty()) {
-        productResponseList.add(new ProductResponse(product, programCodes, programsResponse));
+      if (!programsResponse.isEmpty() || LmisThreadLocalUtils.STR_VERSION_87.equals(LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE))) {
+        productResponseList.add(new ProductResponse(product, programsResponse));
       }
     }
     return productResponseList;

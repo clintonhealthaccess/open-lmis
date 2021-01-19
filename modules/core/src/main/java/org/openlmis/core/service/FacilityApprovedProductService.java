@@ -11,6 +11,7 @@
 package org.openlmis.core.service;
 
 import lombok.NoArgsConstructor;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.FacilityType;
 import org.openlmis.core.domain.FacilityTypeApprovedProduct;
 import org.openlmis.core.domain.Pagination;
@@ -54,6 +55,12 @@ public class FacilityApprovedProductService {
 
   public List<FacilityTypeApprovedProduct> getFullSupplyFacilityApprovedProductByFacilityAndProgramIncludingSubPrograms(Long facilityId, Long programId) {
     return repository.getFullSupplyProductsByFacilityAndProgramIncludingSubPrograms(facilityId, programId);
+  }
+
+  public List<FacilityTypeApprovedProduct> getFullSupplyFacilityApprovedProductByFacilityAndProgramIncludingSubProgramsAndVersion(Long facilityId, Long programId) {
+    String versionCodeFromHeader = LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE);
+    String versioncode = versionCodeFromHeader == null || Integer.valueOf(versionCodeFromHeader) < 87  ? LmisThreadLocalUtils.STR_VERSION_86 : LmisThreadLocalUtils.STR_VERSION_87;
+    return repository.getFullSupplyFacilityApprovedProductByFacilityAndProgramIncludingSubProgramsAndVersion(facilityId, programId,versioncode);
   }
 
   public List<FacilityTypeApprovedProduct> getNonFullSupplyFacilityApprovedProductByFacilityAndProgram(Long facilityId, Long programId) {

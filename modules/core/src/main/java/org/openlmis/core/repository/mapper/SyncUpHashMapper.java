@@ -2,6 +2,7 @@ package org.openlmis.core.repository.mapper;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +21,7 @@ public interface SyncUpHashMapper {
 
     @Select({"SELECT hash from sync_up_hashes where hash=#{hash}"})
     List<String> find(String hash);
+
+    @Delete("DELETE from sync_up_hashes where hash = ANY (#{syncUpHashes}::VARCHAR[])")
+    void deleteSyncUpHashes(@Param("syncUpHashes") String syncUpHashes);
 }

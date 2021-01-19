@@ -10,6 +10,7 @@
 
 package org.openlmis.core.repository;
 
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.*;
 import org.openlmis.core.repository.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,6 @@ public class RegimenRepository {
   @Autowired
   RegimenConstituentDosageMapper regimenConstituentDosageMapper;
 
-
   public List<Regimen> getByProgram(Long programId) {
     return mapper.getByProgram(programId);
   }
@@ -58,6 +58,7 @@ public class RegimenRepository {
       regimen.setModifiedBy(userId);
       if (regimen.getId() == null) {
         regimen.setCreatedBy(userId);
+        regimen.setVersionCode(Long.valueOf(LmisThreadLocalUtils.STR_VERSION_87));
         mapper.insert(regimen);
       }
       mapper.update(regimen);
@@ -103,9 +104,21 @@ public class RegimenRepository {
     return mapper.getRegimensByCategoryIdAndName(categoryId, code);
   }
 
-  public List<Regimen> getRegimensByProgramAndIsCustom(Long programId, boolean isCustom) {
+  public Regimen getRegimensByCategoryIdAndNameAndVersion(Long categoryId, String code, Long versionCode) {
+    return mapper.getRegimensByCategoryIdAndNameAndVersion(categoryId, code,versionCode);
+  }
 
-    return mapper.getRegimensByProgramAndIsCustom(programId, isCustom);
+  public List<Regimen> getRegimensByProgramAndIsCustom(Long programId, boolean isCustom) {
+    if (programId == 1) {
+      String versionCode = LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE);
+      if (versionCode == null || Integer.valueOf(versionCode) < 87) {
+        return mapper.getAndroidLess87MMIARegimes(isCustom);
+      } else {
+        return mapper.getAndroidV87MMIARegimes(isCustom);
+      }
+    } else {
+      return mapper.getRegimensByProgramAndIsCustom(programId, isCustom);
+    }
   }
 
   @Transactional

@@ -19,8 +19,6 @@ import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.
 public class ProductResponse {
 
     private Product product;
-    @Deprecated
-    private List<String> supportedPrograms = new ArrayList<>();
     private List<ProgramProductResponse> productPrograms = new ArrayList<>();
 
 }

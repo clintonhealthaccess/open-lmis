@@ -180,6 +180,15 @@ public interface ProductMapper {
                   many = @Many(select = "org.openlmis.core.repository.mapper.DosageUnitMapper.getById"))})
   Product getProductByCode(String productCode);
 
+  @Select("SELECT p.id,pc.name FROM products p" +
+          " JOIN program_products pp ON p.id = pp.productId" +
+          " JOIN product_categories pc on pc.id = pp.productCategoryId" +
+          " where pp.versionCode='87'")
+  @Results({
+          @Result(property = "productItem", column = "id", javaType = Product.class, many = @Many(select = "org.openlmis.core.repository.mapper.ProductMapper.getById")),
+          @Result(property = "categoryName", column = "name")})
+  List<NewProductsItem> getProductListForNewVersion();
+
   @Update("UPDATE products SET modifiedDate=CURRENT_TIMESTAMP,ACTIVE=#{active} WHERE id=#{id} ")
   void updateProductActiveStatus(@Param("active") boolean active, @Param("id") long id);
 
@@ -188,4 +197,10 @@ public interface ProductMapper {
 
   @Delete("DELETE FROM kit_products_relation WHERE kitCode = #{kitCode} and productCode = #{productCode}")
   void deleteKitProduct(KitProduct kitProduct);
+
+  @Select("SELECT id FROM products WHERE code = #{code} ")
+  Long getProductIdByCode(String code);
+
+  @Select("SELECT id,code FROM products WHERE code = ANY (#{productCodes}::VARCHAR[])")
+  List<Product> getProductsByCodes(@Param("productCodes") String productCodes);
 }

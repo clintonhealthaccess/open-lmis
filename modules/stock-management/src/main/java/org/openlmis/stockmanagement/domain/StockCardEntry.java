@@ -2,25 +2,28 @@ package org.openlmis.stockmanagement.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.google.common.collect.Sets;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.BaseModel;
 import org.openlmis.core.domain.StockAdjustmentReason;
 import org.openlmis.core.exception.DataException;
+import org.openlmis.stockmanagement.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false)
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class StockCardEntry extends BaseModel {
+  private static final Set<String> RIGHT_KIT_PRODUCTS_SET = Sets.newHashSet("26A01", "26B01", "26A02", "26B02");
 
   @JsonIgnore
   private StockCard stockCard;
@@ -34,6 +37,7 @@ public class StockCardEntry extends BaseModel {
 
   private StockAdjustmentReason adjustmentReason;
 
+  @JsonIgnore
   private LotOnHand lotOnHand;
 
   String notes;
@@ -80,41 +84,77 @@ public class StockCardEntry extends BaseModel {
   }
 
   public void validStockCardEntry() {
-    if((this.getStockCard().getEntries() == null && this.getStockCard().getLastestStockCardEntry() == null)) {
-      this.validFirstInventory();
+    if ((CollectionUtils.isEmpty(this.getStockCard().getEntries())
+        && this.getStockCard().getLastestStockCardEntry() == null)) {
+      if (!RIGHT_KIT_PRODUCTS_SET.contains(this.getStockCard().getProduct().getCode())) {
+        this.validFirstInventory();
+      }
     } else {
-      this.validOccurredDate();
-      this.validStockOnHand();
+      List<StockCardEntry> stockCardEntries = stockCard.getEntries();
+      StockCardEntry latestStockCardEntry =
+          stockCard.getLastestStockCardEntry() == null ? stockCardEntries.get(0)
+              : stockCard.getLastestStockCardEntry();
+      this.validOccurredDate(latestStockCardEntry);
+      this.validStockOnHand(latestStockCardEntry);
     }
   }
 
-  private void validStockOnHand() {
-    if(stockCard.getTotalQuantityOnHand() + this.getQuantity() != this.getStockOnHand()) {
-      logger.error("stock movement quantity error, facilityname: " + this.getStockCard().getFacility().getName() + ", productcode: " + this.getStockCard().getProduct().getCode());
+  private String getVersionCode(){
+    return LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE);
+  }
+
+  private boolean shouldBlockProcess(){
+    String versionCode = LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE);
+    return StringUtils.isNumeric(versionCode) && Integer.valueOf(versionCode) >= LmisThreadLocalUtils.VERSION_87;
+  }
+
+  private void validStockOnHand(StockCardEntry latestStockCardEntry) {
+    if (latestStockCardEntry.findStockOnHand() + this.getQuantity() != this.findStockOnHand()) {
+      logger.error("stock movement quantity error");
+      logger.error(
+          "stock movement quantity error, facilityId {} version {} productCode {} movement is {} latestMovement is {}",
+          this.getStockCard().getFacility().getId(),this.getVersionCode(),this.getStockCard().getProduct().getCode(),
+          JsonUtils.toJsonString(this), JsonUtils.toJsonString(latestStockCardEntry));
+      if (shouldBlockProcess()) {
+          throw new DataException("error.stock.entry.quantity");
+      }
     }
   }
 
-  private void validOccurredDate() {
-    List<StockCardEntry> stockCardEntries = stockCard.getEntries();
-    StockCardEntry latestStockCardEntry = stockCard.getLastestStockCardEntry() == null ? stockCardEntries.get(0) : stockCard.getLastestStockCardEntry();
-    if(latestStockCardEntry.getOccurred().after(this.getOccurred())) {
-      logger.error("stock movement date error, facilityname: " + this.getStockCard().getFacility().getName() + ", productcode: " + this.getStockCard().getProduct().getCode());
+  private void validOccurredDate(StockCardEntry latestStockCardEntry) {
+    if (latestStockCardEntry.getOccurred().after(this.getOccurred())) {
+      logger.error("stock movement date error");
+      logger.error(
+          "stock movement date error, facilityId {} version {}  productCode {} movement is {} latestMovement is {}",
+          this.getStockCard().getFacility().getId(), this.getVersionCode(), this.getStockCard().getProduct().getCode(),
+          JsonUtils.toJsonString(this), JsonUtils.toJsonString(latestStockCardEntry));
+      if (shouldBlockProcess()) {
+        throw new DataException("error.stock.entry.date.validation");
+      }
     }
   }
 
   private void validFirstInventory() {
-    if(!(this.getAdjustmentReason().getName().equals("INVENTORY") && this.getQuantity() >= 0)) {
-      logger.error("first inventory error, facilityname: " + this.getStockCard().getFacility().getName() + ", productcode: " + this.getStockCard().getProduct().getCode());
+    if (!(this.getAdjustmentReason().getName().equals("INVENTORY")
+        && this.getQuantity() >= 0)) {
+      logger.error("stock movement first inventory error");
+      logger.error(
+          "stock movement first inventory error, facilityId {},version {} , productCode: {} movement is {}",
+          this.getStockCard().getFacility().getId(),this.getVersionCode(), this.getStockCard().getProduct().getCode(),
+          JsonUtils.toJsonString(this));
+      if (shouldBlockProcess()) {
+          throw new DataException("error.stock.entry.first.inventory");
+      }
     }
   }
 
-  private Integer getStockOnHand() {
-    for(StockCardEntryKV stockCardEntryKV : extensions) {
-      if(stockCardEntryKV.getKey().equals("soh")) {
-        return Integer.valueOf(stockCardEntryKV.getValue());
+  public Long findStockOnHand() {
+    for (StockCardEntryKV stockCardEntryKV : extensions) {
+      if (stockCardEntryKV.getKey().equals("soh")) {
+        return Long.valueOf(stockCardEntryKV.getValue());
       }
     }
-    throw new DataException("error.stockonhand.notfound");
+    throw new DataException("error.stock.entry.soh.notfound");
   }
 
 }

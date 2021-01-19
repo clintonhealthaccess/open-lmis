@@ -20,15 +20,19 @@ public class AppInfoRepository {
     @Autowired
     AppInfoMapper appInfoMapper;
 
-    public int create(AppInfo appInfo) {
+    public int insert(AppInfo appInfo) {
         return appInfoMapper.insert(appInfo);
     }
 
-    public int update(AppInfo appInfo) {
-        return appInfoMapper.update(appInfo);
+    public int updateAppVersion(Long facilityId, String appVersion) {
+        return appInfoMapper.updateAppVersion(facilityId, appVersion);
     }
 
-    public AppInfo getAppInfoByFacilityCode(String facilityCode) {
-        return appInfoMapper.queryByFacilityCode(facilityCode);
+    public AppInfo getAppInfoByFacilityId(Long facilityId) {
+        return appInfoMapper.queryByFacilityId(facilityId);
+    }
+
+    public int updateInfo(AppInfo appInfo) {
+        return appInfoMapper.updateInfo(appInfo);
     }
 }

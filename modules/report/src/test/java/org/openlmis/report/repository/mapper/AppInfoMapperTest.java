@@ -42,7 +42,7 @@ public class AppInfoMapperTest {
         AppInfo appInfo = new AppInfo(facility.getId(), "testUser", "1.0");
         mapper.insert(appInfo);
 
-        AppInfo queryAppInfo = mapper.queryByFacilityCode(facility.getCode());
+        AppInfo queryAppInfo = mapper.queryByFacilityId(facility.getId());
 
         assertThat(queryAppInfo.getAppVersion(), is(appInfo.getAppVersion()));
     }
@@ -56,9 +56,9 @@ public class AppInfoMapperTest {
         mapper.insert(appInfo);
 
         appInfo.setAppVersion("2.0");
-        mapper.update(appInfo);
+        mapper.updateAppVersion(appInfo.getFacilityId(), appInfo.getAppVersion());
 
-        AppInfo queryAppInfo = mapper.queryByFacilityCode(facility.getCode());
+        AppInfo queryAppInfo = mapper.queryByFacilityId(facility.getId());
 
         assertThat(queryAppInfo.getAppVersion(), is(appInfo.getAppVersion()));
 

@@ -22,14 +22,14 @@ public class RegimenForRest extends Regimen {
 
     public RegimenForRest(String name, String code, Long programId, Boolean active,
                           RegimenCategory category, String categoryName, Integer displayOrder,
-                          boolean isCustom, boolean skipped) {
-        super(name, code, programId, active, category, displayOrder, isCustom, skipped);
+                          boolean isCustom, boolean skipped, Long versionCode) {
+        super(name, code, programId, active, category, displayOrder, isCustom, skipped, versionCode);
         this.categoryName = categoryName;
     }
 
     public static RegimenForRest convertFromRegimenLineItem(Regimen regimen) {
         return new RegimenForRest(regimen.getName(), regimen.getCode(), regimen.getProgramId(),
                 regimen.getActive(), regimen.getCategory(), regimen.getCategory().getName(), regimen.getDisplayOrder(),
-                regimen.isCustom(), regimen.isSkipped());
+                regimen.isCustom(), regimen.isSkipped(), regimen.getVersionCode());
     }
 }

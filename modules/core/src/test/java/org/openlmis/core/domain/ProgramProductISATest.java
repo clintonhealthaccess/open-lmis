@@ -65,6 +65,7 @@ public class ProgramProductISATest
       {
         fieldType = field.getType();
         fieldName = field.getName();
+        field.setAccessible(true);
 
         if (fieldType == boolean.class && field.getBoolean(object) == false)
           fail(String.format(err, className, fieldName));

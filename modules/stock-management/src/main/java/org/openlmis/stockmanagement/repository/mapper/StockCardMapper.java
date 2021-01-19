@@ -94,7 +94,7 @@ public interface StockCardMapper {
   @Select("SELECT *" +
       " FROM stock_card_entries" +
       " WHERE stockcardid = #{stockCardId}" +
-      " ORDER BY createddate DESC")
+      " ORDER BY createddate DESC, id DESC")
   @Results({
       @Result(property = "id", column = "id"),
       @Result(property = "adjustmentReason", column = "adjustmentType", javaType = StockAdjustmentReason.class,
@@ -251,6 +251,21 @@ public interface StockCardMapper {
       "WHERE id = #{id}")
   int update(StockCard card);
 
+  @Select("SELECT *" +
+          " FROM stock_card_entries" +
+          " WHERE stockcardid = #{stockCardId}" +
+          " ORDER BY createddate")
+  @Results({
+          @Result(property = "id", column = "id"),
+          @Result(property = "adjustmentReason", column = "adjustmentType", javaType = StockAdjustmentReason.class,
+                  one = @One(select = "org.openlmis.core.repository.mapper.StockAdjustmentReasonMapper.getByName")),
+          @Result(property = "extensions", column = "id", javaType = List.class,
+                  many = @Many(select = "getStockCardEntryExtensionAttributes")),
+          @Result(property = "stockCardEntryLotItems", column = "id", javaType = List.class,
+                  many = @Many(select = "org.openlmis.stockmanagement.repository.mapper.LotMapper.getLotMovementItemsByStockEntry"))
+  })
+  List<StockCardEntry> getAllEntries(@Param("stockCardId") Long stockCardId);
+
   @Update("UPDATE stock_cards " +
       "SET modifieddate = NOW() " +
       "WHERE facilityid = #{facilityId}")
@@ -261,4 +276,72 @@ public interface StockCardMapper {
       "WHERE facilityid = #{facilityId} " +
       "AND productid = (SELECT id FROM products WHERE code = (#{stockCardProductCode}))")
   int updateStockCardToSyncTimeToNow(@Param("facilityId") long facilityId, @Param("stockCardProductCode") String stockCardProductCode);
+
+  @Select("SELECT *" +
+          " FROM stock_cards" +
+          " WHERE facilityid = #{facilityId}" +
+          "   AND productid = ANY (#{productIds}::INT[])")
+  @Results({
+          @Result(property = "id", column = "id"),
+          @Result(property = "facility", column = "facilityId", javaType = Facility.class,
+                  one = @One(select = "org.openlmis.core.repository.mapper.FacilityMapper.getById")),
+          @Result(property = "product", column = "productId", javaType = Product.class,
+                  one = @One(select = "org.openlmis.core.repository.mapper.ProductMapper.getById")),
+          @Result(property = "entries", column = "id", javaType = List.class,
+                  many = @Many(select = "getAllEntries")),
+          @Result(property = "lotsOnHand", column = "id", javaType = List.class,
+                  many = @Many(select = "getLotsOnHand"))
+  })
+  List<StockCard> getStockCardsByProductIds(@Param("facilityId") Long facilityId, @Param("productIds") String productIds);
+
+  @Select({"SELECT COUNT(*) FROM (select sc.facilityid",
+          "FROM stock_cards sc" ,
+          " INNER JOIN products p ON sc.productid = p.id" ,
+          " WHERE p.code = #{productCode} ",
+          " AND p.code NOT IN ('26A01','26B01','26A02','26B02') " ,
+          " AND sc.totalquantityonhand > 0" ,
+          " GROUP BY sc.facilityid) as tmp"})
+  int getTotalFacilityWithProductSOHGreaterZero(@Param("productCode") String productCode);
+
+  @Select("SELECT id FROM stock_card_entries WHERE stockcardid IN ( SELECT id FROM stock_cards WHERE stock_cards.facilityid = #{facilityId} AND stock_cards.productid = ANY (#{deletedProductIds}::INT[]))")
+  List<Long> getStockCardEntriesIds(@Param("facilityId") Long facilityId, @Param("deletedProductIds") String deletedProductIds);
+
+  @Select("SELECT id FROM stock_cards WHERE stock_cards.facilityid = #{facilityId} AND stock_cards.productid = ANY (#{deletedProductIds}::INT[])")
+  List<Long> getStockCardIds(@Param("facilityId") Long facilityId, @Param("deletedProductIds") String deletedProductIds);
+
+  @Delete("DELETE FROM cmm_entries WHERE stockcardid IN (SELECT id FROM stock_cards WHERE stock_cards.facilityid = #{facilityId} AND stock_cards.productid = ANY (#{productIds}::INT[]))")
+  void deleteCMMEntries(@Param("facilityId") Long facilityId, @Param("productIds") String productIds);
+
+  @Delete("DELETE from stock_card_entry_key_values where stockcardentryid = ANY (#{stockCardIds}::INT[])")
+  void deleteStockCardEntryKeyValues(@Param("stockCardIds") String stockCardIds);
+
+  @Delete("DELETE from stock_card_entry_lot_items_key_values where stockcardentrylotitemid IN (SELECT id FROM stock_card_entry_lot_items WHERE stockcardentryid = ANY (#{stockCardIds}::INT[]))")
+  void deleteStockCardEntryLotItemsKeyValues(@Param("stockCardIds") String stockCardIds);
+
+  @Delete("DELETE from stock_card_entry_lot_items where stockcardentryid = ANY (#{stockCardIds}::INT[])")
+  void deleteStockCardEntryLotItems(@Param("stockCardIds") String stockCardIds);
+
+  @Delete("DELETE FROM lots_on_hand WHERE stockcardid = ANY (#{stockCardIds}::INT[])")
+  void deleteLotsOnHand(@Param("stockCardIds") String stockCardIds);
+
+  @Delete("DELETE from stock_card_entries where id = ANY (#{ids}::INT[])")
+  void deleteStockCardEntry(@Param("ids") String ids);
+
+  @Delete("DELETE from stock_card_entries where stockcardid = ANY (#{stockCardIds}::INT[])")
+  void deleteStockCardEntryByStockCardIds(@Param("stockCardIds") String stockCardIds);
+
+  @Select("DELETE from stock_cards where id = ANY (#{stockCardIds}::INT[])")
+  void deleteStockCards(@Param("stockCardIds") String stockCardIds);
+
+  @Select("SELECT result.id, result.stockcardid, result.createddate FROM\n" +
+          "(SELECT sce.id, sce.stockcardid, sce.createddate, row_number() over(partition by sce.stockcardid order by sce.createddate DESC, sce.occurred DESC, sce.id DESC) AS num\n" +
+          "FROM stock_card_entries AS sce\n" +
+          "LEFT JOIN \n" +
+          "(SELECT stockcardid, min(occurred) AS minOccurred, min(createddate) AS minCreateDate FROM stock_card_entries\n" +
+          "WHERE stockcardid IN \n" +
+          "(SELECT id FROM stock_cards AS sc WHERE sc.facilityid = #{facilityId} AND sc.productid = ANY (#{productIds}::INT[]))\n" +
+          "AND id IN \n" +
+          "(SELECT stockcardentryid FROM stock_card_entry_key_values WHERE keycolumn = 'signature') GROUP BY stockcardid) AS temp ON temp.stockcardid = sce.stockcardid\n" +
+          "WHERE sce.createddate < temp.minCreateDate AND sce.occurred <= temp.minOccurred) AS result WHERE num > 1")
+  List<Long> getNeedPartialDeletedStockCardEntriesIds(@Param("facilityId") Long facilityId, @Param("productIds") String productIds);
 }

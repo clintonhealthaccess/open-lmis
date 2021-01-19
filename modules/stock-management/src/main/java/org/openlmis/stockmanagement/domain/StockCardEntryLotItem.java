@@ -8,11 +8,15 @@ import org.openlmis.core.domain.BaseModel;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.openlmis.core.exception.DataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Data
 @NoArgsConstructor
 public class StockCardEntryLotItem extends BaseModel {
 
+    private static final Logger logger = LoggerFactory.getLogger(StockCardEntryLotItem.class);
     @JsonIgnore
     private Long stockCardEntryId;
 
@@ -24,6 +28,7 @@ public class StockCardEntryLotItem extends BaseModel {
 
     private List<StockCardEntryLotItemKV> extensions = new ArrayList<>();
 
+
     public StockCardEntryLotItem(Lot lot, Long quantity) {
         this.lot = lot;
         this.quantity = quantity;
@@ -32,5 +37,16 @@ public class StockCardEntryLotItem extends BaseModel {
     public void addKeyValue(String key, String value) {
         String newKey = key.trim().toLowerCase();
         extensions.add(new StockCardEntryLotItemKV(newKey, value, new Date()));
+    }
+
+    public long findStockOnHand() {
+        for (StockCardEntryLotItemKV lotItemKV : extensions) {
+            if (lotItemKV.getKey().equals("soh")) {
+                return Long.valueOf(lotItemKV.getValue());
+            }
+        }
+        logger.error("product[{}], lot[{}] has no soh field", this.getLot().getProduct().getCode(),
+            this.getLot().getLotCode());
+        throw new DataException("error.stock.entry.lot.soh.notfound");
     }
 }

@@ -2,6 +2,7 @@ package org.openlmis.rnr.service;
 
 import com.google.common.collect.FluentIterable;
 import org.apache.commons.collections.CollectionUtils;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.BudgetLineItem;
 import org.openlmis.core.domain.Facility;
 import org.openlmis.core.domain.FacilityTypeApprovedProduct;
@@ -151,7 +152,8 @@ public class RequisitionService {
   }
 
   @Transactional
-  public Rnr initiate(Facility facility, Program program, Long modifiedBy, Boolean emergency, ProcessingPeriod proposedPeriod, List<ServiceLineItem> serviceLineItems) {
+  public Rnr initiate(Facility facility, Program program, Long modifiedBy, Boolean emergency,
+      ProcessingPeriod proposedPeriod, List<ServiceLineItem> serviceLineItems) {
 
     if (!requisitionPermissionService.hasPermission(modifiedBy, facility, program, CREATE_REQUISITION)) {
       throw new DataException(RNR_OPERATION_UNAUTHORIZED);
@@ -167,21 +169,28 @@ public class RequisitionService {
 
     List<FacilityTypeApprovedProduct> facilityTypeApprovedProducts;
 
+
+      String versionCode = LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_VERSION_CODE);
+
     if (!staticReferenceDataService.getBoolean("toggle.rnr.multiple.programs")) {
       facilityTypeApprovedProducts = facilityApprovedProductService.getFullSupplyFacilityApprovedProductByFacilityAndProgram(
           facility.getId(), program.getId());
     } else {
-      facilityTypeApprovedProducts = facilityApprovedProductService.getFullSupplyFacilityApprovedProductByFacilityAndProgramIncludingSubPrograms(
-          facility.getId(), program.getId());
-
-      //if there are multiple programs for the same product, in order not to have that item show up twice in the form
-      //we pick a program randomly; since none of the program product attributes are used in Mozambique, this is ok.
-      //if we want to start using program product attributes, then we need talk about the requirements.
-      Map<String, FacilityTypeApprovedProduct> programProductMap = new HashMap<>();
-      for (FacilityTypeApprovedProduct facilityTypeApprovedProduct: facilityTypeApprovedProducts) {
-        programProductMap.put(facilityTypeApprovedProduct.getProgramProduct().getProduct().getCode(), facilityTypeApprovedProduct);
+      if ("MMIA".equals(program.getCode())){
+        facilityTypeApprovedProducts = facilityApprovedProductService
+                .getFullSupplyFacilityApprovedProductByFacilityAndProgramIncludingSubProgramsAndVersion(facility.getId(), program.getId());
+      } else {
+        facilityTypeApprovedProducts = facilityApprovedProductService.getFullSupplyFacilityApprovedProductByFacilityAndProgramIncludingSubPrograms(
+                facility.getId(), program.getId());
       }
-      facilityTypeApprovedProducts = FluentIterable.from(programProductMap.values()).toList();
+        //if there are multiple programs for the same product, in order not to have that item show up twice in the form
+        //we pick a program randomly; since none of the program product attributes are used in Mozambique, this is ok.
+        //if we want to start using program product attributes, then we need talk about the requirements.
+        Map<String, FacilityTypeApprovedProduct> programProductMap = new HashMap<>();
+        for (FacilityTypeApprovedProduct facilityTypeApprovedProduct : facilityTypeApprovedProducts) {
+          programProductMap.put(facilityTypeApprovedProduct.getProgramProduct().getProduct().getCode(), facilityTypeApprovedProduct);
+        }
+        facilityTypeApprovedProducts = FluentIterable.from(programProductMap.values()).toList();
     }
 
      //N:B If usePriceSchedule is selected for the selected program, use the product price from price_schedule table
@@ -750,9 +759,13 @@ public class RequisitionService {
     requisitionRepository.insertPatientQuantificationLineItems(rnr);
   }
 
+  @Transactional
+  public void insertTherapeuticLinesItem(Rnr rnr) {
+    requisitionRepository.insertTherapeuticLinesItem(rnr);
+  }
 
-  public List<Rnr> getRequisitionsByFacility(Facility facility) {
-    return requisitionRepository.getRequisitionDetailsByFacility(facility);
+  public List<Rnr> getRequisitionsByFacility(Facility facility, Date startDate) {
+    return requisitionRepository.getRequisitionDetailsByFacility(facility, startDate);
   }
 
   @Transactional

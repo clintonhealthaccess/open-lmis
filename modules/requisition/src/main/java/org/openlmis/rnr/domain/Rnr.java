@@ -19,10 +19,12 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.openlmis.core.domain.*;
+import org.openlmis.core.domain.NewProductsItem;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.rnr.dto.ProgramDataColumnDTO;
 import org.openlmis.rnr.dto.ServiceDTO;
 import org.openlmis.rnr.dto.ServiceLineItemDTO;
+import org.openlmis.core.utils.MessageKeyUtils;
 import org.springframework.beans.BeanUtils;
 
 import javax.persistence.Transient;
@@ -49,7 +51,7 @@ import static org.openlmis.rnr.domain.RnrStatus.*;
 @EqualsAndHashCode(callSuper = false)
 public class Rnr extends BaseModel {
 
-  public static final String RNR_VALIDATION_ERROR = "error.rnr.validation";
+
   private boolean emergency;
   private Facility facility;
   private Program program;
@@ -62,13 +64,16 @@ public class Rnr extends BaseModel {
   private List<RegimenLineItem> regimenLineItems = new ArrayList<>();
   private List<EquipmentLineItem> equipmentLineItems = new ArrayList<>();
   private List<PatientQuantificationLineItem> patientQuantifications = new ArrayList<>();
+  private List<TherapeuticLinesItem> therapeuticLines = new ArrayList<>();
+  private List<NewProductsItem> newProducts = new ArrayList<>();
+  private List<Regimen> newRegimes = new ArrayList<>();
   private BigDecimal allocatedBudget;
   @Transient
   @JsonIgnore
   private List<RnrLineItem> allLineItems = new ArrayList<>();
 
   private Facility supplyingDepot;
-  private Long supplyingDepotId;;
+  private Long supplyingDepotId;
   private Long supervisoryNodeId;
   private Date submittedDate;
   private Date clientSubmittedTime;
@@ -407,7 +412,7 @@ public class Rnr extends BaseModel {
           regimenLineItem.validate(regimenTemplate);
         }
       } catch (NoSuchFieldException | IllegalAccessException e) {
-        throw new DataException(RNR_VALIDATION_ERROR);
+        throw new DataException(MessageKeyUtils.RNR_VALIDATION_ERROR);
       }
     }
   }
@@ -478,6 +483,20 @@ public class Rnr extends BaseModel {
   @JsonIgnore
   public boolean isBudgetingApplicable() {
     return !this.emergency && this.program.getBudgetingApplies();
+  }
+
+  public void setNewProducts(List<NewProductsItem> products){
+    this.newProducts = products;
+  }
+  public void setNewRegimes(List<Regimen> regimes){
+    this.newRegimes = regimes;
+  }
+
+  public boolean isFromOldMMIALayout(){
+    return this.patientQuantifications.size() == 7;
+  }
+  public boolean isMMIALayout(){
+    return this.program.isMmiaRequisition();
   }
 }
 

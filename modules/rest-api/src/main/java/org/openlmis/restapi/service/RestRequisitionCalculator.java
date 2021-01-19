@@ -10,8 +10,8 @@
 
 package org.openlmis.restapi.service;
 
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.Facility;
 import org.openlmis.core.domain.ProcessingPeriod;
 import org.openlmis.core.domain.Program;
@@ -24,6 +24,9 @@ import org.openlmis.rnr.domain.Rnr;
 import org.openlmis.rnr.domain.RnrLineItem;
 import org.openlmis.rnr.search.criteria.RequisitionSearchCriteria;
 import org.openlmis.rnr.service.RequisitionService;
+import org.openlmis.core.utils.MessageKeyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -51,7 +54,7 @@ public class RestRequisitionCalculator {
   @Autowired
   private StaticReferenceDataService staticReferenceDataService;
 
-  private static final Logger LOGGER = Logger.getLogger(RestRequisitionCalculator.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RestRequisitionCalculator.class);
 
   public void validatePeriod(Facility reportingFacility, Program reportingProgram, Date periodStartDate, Date periodEndDate) {
 
@@ -81,15 +84,30 @@ public class RestRequisitionCalculator {
     }
 
     List<Rnr> rnrs = requisitionService.getNormalRnrsByPeriodAndProgram(periodStartDate, periodEndDate, reportingProgram.getId(), reportingFacility.getId());
+
+    DateTime actualStart = new DateTime(periodStartDate);
+    DateTime actualEnd = new DateTime(periodEndDate);
     if (rnrs != null && !rnrs.isEmpty()) {
-      throw new DataException("error.rnr.period.duplicate");
+      LOGGER.error("facilityId {} programId {}, {}-{} has been submitted",
+          actualStart.toString("yyyy-MM"), actualEnd.toString("yyyy-MM"),
+          LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_FACILITY_ID),
+          reportingProgram.getId());
+      throw new DataException(MessageKeyUtils.RNR_PERIOD_DUPLICATE);
+    }
+    if (periodStartDate != null) {
+      DateTime initStart = new DateTime(periodForInitialize.getStartDate());
+      DateTime initEnd = new DateTime(periodForInitialize.getEndDate());
+      if (initStart.getMonthOfYear() != actualStart.getMonthOfYear()
+          && initEnd.getMonthOfYear() != actualEnd.getMonthOfYear()) {
+          LOGGER.error("facilityId {} programId {}, expected period is {}-{}, but submit is {}-{}, ",
+              LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_FACILITY_ID),
+              reportingProgram.getId(), initStart.toString("yyyy-MM"), initEnd.toString("yyyy-MM"),
+              actualStart.toString("yyyy-MM"), actualEnd.toString("yyyy-MM"));
+        throw new DataException(MessageKeyUtils.RNR_ERROR_RNR_PERIOD_INVALID, initStart.toString("yyyy-MM"),
+            initEnd.toString("yyyy-MM"));
+      }
     }
 
-    if (periodStartDate != null
-        && new DateTime(periodForInitialize.getStartDate()).getMonthOfYear() != new DateTime(periodStartDate).getMonthOfYear()
-        && new DateTime(periodForInitialize.getEndDate()).getMonthOfYear() != new DateTime(periodEndDate).getMonthOfYear()) {
-      throw new DataException("error.rnr.period.invalid");
-    }
   }
 
   public void validateCustomPeriod(Facility reportingFacility, Program reportingProgram, ProcessingPeriod period, Long userId) {
@@ -126,7 +144,7 @@ public class RestRequisitionCalculator {
       }
     }
     if (!invalidProductCodes.isEmpty()) {
-      LOGGER.info(String.format("invalid product code : %s", invalidProductCodes.toString()));
+      LOGGER.error(String.format("invalid product code : %s", invalidProductCodes.toString()));
 //      throw new DataException("invalid.product.codes", invalidProductCodes.toString());
     }
   }

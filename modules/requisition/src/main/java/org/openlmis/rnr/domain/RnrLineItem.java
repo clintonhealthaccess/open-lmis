@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.*;
 import org.openlmis.core.exception.DataException;
 import org.slf4j.Logger;
@@ -32,8 +33,10 @@ import static java.math.RoundingMode.HALF_UP;
 import static org.apache.commons.collections.CollectionUtils.find;
 import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.NON_EMPTY;
 import static org.openlmis.rnr.domain.ProgramRnrTemplate.*;
-import static org.openlmis.rnr.domain.Rnr.RNR_VALIDATION_ERROR;
 import static org.openlmis.rnr.domain.RnrStatus.AUTHORIZED;
+import static org.openlmis.core.utils.MessageKeyUtils.RNR_FIELD_MANDATORY_NEGATIVE_OR_NULL;
+import static org.openlmis.core.utils.MessageKeyUtils.RNR_VALIDATION_EQUATION_NOT_EQUAL;
+import static org.openlmis.core.utils.MessageKeyUtils.RNR_VALIDATION_ERROR;
 
 /**
  * This class represents the data captured against a product for each Requisition and contains methods to determine
@@ -190,14 +193,17 @@ public class RnrLineItem extends LineItem {
 
   public void validateMandatoryFields(ProgramRnrTemplate template) {
     String[] nonNullableFields = {BEGINNING_BALANCE, QUANTITY_RECEIVED, STOCK_IN_HAND,
-      QUANTITY_DISPENSED, NEW_PATIENT_COUNT, STOCK_OUT_DAYS};
+        QUANTITY_DISPENSED, NEW_PATIENT_COUNT, STOCK_OUT_DAYS};
 
     for (String fieldName : nonNullableFields) {
-      if (template.columnsVisible(fieldName) &&
-        !template.columnsCalculated(fieldName) &&
-        (getValueFor(fieldName) == null || (Integer) getValueFor(fieldName) < 0)) {
-        LOGGER.error(String.format("field name is %s, productcode is %s", fieldName, productCode));
-        throw new DataException(RNR_VALIDATION_ERROR);
+      boolean nullOrNegative =
+          template.columnsVisible(fieldName) && !template.columnsCalculated(fieldName) && (
+              getValueFor(fieldName) == null || (Integer) getValueFor(fieldName) < 0);
+      if (nullOrNegative) {
+        LOGGER.error("facilityId {} programId {}, product code {} filed {} is {}",
+            LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_FACILITY_ID),
+            template.getProgramId(), productCode, fieldName, getValueFor(fieldName));
+        throw new DataException(RNR_FIELD_MANDATORY_NEGATIVE_OR_NULL);
       }
     }
     requestedQuantityConditionalValidation(template);
@@ -218,11 +224,11 @@ public class RnrLineItem extends LineItem {
       if (rnrColumn.isFormulaValidationRequired()) {
         validQuantityDispensed = (quantityDispensed == (beginningBalance + quantityReceived + totalLossesAndAdjustments - stockInHand));
       }
-      boolean valid = quantityDispensed >= 0 && stockInHand >= 0 && validQuantityDispensed;
-
-      if (!valid) {
-        LOGGER.error(String.format("invalid productcode is %s", productCode));
-        throw new DataException(RNR_VALIDATION_ERROR);
+      if (!validQuantityDispensed) {
+        LOGGER.error("facilityId {} programId {}, productCode {} is not match code",
+            LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_FACILITY_ID),
+            template.getProgramId(), productCode);
+        throw new DataException(RNR_VALIDATION_EQUATION_NOT_EQUAL);
       }
     }
   }

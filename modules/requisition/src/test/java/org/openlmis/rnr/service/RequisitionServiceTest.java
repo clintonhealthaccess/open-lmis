@@ -22,6 +22,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.builder.*;
 import org.openlmis.core.domain.*;
 import org.openlmis.core.exception.DataException;
@@ -172,7 +173,7 @@ public class RequisitionServiceTest {
                 PROGRAM.getId())).thenReturn(facilityTypeApprovedProducts);
 
         List<Regimen> regimens = new ArrayList<>();
-        regimens.add(new Regimen("name", "code", 1L, true, new RegimenCategory("code", "name", 1), 1, false, false));
+        regimens.add(new Regimen("name", "code", 1L, true, new RegimenCategory("code", "name", 1), 1, false, false, Long.valueOf(LmisThreadLocalUtils.STR_VERSION_87)));
 
         List<RegimenLineItem> regimenLineItems = new ArrayList<>();
         regimenLineItems.add(new RegimenLineItem(null, null, 1L, 1L));
@@ -1690,8 +1691,8 @@ public class RequisitionServiceTest {
     @Test
     public void shouldGetRequisitionsByFacility() {
         Facility facility = new Facility();
-        requisitionService.getRequisitionsByFacility(facility);
-        verify(requisitionRepository).getRequisitionDetailsByFacility(facility);
+        requisitionService.getRequisitionsByFacility(facility, null);
+        verify(requisitionRepository).getRequisitionDetailsByFacility(facility, null);
     }
 
     @Test

@@ -39,7 +39,8 @@ public class RestProgramsController extends BaseController {
   public ResponseEntity getProgramsByFacilityId(@PathVariable(value = "facilityId") Long facilityId) {
     List<ProgramWithRegimens> programWithRegimens;
     try {
-      programWithRegimens = restProgramsService.getAllProgramWithRegimenByFacilityId(facilityId);
+      programWithRegimens = restProgramsService
+          .getAllProgramWithRegimenByFacilityId(facilityId);
     } catch (DataException e) {
       return RestResponse.error(e.getOpenLmisMessage(), BAD_REQUEST);
     }

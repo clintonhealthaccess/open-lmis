@@ -19,6 +19,7 @@ import org.openlmis.db.categories.UnitTests;
 import org.openlmis.rnr.builder.RegimenColumnBuilder;
 
 import java.util.List;
+import org.openlmis.core.utils.MessageKeyUtils;
 
 import static com.natpryce.makeiteasy.MakeItEasy.*;
 import static java.util.Arrays.asList;
@@ -28,7 +29,6 @@ import static org.openlmis.rnr.builder.RegimenColumnBuilder.defaultRegimenColumn
 import static org.openlmis.rnr.builder.RegimenLineItemBuilder.*;
 import static org.openlmis.rnr.domain.RegimenLineItem.INITIATED_TREATMENT;
 import static org.openlmis.rnr.domain.RegimenLineItem.ON_TREATMENT;
-import static org.openlmis.rnr.domain.Rnr.RNR_VALIDATION_ERROR;
 
 @Category(UnitTests.class)
 public class RegimenLineItemTest {
@@ -75,7 +75,7 @@ public class RegimenLineItemTest {
     regimenLineItem.setPatientsOnTreatment(null);
 
     expectedException.expect(DataException.class);
-    expectedException.expectMessage(RNR_VALIDATION_ERROR);
+    expectedException.expectMessage(MessageKeyUtils.RNR_VALIDATION_ERROR);
 
     RegimenTemplate regimenTemplate = new RegimenTemplate();
     RegimenColumn regimenColumn = new RegimenColumn(1l, ON_TREATMENT, ON_TREATMENT, "Number", true, 2, 2l);
@@ -89,7 +89,7 @@ public class RegimenLineItemTest {
     regimenLineItem.setPatientsToInitiateTreatment(null);
 
     expectedException.expect(DataException.class);
-    expectedException.expectMessage(RNR_VALIDATION_ERROR);
+    expectedException.expectMessage(MessageKeyUtils.RNR_VALIDATION_ERROR);
 
     RegimenTemplate regimenTemplate = new RegimenTemplate();
     RegimenColumn regimenColumn = new RegimenColumn(1l, INITIATED_TREATMENT, INITIATED_TREATMENT, "Number", true,1, 2l);

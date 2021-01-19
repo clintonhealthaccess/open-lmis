@@ -13,18 +13,30 @@ package org.openlmis.stockmanagement.service;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import lombok.NoArgsConstructor;
+import org.openlmis.core.domain.Product;
 import org.openlmis.core.repository.ProductRepository;
+import org.openlmis.core.repository.SyncUpHashRepository;
+import org.openlmis.core.repository.mapper.ProductMapper;
 import org.openlmis.core.service.FacilityService;
 import org.openlmis.stockmanagement.domain.*;
+import org.openlmis.stockmanagement.dto.StockCardBakDTO;
+import org.openlmis.stockmanagement.dto.StockCardDeleteDTO;
+import org.openlmis.stockmanagement.dto.StockEvent;
+import org.openlmis.stockmanagement.dto.StockEventType;
 import org.openlmis.stockmanagement.repository.LotRepository;
 import org.openlmis.stockmanagement.repository.StockCardRepository;
+import org.openlmis.stockmanagement.repository.mapper.StockCardBakMapper;
+import org.openlmis.stockmanagement.repository.mapper.StockCardLockMapper;
+import org.openlmis.stockmanagement.repository.mapper.StockCardMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import org.springframework.util.CollectionUtils;
 
 
 /**
@@ -47,6 +59,17 @@ public class StockCardService {
 
   @Autowired
   StockCardRepository repository;
+  @Autowired
+  StockCardLockMapper stockCardLockMapper;
+  @Autowired
+  StockCardMapper stockCardMapper;
+  @Autowired
+  StockCardBakMapper stockCardBakMapper;
+  @Autowired
+  ProductMapper productMapper;
+
+  @Autowired
+  private SyncUpHashRepository syncUpHashRepository;
 
   StockCardService(FacilityService facilityService,
                    ProductRepository productRepository,
@@ -128,11 +151,10 @@ public class StockCardService {
 
   @Transactional
   public void addStockCardEntry(StockCardEntry entry) {
-    logger.info("start to valid stock card entry");
     entry.validStockCardEntry();
     StockCard card = entry.getStockCard();
     card.setLatestStockCardEntry(entry);
-    card.addToTotalQuantityOnHand(entry.getQuantity());
+    card.setTotalQuantityOnHand(entry.findStockOnHand());
     repository.updateStockCard(card);
     repository.persistStockCardEntry(entry);
 
@@ -157,7 +179,11 @@ public class StockCardService {
       stockCardEntryLotItem.setStockCardEntryId(entry.getId());
       LotOnHand lotOnHand = lotOnHandMap.get(stockCardEntryLotItem.getLot().getLotCode());
       if (lotOnHand != null) {
-        lotOnHand.addToQuantityOnHand(stockCardEntryLotItem.getQuantity());
+        if (!CollectionUtils.isEmpty(stockCardEntryLotItem.getExtensions())) {
+          lotOnHand.setQuantityOnHand(stockCardEntryLotItem.findStockOnHand());
+        } else {
+          lotOnHand.addToQuantityOnHand(stockCardEntryLotItem.getQuantity());
+        }
       }
       lotRepository.createStockCardEntryLotItem(stockCardEntryLotItem);
     }
@@ -179,8 +205,8 @@ public class StockCardService {
     repository.updateAllStockCardSyncTimeForFacility(facilityId);
   }
 
-  public void updateStockCardSyncTimeToNow(long facilityId, final List<String> stockCardProductCodeList) {
-    for (StockCard stockCard : getStockCardsNotInList(facilityId, stockCardProductCodeList)) {
+  public void updateStockCardSyncTimeToNowExclude(long facilityId, final List<String> unSyncProductCodeList) {
+    for (StockCard stockCard : getStockCardsNotInList(facilityId, unSyncProductCodeList)) {
       repository.updateStockCardSyncTimeToNow(facilityId, stockCard.getProduct().getCode());
     }
   }
@@ -196,5 +222,136 @@ public class StockCardService {
 
   public LotOnHand getLotOnHandByLotNumberAndProductCodeAndFacilityId(String lotNumber, String code, Long facilityId) {
     return lotRepository.getLotOnHandByLotNumberAndProductCodeAndFacilityId(lotNumber, code, facilityId);
+  }
+
+  public int getTotalFacilityWithProductSOHGreaterZero(String productCode){
+    return stockCardMapper.getTotalFacilityWithProductSOHGreaterZero(productCode);
+  }
+
+  public boolean tryLock(Long facilityId, String productCode, String actionType) {
+    Long productId = productMapper.getProductIdByCode(productCode);
+    return tryLock(facilityId, productId, actionType);
+  }
+
+  public boolean tryLock(Long facilityId, Long productId, String actionType) {
+    try {
+      Integer lock = stockCardLockMapper.findLock(facilityId, productId, actionType);
+      if (lock == null) {
+        stockCardLockMapper.lock(facilityId, productId, actionType);
+        return true;
+      }
+    } catch (DuplicateKeyException e) {
+      logger.error("delete and update stockCard conflict, facilityId {}, productId {}", facilityId,
+          productId);
+    }
+    return false;
+  }
+
+  public void release(Long facilityId, String productCode, String actionType) {
+    Long productId = productMapper.getProductIdByCode(productCode);
+    release(facilityId, productId, actionType);
+  }
+
+  public void release(Long facilityId, Long productId, String actionType) {
+    stockCardLockMapper.release(facilityId, productId, actionType);
+  }
+
+  public Map<String, Long> getProductsByCodes(List<String> productCodes) {
+    String codes = productCodes.toString().replace("[", "{").replace("]", "}");
+    List<Product> products =productMapper.getProductsByCodes(codes);
+    Map<String, Long> codeToId = new HashMap<>();
+    for (Product product : products) {
+      codeToId.put(product.getCode(), product.getId());
+    }
+    return codeToId;
+  }
+
+  public void backupStockCards(List<StockCardBakDTO> stockCardBakDTOs) {
+    stockCardBakMapper.backupStockCards(stockCardBakDTOs);
+  }
+  @Transactional
+  public void partialDeleteStockCards(Long facilityId, Map<String, Long> needDeletedProductCodeAndIds, List<StockCardDeleteDTO> stockCardDeleteDTOs) {
+    List<Long> partialDeletedProductIds = new ArrayList<>();
+    for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
+      if (!stockCardDeleteDTO.isFullyDelete()) {
+        partialDeletedProductIds.add(needDeletedProductCodeAndIds.get(stockCardDeleteDTO.getProductCode()));
+      }
+    }
+    if (partialDeletedProductIds.size() <= 0) {
+      return;
+    }
+    List<Long> stockCardEntriesIds = stockCardMapper.getNeedPartialDeletedStockCardEntriesIds(facilityId, convertToArrayString(partialDeletedProductIds));
+    String sceIds = convertToArrayString(stockCardEntriesIds);
+    stockCardMapper.deleteStockCardEntryKeyValues(sceIds);
+    stockCardMapper.deleteStockCardEntryLotItemsKeyValues(sceIds);
+    stockCardMapper.deleteStockCardEntryLotItems(sceIds);
+    stockCardMapper.deleteStockCardEntry(sceIds);
+  }
+
+  public List<StockCard> getStockCardSByProductIds(Long facilityId, Collection<Long> productIds) {
+    return stockCardMapper.getStockCardsByProductIds(facilityId, convertToArrayString(productIds));
+  }
+
+  public void fullyDeleteStockCards(Long facilityId, List<StockCardDeleteDTO> stockCardDeleteDTOs, Map<String, Long> needDeletedProductCodeAndIds, List<StockCard> stockCards) {
+    List<Long> fullyDeletedProductIds = new ArrayList<>();
+    for (StockCardDeleteDTO stockCardDeleteDTO : stockCardDeleteDTOs) {
+      if (stockCardDeleteDTO.isFullyDelete()) {
+        fullyDeletedProductIds.add(needDeletedProductCodeAndIds.get(stockCardDeleteDTO.getProductCode()));
+      }
+    }
+    if (fullyDeletedProductIds.size() <= 0) {
+      return;
+    }
+
+    deleteSyncUpHash(facilityId, needDeletedProductCodeAndIds, stockCards);
+
+    String deletedProductIds = convertToArrayString(fullyDeletedProductIds);
+    stockCardMapper.deleteCMMEntries(facilityId, deletedProductIds);
+
+    List<Long> stockCardEntryIds = stockCardMapper.getStockCardEntriesIds(facilityId, deletedProductIds);
+    String sceIds = convertToArrayString(stockCardEntryIds);
+    stockCardMapper.deleteStockCardEntryKeyValues(sceIds);
+    stockCardMapper.deleteStockCardEntryLotItemsKeyValues(sceIds);
+    stockCardMapper.deleteStockCardEntryLotItems(sceIds);
+
+    List<Long> stockCardIds = stockCardMapper.getStockCardIds(facilityId, deletedProductIds);
+    String scIds = convertToArrayString(stockCardIds);
+    stockCardMapper.deleteLotsOnHand(scIds);
+    stockCardMapper.deleteStockCardEntryByStockCardIds(scIds);
+    stockCardMapper.deleteStockCards(scIds);
+  }
+
+  private void deleteSyncUpHash(Long facilityId, Map<String, Long> needDeletedProductCodeAndIds, List<StockCard> stockCards) {
+    List<String> syncUpHashes = new ArrayList<>();
+    for (StockCard sc : stockCards) {
+      if (needDeletedProductCodeAndIds.containsKey(sc.getProduct().getCode())) {
+        for (StockCardEntry sce : sc.getEntries()) {
+          StockEvent stockEvent = new StockEvent();
+          stockEvent.setFacilityId(facilityId);
+          stockEvent.setType(StockEventType.ADJUSTMENT);
+          stockEvent.setProductCode(sc.getProduct().getCode());
+          stockEvent.setOccurred(sce.getOccurred());
+          stockEvent.setCreatedTime(sce.getCreatedDate());
+          stockEvent.setQuantity(sce.getQuantity());
+          stockEvent.setReasonName(sce.getAdjustmentReason().getName());
+          stockEvent.setReferenceNumber(sce.getReferenceNumber());
+          Map<String, String> customProps = new HashMap<>();
+          for (StockCardEntryKV kv : sce.getExtensions()) {
+            if (kv.getKey().equals("soh")) {
+              customProps.put("SOH", kv.getValue());
+            }
+          }
+          stockEvent.setCustomProps(customProps);
+          syncUpHashes.add(stockEvent.getSyncUpHash());
+        }
+      }
+    }
+
+    syncUpHashRepository.deleteSyncUpHashes(syncUpHashes);
+  }
+
+
+  private String convertToArrayString(Collection collection) {
+    return collection.toString().replace("[", "{").replace("]", "}");
   }
 }

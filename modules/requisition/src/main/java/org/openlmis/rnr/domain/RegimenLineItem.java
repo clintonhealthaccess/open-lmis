@@ -16,13 +16,13 @@ import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.openlmis.core.domain.RegimenCategory;
 import org.openlmis.core.exception.DataException;
+import org.openlmis.core.utils.MessageKeyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 
 import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.NON_EMPTY;
-import static org.openlmis.rnr.domain.Rnr.RNR_VALIDATION_ERROR;
 
 /**
  * RegimenLineItem represents a regimenLineItem belonging to a Rnr.
@@ -43,6 +43,7 @@ public class RegimenLineItem extends LineItem {
   private String code;
   private String name;
   private Integer patientsOnTreatment;
+  private Integer comunitaryPharmacy;
   private Integer patientsToInitiateTreatment;
   private Integer patientsStoppedTreatment;
 
@@ -144,13 +145,14 @@ public class RegimenLineItem extends LineItem {
         field.setAccessible(true);
         Object fieldValue = field.get(this);
         if (fieldValue == null)
-          throw new DataException(RNR_VALIDATION_ERROR);
+          throw new DataException(MessageKeyUtils.RNR_VALIDATION_ERROR);
       }
     }
   }
 
   public void populate(RegimenLineItem regimenLineItem) {
     this.patientsOnTreatment = regimenLineItem.patientsOnTreatment;
+    this.comunitaryPharmacy = regimenLineItem.comunitaryPharmacy;
     this.patientsToInitiateTreatment = regimenLineItem.patientsToInitiateTreatment;
     this.patientsStoppedTreatment = regimenLineItem.patientsStoppedTreatment;
     this.hf = regimenLineItem.hf;

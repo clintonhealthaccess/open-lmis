@@ -322,7 +322,7 @@ public class RestStockCardServiceTest {
     List<String> stockCardProductCodeList = asList("P1");
     restStockCardService.updateStockCardSyncTime(123L, stockCardProductCodeList);
 
-    verify(stockCardService).updateStockCardSyncTimeToNow(123L, stockCardProductCodeList);
+    verify(stockCardService).updateStockCardSyncTimeToNowExclude(123L, stockCardProductCodeList);
   }
 
   @Test

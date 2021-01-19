@@ -36,7 +36,7 @@ public class MessagesController extends BaseController {
   private MessageService messageService;
 
   @RequestMapping(value = "/messages", method = GET, headers = "Accept=application/json")
-  public ResponseEntity<OpenLmisResponse> getAllMessages() throws UnsupportedEncodingException {
+  public ResponseEntity<OpenLmisResponse> getAllMessages() {
     Map<String, String> result = messageService.allMessages();
     return OpenLmisResponse.response(MESSAGES, result);
   }

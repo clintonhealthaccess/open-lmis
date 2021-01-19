@@ -143,6 +143,10 @@ public class ProgramProductService {
     return programProductRepository.getByProductCode(productCode);
   }
 
+  public List<ProgramProduct> getByProductCodeForRest(String productCode,String versionCode) {
+      return programProductRepository.getByProductCodeAndVersion(productCode, versionCode);
+  }
+
   public List<String> getActiveProgramCodesByProductCode(String productCode) {
     return programProductRepository.getActiveProgramCodesByProductCode(productCode);
   }
