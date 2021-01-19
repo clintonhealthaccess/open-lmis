@@ -105,7 +105,7 @@ function ViewRnrMmiaController($scope, $route, Requisitions, messageService, dow
             $scope.year = data.rnr.period.stringYear;
             $scope.newProducts = data.rnr.newProducts;
             $scope.newRegimes = data.rnr.newRegimes;
-            $scope.isBetweenWebUpgradeAndMobileUpgrade = data.rnr.patientQuantifications.length === 7 ? data.rnr.clientSubmittedTime > (new Date("2020-10-29")).getTime() /*Release date*/ : false;
+            $scope.isBetweenWebUpgradeAndMobileUpgrade = data.rnr.patientQuantifications.length === 7 ? data.rnr.clientSubmittedTime > (new Date("2021-01-20")).getTime() /*Release date*/ : false;
             $scope.initMonth();
             console.log("isBetweenWebUpgradeAndMobileUpgrade="+$scope.isBetweenWebUpgradeAndMobileUpgrade);
             if ($scope.isBetweenWebUpgradeAndMobileUpgrade){
