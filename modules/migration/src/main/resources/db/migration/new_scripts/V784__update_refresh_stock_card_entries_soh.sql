@@ -23,8 +23,6 @@ BEGIN
     WHERE stock_card_entries.id > lastStockCardEntryId AND keycolumn = 'soh');
   END IF;
 
-  VACUUM stock_card_entries_soh;
-
   RETURN 1;
 END
 $$
