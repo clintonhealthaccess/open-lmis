@@ -1,9 +1,11 @@
 DROP VIEW IF EXISTS vw_regimen_district_distribution;
 DROP VIEW IF EXISTS vw_regimen_summary;
 
--- the following line is the only line that matters, the other lines are copied from old migration
+-- the following lines are the only line that matters, the other lines are copied from old migration
 -- to delete and recreate views that depend on regimens
 ALTER TABLE regimens ALTER COLUMN code TYPE VARCHAR;
+ALTER TABLE regimen_line_items ALTER COLUMN code TYPE VARCHAR;
+ALTER TABLE regimen_line_items ALTER COLUMN name TYPE VARCHAR;
 
 CREATE OR REPLACE VIEW vw_regimen_summary AS
 SELECT
