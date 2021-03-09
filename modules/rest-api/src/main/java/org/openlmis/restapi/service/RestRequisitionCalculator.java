@@ -97,8 +97,8 @@ public class RestRequisitionCalculator {
     if (periodStartDate != null) {
       DateTime initStart = new DateTime(periodForInitialize.getStartDate());
       DateTime initEnd = new DateTime(periodForInitialize.getEndDate());
-      if (initStart.getMonthOfYear() != actualStart.getMonthOfYear()
-          && initEnd.getMonthOfYear() != actualEnd.getMonthOfYear()) {
+      
+      if (verifyExpectedPeriod(initStart, initEnd, actualStart, actualEnd)) {
           LOGGER.error("facilityId {} programId {}, expected period is {}-{}, but submit is {}-{}, ",
               LmisThreadLocalUtils.getHeader(LmisThreadLocalUtils.HEADER_FACILITY_ID),
               reportingProgram.getId(), initStart.toString("yyyy-MM"), initEnd.toString("yyyy-MM"),
@@ -107,7 +107,14 @@ public class RestRequisitionCalculator {
             initEnd.toString("yyyy-MM"));
       }
     }
-
+  }
+  
+  private boolean verifyExpectedPeriod(DateTime initStart, DateTime initEnd, DateTime actualStart, DateTime actualEnd) {
+    return initStart.getYear() != actualStart.getYear()
+        || initStart.getMonthOfYear() != actualStart.getMonthOfYear()
+        || initEnd.getYear() != actualEnd.getYear()
+        || initEnd.getMonthOfYear() != actualEnd.getMonthOfYear();
+        
   }
 
   public void validateCustomPeriod(Facility reportingFacility, Program reportingProgram, ProcessingPeriod period, Long userId) {
