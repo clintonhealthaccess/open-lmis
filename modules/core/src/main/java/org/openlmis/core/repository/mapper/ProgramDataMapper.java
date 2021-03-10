@@ -16,7 +16,7 @@ public interface ProgramDataMapper {
   @Options(useGeneratedKeys = true)
   void insert(ProgramDataForm programDataForm);
 
-  @Select("SELECT * FROM program_data_forms WHERE facilityId = #{facilityId}")
+  @Select("SELECT * FROM program_data_forms WHERE facilityId = #{facilityId} ORDER BY startdate")
   @Results({
       @Result(
           property = "facility", column = "facilityId", javaType = Facility.class,
