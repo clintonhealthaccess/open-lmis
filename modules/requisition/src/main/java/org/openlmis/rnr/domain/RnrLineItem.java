@@ -197,7 +197,7 @@ public class RnrLineItem extends LineItem {
 
     for (String fieldName : nonNullableFields) {
       boolean nullOrNegative =
-          template.columnsVisible(fieldName) && !template.columnsCalculated(fieldName) && (
+          template.columnsVisible(fieldName) && (
               getValueFor(fieldName) == null || (Integer) getValueFor(fieldName) < 0);
       if (nullOrNegative) {
         LOGGER.error("facilityId {} programId {}, product code {} filed {} is {}",
