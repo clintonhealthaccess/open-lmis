@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * ProgramSupported represents the Program supported by a Facility. Defines the contract for upload of such mapping like program code,
@@ -68,7 +69,7 @@ public class ProgramSupported extends BaseModel implements Importable {
 
     private List<FacilityProgramProduct> programProducts;
 
-    public void isValid(List<ReportType> reportTypes) {
+    public void isValid(List<ReportType> reportTypes, Locale locale) {
         if (this.active && this.startDate == null) {
             throw new DataException("supported.programs.invalid");
         }
@@ -88,12 +89,15 @@ public class ProgramSupported extends BaseModel implements Importable {
             }
 
             if (this.active && this.reportActive && this.startDate.after(this.reportStartDate)) {
-                throw new DataException("supported.programs.report.type.start.time.invalid");
+                if (locale.toString().equals("en")){
+                    throw new DataException("The report time must be later than the program time"+
+                            "(error program :"+this.getProgram().getName()+")");
+                }else {
+                    throw new DataException("O relatório deve ser Mais do que o tempo do programa"+
+                            "(programa de erro :"+this.getProgram().getName()+")");
+                }
             }
-
-
         }
-
     }
 
     private boolean isMatch(List<ReportType> reportTypes) {
@@ -104,7 +108,6 @@ public class ProgramSupported extends BaseModel implements Importable {
             }
 
         }
-
         return false;
     }
 

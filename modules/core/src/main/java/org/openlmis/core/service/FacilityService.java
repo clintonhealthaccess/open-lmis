@@ -80,6 +80,9 @@ public class FacilityService {
     @Autowired
     ReportTypeRepository reportTypeRepository;
 
+    @Autowired
+    MessageService messageService;
+
     private static final Logger LOGGER = Logger.getLogger(FacilityService.class);
 
     @Transactional
@@ -128,7 +131,7 @@ public class FacilityService {
 
     public void save(Facility newFacility) {
 
-        newFacility.validate(reportTypeRepository.getAll());
+        newFacility.validate(reportTypeRepository.getAll(),messageService.getCurrentLocale());
 
         Facility storedFacility = facilityRepository.getById(newFacility.getId());
 

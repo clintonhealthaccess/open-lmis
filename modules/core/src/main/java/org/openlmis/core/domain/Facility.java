@@ -18,16 +18,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.openlmis.core.serializer.DateDeserializer;
 import org.openlmis.upload.Importable;
 import org.openlmis.upload.annotation.ImportField;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
-import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
-import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
 import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.NON_EMPTY;
 
 /**
@@ -177,9 +170,9 @@ public class Facility extends BaseModel implements Importable {
     return new Facility(facilityId, true, false, modifiedBy);
   }
 
-  public void validate(List<ReportType> reportTypes) {
-    for (ProgramSupported programSupported : supportedPrograms) {
-      programSupported.isValid(reportTypes);
+  public void validate(List<ReportType> reportTypes, Locale locale) {
+    for ( ProgramSupported programSupported : supportedPrograms) {
+      programSupported.isValid(reportTypes,locale);
     }
   }
 

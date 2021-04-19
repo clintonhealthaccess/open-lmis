@@ -53,6 +53,9 @@ public class ProgramSupportedService {
     @Autowired
     ReportTypeRepository reportTypeRepository;
 
+    @Autowired
+    MessageService messageService;
+
     Logger logger = Logger.getLogger(ProgramSupportedService.class);
 
 
@@ -105,7 +108,7 @@ public class ProgramSupportedService {
             facility = facilityService.getByCode(facility);
             programSupported.setFacilityId(facility.getId());
 
-            programSupported.isValid(reportTypeRepository.getAll());
+            programSupported.isValid(reportTypeRepository.getAll(),messageService.getCurrentLocale());
 
             ProgramSupported exists = repository.getByFacilityIdAndProgramId(facility.getId(), program.getId());
             if (exists == null) {
@@ -118,7 +121,7 @@ public class ProgramSupportedService {
     }
 
     public void uploadSupportedProgram(ProgramSupported programSupported) {
-        programSupported.isValid(reportTypeRepository.getAll());
+        programSupported.isValid(reportTypeRepository.getAll(),messageService.getCurrentLocale());
 
         Facility facility = new Facility();
         facility.setCode(programSupported.getFacilityCode());
