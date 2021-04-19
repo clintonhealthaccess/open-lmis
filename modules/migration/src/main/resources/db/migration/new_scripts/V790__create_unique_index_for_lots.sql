@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX idx_productid_lotnumber ON lots (productid, lotnumber);
