@@ -10,8 +10,6 @@
 
 package org.openlmis.rnr.repository;
 
-import java.util.Collections;
-import java.util.Comparator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openlmis.LmisThreadLocalUtils;
@@ -30,9 +28,7 @@ import org.openlmis.rnr.repository.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.openlmis.rnr.domain.RnrStatus.*;
 
@@ -395,6 +391,10 @@ public class RequisitionRepository {
 
   public List<Rnr> getRequisitionsDetailsByProgramID(int programId) {
     return requisitionMapper.getRequisitionsWithLineItemsByProgramId(programId);
+  }
+  
+  public List<Rnr> getRequisitionsByProgramIDAndFacilityIdAndDate(int programId, int facilityId, Date start, Date end) {
+    return requisitionMapper.getRequisitionsWithLineItemsByConditions(programId, facilityId, start, end);
   }
 
   public void insertRnrSignatures(Rnr rnr) {
