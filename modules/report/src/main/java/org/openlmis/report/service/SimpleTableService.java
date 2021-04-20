@@ -139,7 +139,7 @@ public class SimpleTableService {
         stockProduct.setStockOnHandStatus(status);
 
         if (cmm < 0) {
-            stockProduct.setCmm(null);
+            stockProduct.setCmm(0.0);
         } else {
             stockProduct.setCmm(cmm);
         }

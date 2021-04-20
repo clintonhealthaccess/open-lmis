@@ -815,16 +815,7 @@ public class RequisitionService {
   }
 
   public List<Rnr> alReportRequisitionsByFacilityId(int facilityId, Date start, Date end) {
-    List<Rnr> rnrs = alReportRequisitionsByStartAndEndDate(start, end);
-    List<Rnr> result = new ArrayList<>();
-
-    for (Rnr rnr : rnrs) {
-      if (facilityId == rnr.getFacility().getId()) {
-        result.add(rnr);
-      }
-    }
-
-    return result;
+    return requisitionRepository.getRequisitionsByProgramIDAndFacilityIdAndDate(5, facilityId, start, end);
   }
 }
 

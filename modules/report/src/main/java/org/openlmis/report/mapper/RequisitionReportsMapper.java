@@ -39,7 +39,7 @@ public interface RequisitionReportsMapper {
             "  LEFT OUTER JOIN programs p on ps.programid = p.id" +
             "  CROSS JOIN processing_periods pp" +
             " WHERE (pp.startdate >= #{filterCriteria.startTime} AND pp.enddate <= #{filterCriteria.endTime})" +
-            "  AND pp.id NOT in (SELECT periodid from requisitions WHERE facilityid = #{filterCriteria.facilityId} AND programid = #{filterCriteria.programId})" +
+            "  AND pp.id NOT in (SELECT periodid from requisitions WHERE facilityid = #{filterCriteria.facilityId} AND programid = #{filterCriteria.programId} AND emergency is false)" +
             "  AND (pp.startdate >= ps.reportstartdate)" +
             "  AND p.id = #{filterCriteria.programId}" +
             "  AND facilityid = #{filterCriteria.facilityId}" +

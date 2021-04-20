@@ -1,8 +1,6 @@
 package org.openlmis.restapi.controller;
 
 import com.wordnik.swagger.annotations.Api;
-import java.util.ArrayList;
-import java.util.Map;
 import lombok.NoArgsConstructor;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.restapi.domain.StockCardDTO;
@@ -24,12 +22,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-import static org.openlmis.restapi.utils.KitProductFilterUtils.*;
 import static org.openlmis.restapi.response.RestResponse.error;
 import static org.openlmis.restapi.response.RestResponse.response;
+import static org.openlmis.restapi.utils.KitProductFilterUtils.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -63,7 +63,11 @@ public class RestStockCardController extends BaseController {
     try {
       restStockCardService.adjustStock(facilityId, filterStockEvents, loggedInUserId(principal));
     } catch (DataException e) {
+      logger.error(e.getOpenLmisMessage().toString());
       return error(e.getOpenLmisMessage(), BAD_REQUEST);
+    } catch (Exception e) {
+      logger.error(e.getMessage());
+      return error(e.getMessage(), BAD_REQUEST);
     }
 
     return RestResponse.success("msg.stockmanagement.adjuststocksuccess");
@@ -91,6 +95,9 @@ public class RestStockCardController extends BaseController {
       } catch (DataException e) {
         errorProductCodes.add(entry.getKey());
         logger.error("facilityId {} productCode {} sync error", facilityId, entry.getKey());
+      } catch (Exception e) {
+        logger.error(e.getMessage());
+        return error(e.getMessage(), BAD_REQUEST);
       } finally {
         stockCardService.release(facilityId, entry.getKey(), StockCardLockConstants.UPDATE);
         productStockEventMap.put(entry.getKey(), null);
