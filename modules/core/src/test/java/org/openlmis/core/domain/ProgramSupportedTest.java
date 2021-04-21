@@ -18,6 +18,7 @@ import org.openlmis.db.categories.UnitTests;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Locale;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
@@ -77,11 +78,11 @@ public class ProgramSupportedTest {
   @Test
   public void shouldThrowExceptionIfActiveAndStartDateNull() throws Exception {
     ProgramSupported programSupported = new ProgramSupported(12345L, true, null);
-
+    Locale defaultLocale = new Locale("en");
     expectedException.expect(DataException.class);
     expectedException.expectMessage("supported.programs.invalid");
 
-    programSupported.isValid(new ArrayList<ReportType>());
+    programSupported.isValid(new ArrayList<ReportType>(),defaultLocale);
   }
 
   @Test

@@ -75,6 +75,9 @@ public class ProgramSupportedServiceTest {
   @Mock
   private EventService eventService;
 
+  @Mock
+  MessageService messageService;
+
 
   @Test
   public void shouldNotGiveErrorIfSupportedProgramWithActiveFalseAndDateNotProvided() throws Exception {

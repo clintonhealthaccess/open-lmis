@@ -96,6 +96,9 @@ public class FacilityServiceTest {
   @Mock
   private FacilityProgramProductService facilityProgramProductService;
 
+  @Mock
+  MessageService service;
+
   @InjectMocks
   private FacilityService facilityService;
 
