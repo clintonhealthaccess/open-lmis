@@ -88,7 +88,7 @@ public class StockStatusService {
 
   public Double calcMos(double cmm, int soh) {
       if (-1.0 == cmm || 0 == cmm) {
-          return null;
+          return 0.0;
       }
       return Math.floor(10 * soh / cmm) / 10;
   }
