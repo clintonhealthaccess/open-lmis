@@ -4,18 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.openlmis.core.utils.DateUtil;
 import org.openlmis.report.generator.AbstractReportModelGenerator;
-import org.openlmis.rnr.domain.RegimenLineItem;
-import org.openlmis.rnr.domain.Rnr;
+import org.openlmis.rnr.domain.AlReportData;
 import org.openlmis.rnr.service.RequisitionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component(value = "alReport")
 public class ALReportGenerator extends AbstractReportModelGenerator {
@@ -25,13 +19,13 @@ public class ALReportGenerator extends AbstractReportModelGenerator {
     private final static String KEY_NO_DATA = "KEY_NO_DATA";
 
     private final static String[] ITEMS = {"Consultas AL US/APE Malaria 1x6",
-            "Consultas AL STOCK Malaria 1x6",
-            "Consultas AL US/APE Malaria 2x6",
-            "Consultas AL STOCK Malaria 2x6",
-            "Consultas AL US/APE Malaria 3x6",
-            "Consultas AL STOCK Malaria 3x6",
-            "Consultas AL US/APE Malaria 4x6",
-            "Consultas AL STOCK Malaria 4x6"};
+        "Consultas AL STOCK Malaria 1x6",
+        "Consultas AL US/APE Malaria 2x6",
+        "Consultas AL STOCK Malaria 2x6",
+        "Consultas AL US/APE Malaria 3x6",
+        "Consultas AL STOCK Malaria 3x6",
+        "Consultas AL US/APE Malaria 4x6",
+        "Consultas AL STOCK Malaria 4x6"};
 
     @Autowired
     private RequisitionService requisitionService;
@@ -41,45 +35,26 @@ public class ALReportGenerator extends AbstractReportModelGenerator {
 
         Date start = DateUtil.parseDate(paraMap.get("startTime").toString());
         Date end = DateUtil.parseDate(paraMap.get("endTime").toString());
-        List<Rnr> rnrs = new ArrayList<>();
-        if (null != paraMap.get("provinceId") && null == paraMap.get("districtId")) {
-            rnrs = requisitionService.alReportRequisitionsByZoneIdAndDate(
-                    Integer.parseInt(paraMap.get("provinceId").toString()), start, end);
-        } else if (null != paraMap.get("districtId") && null == paraMap.get("facilityId")) {
-            rnrs = requisitionService.alReportRequisitionsByZoneIdAndDate(
-                    Integer.parseInt(paraMap.get("districtId").toString()), start, end);
-        } else if (null != paraMap.get("facilityId")) {
-            rnrs = requisitionService.alReportRequisitionsByFacilityId(
-                    Integer.parseInt(paraMap.get("facilityId").toString()), start, end);
-        } else {
-            rnrs = requisitionService.alReportRequisitionsByStartAndEndDate(start, end);
-        }
-        Map<String, Object> result = new HashMap<>();
-        Map<String, AlRegimenStat> map = stat(rnrs);
+        Object provinceId = paraMap.get("provinceId");
+        Object districtId = paraMap.get("districtId");
+        Object facilityId = paraMap.get("facilityId");
+        List<AlReportData> data = requisitionService.alReportRequisitions(start, end, provinceId, districtId, facilityId);
+        Map<String, AlRegimenStat> map = convert(data);
         if (map.size() == 0) {
             paraMap.put(KEY_NO_DATA, true);
         }
+        Map<String, Object> result = new HashMap<>();
         result.put(KEY_QUERY_RESULT, map);
         return result;
     }
 
-    private Map<String, AlRegimenStat> stat(List<Rnr> rnrs) {
+    private Map<String, AlRegimenStat> convert(List<AlReportData> data) {
         Map<String, AlRegimenStat> map = new HashMap<>();
-        for (Rnr rnr : rnrs) {
-            List<RegimenLineItem> list = rnr.getRegimenLineItems();
-            for (RegimenLineItem regimenLineItem : list) {
-                if (!map.containsKey(regimenLineItem.getName())) {
-                    AlRegimenStat stat = new AlRegimenStat();
-                    map.put(regimenLineItem.getName(), stat);
-                }
-                AlRegimenStat alRegimenStat = map.get(regimenLineItem.getName());
-                if (null != regimenLineItem.getChw()) {
-                    alRegimenStat.setChw(alRegimenStat.getChw() + regimenLineItem.getChw());
-                }
-                if (null != regimenLineItem.getHf()) {
-                    alRegimenStat.setHf(alRegimenStat.getHf() + regimenLineItem.getHf());
-                }
-            }
+        for (AlReportData reportData : data) {
+            AlRegimenStat stat = new AlRegimenStat();
+            stat.setHf(reportData.getHf());
+            stat.setChw(reportData.getChw());
+            map.put(reportData.getName(), stat);
         }
         return map;
     }
@@ -140,7 +115,7 @@ public class ALReportGenerator extends AbstractReportModelGenerator {
         mergedRegions.add(createMergedRegion("2", "3", "0", "0", ""));
         for (int i = 1; i < 9; i += 2) {
             mergedRegions.add(createMergedRegion("2",
-                    "2", String.valueOf(i), String.valueOf(i + 1), ""));
+                "2", String.valueOf(i), String.valueOf(i + 1), ""));
         }
         return mergedRegions;
     }
@@ -148,7 +123,6 @@ public class ALReportGenerator extends AbstractReportModelGenerator {
     @Override
     protected Object getReportTitle(Map<Object, Object> paraMap) {
         List<List<String>> title = new ArrayList<>();
-
         title.add(regionTitle(paraMap));
         title.add(generationDate(paraMap));
         title.add(title());
@@ -181,7 +155,7 @@ public class ALReportGenerator extends AbstractReportModelGenerator {
         generationDate.add(getMessage("report.header.generated.for"));
 
         generationDate.add(DateUtil.transform(paraMap.get("startTime").toString(), DateUtil.FORMAT_DATE_TIME, "dd/MM/yyyy") + "-" +
-                DateUtil.transform(paraMap.get("endTime").toString(), DateUtil.FORMAT_DATE_TIME, "dd/MM/yyyy"));
+            DateUtil.transform(paraMap.get("endTime").toString(), DateUtil.FORMAT_DATE_TIME, "dd/MM/yyyy"));
         return generationDate;
     }
 
@@ -197,10 +171,8 @@ public class ALReportGenerator extends AbstractReportModelGenerator {
     @Setter
     @Getter
     class AlRegimenStat {
-
         private int hf;
         private int chw;
-
         public int getTotal() {
             return hf + chw;
         }
