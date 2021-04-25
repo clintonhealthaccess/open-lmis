@@ -403,7 +403,7 @@ public interface RequisitionMapper {
       "      AND requisitions.programId = #{program.id}\n" +
       "      AND requisitions.emergency = false\n" +
       "      AND processing_periods.enddate >= programs_supported.reportstartdate\n" +
-      "ORDER BY requisitions.createdDate DESC limit 1;"})
+      "ORDER BY processing_periods.startdate DESC limit 1;"})
   @Results(value = {
       @Result(property = "facility.id", column = "facilityId"),
       @Result(property = "program.id", column = "programId"),
