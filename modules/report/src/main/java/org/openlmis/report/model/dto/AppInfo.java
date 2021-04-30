@@ -22,6 +22,9 @@ public class AppInfo extends BaseModel {
     private String deviceInfo;
     private Date upgradeTime;
     private String uniqueId;
+    private String facilityName;
+    private String provinceName;
+    private String districtName;
 
     public AppInfo() {
     }
