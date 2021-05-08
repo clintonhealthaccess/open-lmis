@@ -45,7 +45,7 @@ describe('Date picker container controller test', function(){
 
         scope.changePeriodOption("3periods");
         var expectLastThreeMonth = new Date(new Date().setMonth(defaultPeriodStartDate.getMonth() - 2)).getMonth() +1;
-        // expect(Number(scope.dateRange.startTime.substring(5,7))).toEqual(expectLastThreeMonth);
+        expect(Number(scope.dateRange.startTime.substring(5,7))).toEqual(expectLastThreeMonth);
 
         scope.changePeriodOption("year");
         var expectLastYear = new Date(new Date().setMonth(defaultPeriodStartDate.getMonth() - 11)).getMonth() + 1;
