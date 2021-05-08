@@ -8,8 +8,9 @@ import static org.openlmis.LmisThreadLocalUtils.HEADER_USER_NAME;
 import static org.openlmis.LmisThreadLocalUtils.HEADER_VERSION_CODE;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openlmis.LmisThreadLocalUtils;
+import org.openlmis.core.domain.User;
 import org.openlmis.core.exception.DataException;
+import org.openlmis.core.service.UserService;
 import org.openlmis.restapi.domain.RestAppInfoRequest;
 import org.openlmis.restapi.service.RestAppInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class Interceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private RestAppInfoService restAppInfoService;
+
+    @Autowired
+    private UserService userService;
 
     @Value("${andorid.app.old.version.expiration.date}")
     private String expirationDate;
@@ -48,16 +52,22 @@ public class Interceptor extends HandlerInterceptorAdapter {
         return true;
     }
 
-    private void insertOrUpdateAppInfo(HttpServletRequest request) {
+    public void insertOrUpdateAppInfo(HttpServletRequest request) {
         String versionCode = request.getHeader(HEADER_VERSION_CODE);
         String userName = request.getHeader(HEADER_USER_NAME);
         String facilityId = request.getHeader(HEADER_FACILITY_ID);
         String androidVersion = request.getHeader(HEADER_ANDROID_VERSION);
         String deviceInfo = request.getHeader(HEADER_DEVICE_INFO);
         String uniqueId = request.getHeader(HEADER_UNIQUE_ID);
-        if (StringUtils.isNotBlank(facilityId) && StringUtils.isNotBlank(versionCode)) {
-            RestAppInfoRequest appInfoRequest = new RestAppInfoRequest();
+
+        RestAppInfoRequest appInfoRequest = new RestAppInfoRequest();
+        if(Integer.valueOf(versionCode) < Integer.valueOf("87")){
+            User user = userService.getByUserName(userName);
+            appInfoRequest.setFacilityId(user.getFacilityId());
+        }else {
             appInfoRequest.setFacilityId(Long.valueOf(facilityId));
+        }
+        if (StringUtils.isNotBlank(appInfoRequest.getFacilityId().toString()) && StringUtils.isNotBlank(versionCode)) {
             appInfoRequest.setUserName(userName);
             appInfoRequest.setUniqueId(uniqueId);
             appInfoRequest.setVersionCode(versionCode);

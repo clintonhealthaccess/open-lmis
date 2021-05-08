@@ -21,7 +21,7 @@ public class LmisThreadLocalUtils {
     public static final String HEADER_VERSION_CODE = "VersionCode";
     public static final String HEADER_UNIQUE_ID = "UniqueId";
     public static final String HEADER_LANGUAGE = "language";
-    public static final String HEADER_ANDROID_VERSION = "AndroidVersion";
+    public static final String HEADER_ANDROID_VERSION = "AndroidSDKVersion";
     public static final String HEADER_DEVICE_INFO = "DeviceInfo";
 
     public static String getHeader(String key) {
