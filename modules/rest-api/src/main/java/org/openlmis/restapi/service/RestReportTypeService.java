@@ -7,6 +7,7 @@ import org.apache.commons.collections.Predicate;
 import org.openlmis.core.domain.Program;
 import org.openlmis.core.domain.ProgramSupported;
 import org.openlmis.core.domain.ReportType;
+import org.openlmis.core.repository.ProcessingPeriodRepository;
 import org.openlmis.core.repository.ReportTypeRepository;
 import org.openlmis.core.service.ProgramSupportedService;
 import org.openlmis.core.utils.DateUtil;
@@ -20,19 +21,22 @@ import java.util.List;
 
 @Service
 public class RestReportTypeService {
+    private ProcessingPeriodRepository processingPeriodRepository;
 
     private ReportTypeRepository reportTypeRepository;
 
     private ProgramSupportedService programSupportedService;
 
     @Autowired
-    public RestReportTypeService(ReportTypeRepository reportTypeRepository, ProgramSupportedService programSupportedService) {
+    public RestReportTypeService(ReportTypeRepository reportTypeRepository, ProgramSupportedService programSupportedService,
+        ProcessingPeriodRepository processingPeriodRepository) {
         this.reportTypeRepository = reportTypeRepository;
         this.programSupportedService = programSupportedService;
+        this.processingPeriodRepository = processingPeriodRepository;
 
     }
 
-    public List<ReportTypeDTO> getReportTypeByFacilityId(Long facilityId) {
+    public List<ReportTypeDTO> getReportTypeByFacilityId(final Long facilityId) {
         List<ProgramSupported> programSupportedList = filterInvalidData(programSupportedService.getAllByFacilityId(facilityId));
         List<ReportTypeDTO> reportTypeDTOS = FluentIterable.from(programSupportedList).transform(new Function<ProgramSupported, ReportTypeDTO>() {
             @Override
@@ -46,6 +50,7 @@ public class RestReportTypeService {
                 reportType.setName(reportTypeDomain.getName());
                 reportType.setDescription(reportTypeDomain.getDescription());
                 Program program = input.getProgram();
+                reportType.setLastReportEndTime(processingPeriodRepository.getReportEndTime(facilityId, program.getId()));
                 reportType.setProgram(new ProgramDTO(program.getId(), program.getCode(), program.getName()));
                 return reportType;
             }

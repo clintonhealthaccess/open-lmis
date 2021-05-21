@@ -11,6 +11,8 @@
 package org.openlmis.restapi.service;
 
 import org.joda.time.DateTime;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import org.openlmis.LmisThreadLocalUtils;
 import org.openlmis.core.domain.Facility;
 import org.openlmis.core.domain.ProcessingPeriod;
@@ -110,6 +112,9 @@ public class RestRequisitionCalculator {
   }
   
   private boolean verifyExpectedPeriod(DateTime initStart, DateTime initEnd, DateTime actualStart, DateTime actualEnd) {
+    if (calculateDateMonthOffset(initStart.toDate(), new Date()) > 13) {
+      return false;
+    }
     return initStart.getYear() != actualStart.getYear()
         || initStart.getMonthOfYear() != actualStart.getMonthOfYear()
         || initEnd.getYear() != actualEnd.getYear()
@@ -202,5 +207,15 @@ public class RestRequisitionCalculator {
 
     Integer beginningBalance = rnrLineItem.getStockInHand() != null ? rnrLineItem.getStockInHand() : 0;
     rnrLineItem.setBeginningBalance(beginningBalance);
+  }
+
+  public static int calculateDateMonthOffset(Date earlierDate, Date laterDate) {
+    Calendar startCalendar = new GregorianCalendar();
+    startCalendar.setTime(earlierDate);
+    Calendar endCalendar = new GregorianCalendar();
+    endCalendar.setTime(laterDate);
+
+    int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
+    return diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
   }
 }

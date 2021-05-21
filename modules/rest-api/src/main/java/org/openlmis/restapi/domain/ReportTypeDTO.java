@@ -28,6 +28,8 @@ public class ReportTypeDTO {
 
     private String startTime;
 
+    private String lastReportEndTime;
+
     private ProgramDTO program;
 
 }

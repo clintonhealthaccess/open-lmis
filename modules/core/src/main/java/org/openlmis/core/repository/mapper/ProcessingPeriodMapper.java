@@ -118,4 +118,9 @@ public interface ProcessingPeriodMapper {
           @Param("scheduleId") Long scheduleId,
           @Param("actualPeriodStartDate") Date actualPeriodStartDate,
           @Param("actualPeriodEndDate") Date actualPeriodEndDate);
+
+  @Select("SELECT enddate FROM processing_periods " +
+      "WHERE id = (SELECT max(periodid) FROM requisitions WHERE facilityId = #{facilityId} and programId = #{programId})")
+  Date getLastReportEndDataForFacilityAndProgram(@Param("facilityId") Long facilityId,
+      @Param("programId") Long programId);
 }

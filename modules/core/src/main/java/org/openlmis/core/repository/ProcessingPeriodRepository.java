@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import org.openlmis.core.domain.ProcessingPeriod;
 import org.openlmis.core.exception.DataException;
 import org.openlmis.core.repository.mapper.ProcessingPeriodMapper;
+import org.openlmis.core.utils.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
@@ -114,5 +115,10 @@ public class ProcessingPeriodRepository {
 
   public ProcessingPeriod getPeriodByDate(Long scheduleId, Date actualPeriodStartDate, Date actualPeriodEndDate) {
     return mapper.getProcessingPeriodByStartDateAndEndDate(scheduleId, actualPeriodStartDate, actualPeriodEndDate);
+  }
+
+  public String getReportEndTime(Long facilityId, Long programId) {
+    Date date = mapper.getLastReportEndDataForFacilityAndProgram(facilityId, programId);
+    return date == null ? null : DateUtil.formatDate(date);
   }
 }
