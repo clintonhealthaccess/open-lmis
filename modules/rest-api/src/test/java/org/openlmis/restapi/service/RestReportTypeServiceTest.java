@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.openlmis.core.domain.Program;
 import org.openlmis.core.domain.ProgramSupported;
 import org.openlmis.core.domain.ReportType;
+import org.openlmis.core.repository.ProcessingPeriodRepository;
 import org.openlmis.core.repository.ReportTypeRepository;
 import org.openlmis.core.service.ProgramSupportedService;
 import org.openlmis.db.categories.UnitTests;
@@ -51,6 +52,9 @@ public class RestReportTypeServiceTest {
 
     @Mock
     ProgramSupportedService programSupportedService;
+
+    @Mock
+    ProcessingPeriodRepository processingPeriodRepository;
 
     @InjectMocks
     RestReportTypeService restReportTypeService;
@@ -109,6 +113,8 @@ public class RestReportTypeServiceTest {
 
 
         when(programSupportedService.getAllByFacilityId(anyLong())).thenReturn(programSupportedList);
+        when(processingPeriodRepository.getReportEndTime(anyLong(), anyLong()))
+            .thenReturn("2018-09-01");
         List<ReportTypeDTO> rts = restReportTypeService.getReportTypeByFacilityId(anyLong());
 
         assertThat(rts.size(), notNullValue());
