@@ -112,7 +112,7 @@ public class RestRequisitionCalculator {
   }
   
   private boolean verifyExpectedPeriod(DateTime initStart, DateTime initEnd, DateTime actualStart, DateTime actualEnd) {
-    if (calculateDateMonthOffset(initStart.toDate(), new Date()) > 13) {
+    if (calculateDateMonthOffset(initStart.toDate(), new Date()) > 12) {
       return false;
     }
     return initStart.getYear() != actualStart.getYear()
