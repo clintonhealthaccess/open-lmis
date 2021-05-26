@@ -1,5 +1,6 @@
 package org.openlmis.core.repository;
 
+import java.util.Date;
 import org.openlmis.core.domain.Signature;
 import org.openlmis.core.domain.moz.ProgramDataForm;
 import org.openlmis.core.domain.moz.ProgramDataFormBasicItem;
@@ -44,7 +45,7 @@ public class ProgramDataRepository {
     }
   }
 
-  public List<ProgramDataForm> getProgramDataFormsByFacilityId(Long facilityId) {
-    return programDataMapper.getByFacilityId(facilityId);
+  public List<ProgramDataForm> getProgramDataFormsByFacilityId(Long facilityId, Date startDate) {
+    return programDataMapper.getRapidTestReport(facilityId, startDate);
   }
 }

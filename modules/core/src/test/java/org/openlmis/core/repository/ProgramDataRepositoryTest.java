@@ -1,5 +1,6 @@
 package org.openlmis.core.repository;
 
+import java.util.Date;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -64,9 +65,10 @@ public class ProgramDataRepositoryTest {
   public void shouldGetProgramDataFormsByFacilityId() {
     ProgramDataForm programDataForm1 = new ProgramDataForm();
     ProgramDataForm programDataForm2 = new ProgramDataForm();
-    when(programDataMapper.getByFacilityId(12L)).thenReturn(asList(programDataForm1, programDataForm2));
+    Date date = new Date();
+    when(programDataMapper.getRapidTestReport(12L, date)).thenReturn(asList(programDataForm1, programDataForm2));
 
-    List<ProgramDataForm> programDataFormList = programDataRepository.getProgramDataFormsByFacilityId(12L);
+    List<ProgramDataForm> programDataFormList = programDataRepository.getProgramDataFormsByFacilityId(12L, date);
     assertThat(programDataFormList.size(), is(2));
     assertThat(programDataFormList.get(0), is(programDataForm1));
     assertThat(programDataFormList.get(1), is(programDataForm2));

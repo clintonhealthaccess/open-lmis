@@ -1,6 +1,7 @@
 package org.openlmis.restapi.service;
 
 import com.google.common.collect.Lists;
+import java.util.UUID;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -234,7 +235,7 @@ public class RestProgramDataServiceTest {
     ProgramDataItem programDataItem4 = new ProgramDataItem(programDataForm2, "category 1", programDataColumn1, 20L);
     ProgramDataItem programDataItem5 = new ProgramDataItem(programDataForm2, "category 2", programDataColumn2, 25L);
     programDataForm2.setProgramDataItems(asList(programDataItem4, programDataItem5));
-    when(programDataRepository.getProgramDataFormsByFacilityId(12L)).thenReturn(asList(programDataForm, programDataForm2));
+    when(programDataRepository.getProgramDataFormsByFacilityId(any(Long.class), any(Date.class))).thenReturn(asList(programDataForm, programDataForm2));
 
     List<ProgramDataFormDTO> programDataFormDTOs = restProgramDataService.getProgramDataFormsByFacility(12L);
     assertThat(programDataFormDTOs.size(), is(2));

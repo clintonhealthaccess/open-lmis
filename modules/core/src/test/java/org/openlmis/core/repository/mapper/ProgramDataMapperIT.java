@@ -111,7 +111,7 @@ public class ProgramDataMapperIT {
     programDataMapper.insertProgramDataFormSignature(programDataForm, signature1);
     programDataMapper.insertProgramDataFormSignature(programDataForm, signature2);
 
-    List<ProgramDataForm> programDataFormResult = programDataMapper.getByFacilityId(facility.getId());
+    List<ProgramDataForm> programDataFormResult = programDataMapper.getRapidTestReport(facility.getId(), new Date());
     assertThat(programDataFormResult.get(0).getFacility().getCode(), is(facility.getCode()));
     assertThat(programDataFormResult.get(0).getSupplementalProgram().getCode(), is(supplementalProgram.getCode()));
     assertThat(programDataFormResult.get(0).getStartDate(), is(startDate));

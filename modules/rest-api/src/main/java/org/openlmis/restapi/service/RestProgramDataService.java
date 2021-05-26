@@ -2,8 +2,11 @@ package org.openlmis.restapi.service;
 
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
+import java.util.Calendar;
+import java.util.Date;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.openlmis.core.domain.Facility;
 import org.openlmis.core.domain.moz.*;
 import org.openlmis.core.exception.DataException;
@@ -111,7 +114,8 @@ public class RestProgramDataService {
   }
 
   public List<ProgramDataFormDTO> getProgramDataFormsByFacility(Long facilityId) {
-    return FluentIterable.from(programDataRepository.getProgramDataFormsByFacilityId(facilityId)).transform(new Function<ProgramDataForm, ProgramDataFormDTO>() {
+    Date startDate = getStartDate();
+    return FluentIterable.from(programDataRepository.getProgramDataFormsByFacilityId(facilityId, startDate)).transform(new Function<ProgramDataForm, ProgramDataFormDTO>() {
       @Override
       public ProgramDataFormDTO apply(ProgramDataForm input) {
         return ProgramDataFormDTO.prepareForRest(input);
@@ -240,5 +244,11 @@ public class RestProgramDataService {
     return regimenLineItemForRest;
   }
 
+  private Date getStartDate() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(new Date());
+    calendar.set(Calendar.DAY_OF_MONTH, 1);
+    return new DateTime(calendar.getTime()).minusMonths(13).toDate();
+  }
 
 }

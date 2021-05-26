@@ -1,5 +1,6 @@
 package org.openlmis.core.repository.mapper;
 
+import java.util.Date;
 import org.apache.ibatis.annotations.*;
 import org.openlmis.core.domain.Facility;
 import org.openlmis.core.domain.Signature;
@@ -16,7 +17,7 @@ public interface ProgramDataMapper {
   @Options(useGeneratedKeys = true)
   void insert(ProgramDataForm programDataForm);
 
-  @Select("SELECT * FROM program_data_forms WHERE facilityId = #{facilityId} ORDER BY startdate")
+  @Select("SELECT * FROM program_data_forms WHERE facilityId = #{facilityId} AND startdate > #{startDate} ORDER BY startdate")
   @Results({
       @Result(
           property = "facility", column = "facilityId", javaType = Facility.class,
@@ -31,7 +32,7 @@ public interface ProgramDataMapper {
       @Result(property = "programDataFormBasicItems", javaType = List.class, column = "id",
           many = @Many(select = "org.openlmis.core.repository.mapper.ProgramDataFormBasicItemMapper.getByFormId"))
   })
-  List<ProgramDataForm> getByFacilityId(Long facilityId);
+  List<ProgramDataForm> getRapidTestReport(@Param("facilityId")Long facilityId, @Param("startDate") Date startDate);
 
   @Insert("INSERT INTO program_data_form_signatures(signatureId, programDataFormId) VALUES " +
       "(#{signature.id}, #{form.id})")
