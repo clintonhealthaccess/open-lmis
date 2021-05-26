@@ -6,6 +6,7 @@ import org.openlmis.core.exception.DataException;
 import org.openlmis.restapi.domain.StockCardDTO;
 import org.openlmis.restapi.response.RestResponse;
 import org.openlmis.restapi.service.RestStockCardService;
+import org.openlmis.restapi.service.backup.StockCardsBackupRequestBodyService;
 import org.openlmis.restapi.utils.KitProductFilterUtils;
 import org.openlmis.stockmanagement.domain.StockCardEntry;
 import org.openlmis.stockmanagement.dto.StockCardDeleteDTO;
@@ -22,10 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.openlmis.restapi.response.RestResponse.error;
 import static org.openlmis.restapi.response.RestResponse.response;
@@ -45,13 +43,18 @@ public class RestStockCardController extends BaseController {
   private RestStockCardService restStockCardService;
   @Autowired
   private StockCardService stockCardService;
+  @Autowired
+  private StockCardsBackupRequestBodyService stockCardsBackupRequestBodyService;
 
   @RequestMapping(value = "/rest-api/facilities/{facilityId}/stockCards", method = POST, headers = ACCEPT_JSON)
   public ResponseEntity adjustStock(@PathVariable long facilityId,
                                     @RequestHeader(value = "VersionCode", required = false) String versionCode,
+                                    @RequestHeader(value = "DeviceInfo", required = false) String deviceInfo,
                                     @RequestBody List<StockEvent> events,
                                     Principal principal) {
     List<StockEvent> filterStockEvents;
+    Long userId = loggedInUserId(principal);
+    String requestBody = JsonUtils.toJsonString(events);
     if (KitProductFilterUtils.isBiggerThanThresholdVersion(versionCode, FILTER_THRESHOLD_VERSION)) {
       filterStockEvents = restStockCardService
           .filterStockEventsList(events, WRONG_KIT_PRODUCTS_SET);
@@ -64,9 +67,11 @@ public class RestStockCardController extends BaseController {
       restStockCardService.adjustStock(facilityId, filterStockEvents, loggedInUserId(principal));
     } catch (DataException e) {
       logger.error(e.getOpenLmisMessage().toString());
+      stockCardsBackupRequestBodyService.backupRequestBody(facilityId, userId, deviceInfo, versionCode, "DataException: "+e.getOpenLmisMessage().toString(), requestBody);
       return error(e.getOpenLmisMessage(), BAD_REQUEST);
     } catch (Exception e) {
       logger.error(e.getMessage());
+      stockCardsBackupRequestBodyService.backupRequestBody(facilityId, userId, deviceInfo, versionCode, "OtherException: "+e.getMessage(),requestBody);
       return error(e.getMessage(), BAD_REQUEST);
     }
 
@@ -74,9 +79,15 @@ public class RestStockCardController extends BaseController {
   }
 
   @RequestMapping(value = "/rest-api/facilities/split/{facilityId}/stockCards", method = POST, headers = ACCEPT_JSON)
-  public ResponseEntity adjustStock(@PathVariable long facilityId,
-      @RequestBody List<StockEvent> events, Principal principal) {
+  public ResponseEntity adjustStockSplit(@PathVariable long facilityId,
+                                         @RequestHeader(value = "VersionCode", required = false) String versionCode,
+                                         @RequestHeader(value = "DeviceInfo", required = false) String deviceInfo,
+                                         @RequestBody List<StockEvent> events, Principal principal) {
+
+    String requestBody = JsonUtils.toJsonString(events);
+    Long userId = loggedInUserId(principal);
     if (!restStockCardService.validFacility(facilityId)) {
+      stockCardsBackupRequestBodyService.backupRequestBody(facilityId, userId, deviceInfo, versionCode,"DataException: error.facility.unknown", requestBody);
       throw new DataException("error.facility.unknown");
     }
     List<StockEvent> correctEventList = restStockCardService
@@ -84,7 +95,6 @@ public class RestStockCardController extends BaseController {
     Map<String, List<StockEvent>> productStockEventMap = restStockCardService
         .groupByProduct(correctEventList);
     List<String> errorProductCodes = new ArrayList<>();
-    Long userId = loggedInUserId(principal);
     for (Map.Entry<String, List<StockEvent>> entry : productStockEventMap.entrySet()) {
       try {
         if (stockCardService.tryLock(facilityId, entry.getKey(), StockCardLockConstants.UPDATE)) {
@@ -95,8 +105,10 @@ public class RestStockCardController extends BaseController {
       } catch (DataException e) {
         errorProductCodes.add(entry.getKey());
         logger.error("facilityId {} productCode {} sync error", facilityId, entry.getKey());
+        stockCardsBackupRequestBodyService.backupRequestBody(facilityId, userId, deviceInfo, versionCode, "DataException: "+Arrays.toString(errorProductCodes.toArray()), requestBody);
       } catch (Exception e) {
         logger.error(e.getMessage());
+        stockCardsBackupRequestBodyService.backupRequestBody(facilityId, userId, deviceInfo, versionCode, "OtherException: "+e.getMessage(), requestBody);
         return error(e.getMessage(), BAD_REQUEST);
       } finally {
         stockCardService.release(facilityId, entry.getKey(), StockCardLockConstants.UPDATE);

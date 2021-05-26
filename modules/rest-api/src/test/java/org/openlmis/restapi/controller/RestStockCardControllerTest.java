@@ -15,6 +15,7 @@ import org.openlmis.restapi.domain.StockCardDTO;
 import org.openlmis.restapi.domain.StockCardMovementDTO;
 import org.openlmis.restapi.response.RestResponse;
 import org.openlmis.restapi.service.RestStockCardService;
+import org.openlmis.restapi.service.backup.StockCardsBackupRequestBodyService;
 import org.openlmis.stockmanagement.domain.StockCard;
 import org.openlmis.stockmanagement.dto.StockEvent;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -46,6 +47,9 @@ public class RestStockCardControllerTest {
   @Mock
   RestStockCardService restStockCardService;
 
+  @Mock
+  StockCardsBackupRequestBodyService stockCardsBackupRequestBodyService;
+
   @InjectMocks
   RestStockCardController restStockCardController;
 
@@ -70,7 +74,7 @@ public class RestStockCardControllerTest {
     ResponseEntity<RestResponse> expectedResponse = new ResponseEntity<>(new RestResponse(SUCCESS, successMsg), HttpStatus.OK);
     when(RestResponse.success(successMsg)).thenReturn(expectedResponse);
 
-    ResponseEntity<RestResponse> response = restStockCardController.adjustStock(facilityId,"86", stockEventList, principal);
+    ResponseEntity<RestResponse> response = restStockCardController.adjustStock(facilityId,"86","os:huawei",stockEventList, principal);
 
     verify(restStockCardService).adjustStock(facilityId, stockEventList, userId);
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
@@ -88,7 +92,7 @@ public class RestStockCardControllerTest {
     ResponseEntity<RestResponse> expectedResponse = new ResponseEntity<>(new RestResponse(ERROR, "invalid data"), HttpStatus.BAD_REQUEST);
     when(error(dataException.getOpenLmisMessage(), HttpStatus.BAD_REQUEST)).thenReturn(expectedResponse);
 
-    ResponseEntity<RestResponse> response = restStockCardController.adjustStock(facilityId,"86", stockEventList, principal);
+    ResponseEntity<RestResponse> response = restStockCardController.adjustStock(facilityId,"86", "os:huawei",stockEventList, principal);
 
     assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
     assertThat((String) response.getBody().getData().get(ERROR), is("invalid data"));
