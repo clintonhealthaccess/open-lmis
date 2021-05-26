@@ -28,6 +28,7 @@ import static com.natpryce.makeiteasy.MakeItEasy.make;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.openlmis.core.utils.DateUtil.FORMAT_DATE;
 
 @Category(IntegrationTests.class)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -75,9 +76,9 @@ public class ProgramDataMapperIT {
 
     ProgramDataForm programDataForm = new ProgramDataForm();
     programDataForm.setFacility(facility);
-    Date startDate = DateUtil.parseDate("2016-11-21", DateUtil.FORMAT_DATE);
+    Date startDate = DateUtil.parseDate("2016-11-21", FORMAT_DATE);
     programDataForm.setStartDate(startDate);
-    Date endDate = DateUtil.parseDate("2016-12-20", DateUtil.FORMAT_DATE);
+    Date endDate = DateUtil.parseDate("2016-12-20", FORMAT_DATE);
     programDataForm.setEndDate(endDate);
     programDataForm.setSubmittedTime(new Date());
     programDataForm.setSupplementalProgram(supplementalProgram);
@@ -111,7 +112,7 @@ public class ProgramDataMapperIT {
     programDataMapper.insertProgramDataFormSignature(programDataForm, signature1);
     programDataMapper.insertProgramDataFormSignature(programDataForm, signature2);
 
-    List<ProgramDataForm> programDataFormResult = programDataMapper.getRapidTestReport(facility.getId(), new Date());
+    List<ProgramDataForm> programDataFormResult = programDataMapper.getRapidTestReport(facility.getId(), DateUtil.parseDate("2016-11-12", FORMAT_DATE));
     assertThat(programDataFormResult.get(0).getFacility().getCode(), is(facility.getCode()));
     assertThat(programDataFormResult.get(0).getSupplementalProgram().getCode(), is(supplementalProgram.getCode()));
     assertThat(programDataFormResult.get(0).getStartDate(), is(startDate));
