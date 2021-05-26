@@ -65,6 +65,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.openlmis.core.builder.FacilityBuilder.*;
+import static org.openlmis.core.builder.ProgramSupportedBuilder.FACILITY_ID;
 import static org.openlmis.core.builder.ProgramSupportedBuilder.PROGRAM_ID;
 import static org.openlmis.core.builder.ProgramSupportedBuilder.defaultProgramSupported;
 import static org.openlmis.restapi.builder.ReportBuilder.*;
@@ -121,9 +122,12 @@ public class RestRequisitionServiceTest {
   private SyncUpHashRepository syncUpHashRepository;
   @Mock
   private RegimenLineItemMapper regimenLineItemMapper;
+  @Mock
+  ProcessingScheduleService processingScheduleService;
 
   private Facility facility;
   private Program program;
+  private ProcessingPeriod processingPeriod;
 
   @Before
   public void setUp() throws Exception {
@@ -136,6 +140,10 @@ public class RestRequisitionServiceTest {
     requisition.setId(2L);
     user = new User();
     user.setId(1L);
+    processingPeriod = new ProcessingPeriod();
+    when(processingScheduleService.getPeriodByDate(report.getActualPeriodStartDate(),
+        report.getActualPeriodEndDate(), FACILITY_ID, PROGRAM_ID))
+        .thenReturn(processingPeriod);
     whenNew(User.class).withNoArguments().thenReturn(user);
     when(userService.getByUserName(user.getUserName())).thenReturn(user);
     when(programService.getReportStartDate(any(Long.class), any(Long.class))).thenReturn(setUpReportDate(new Date()));
@@ -219,10 +227,9 @@ public class RestRequisitionServiceTest {
 
 
     report.setProducts(products);
-    Long facility_id = 5L;
 
     ProgramSupported programSupported = make(a(defaultProgramSupported));
-    facility = make(a(defaultFacility, with(facilityId, facility_id), with(programSupportedList, asList(programSupported)), with(virtualFacility, true)));
+    facility = make(a(defaultFacility, with(facilityId, FACILITY_ID), with(programSupportedList, asList(programSupported)), with(virtualFacility, true)));
     program = new Program(PROGRAM_ID);
 
     when(facilityService.getOperativeFacilityByCode(DEFAULT_AGENT_CODE)).thenReturn(facility);
@@ -288,10 +295,8 @@ public class RestRequisitionServiceTest {
     report.setPeriodId(1L);
     report.setEmergency(false);
 
-    Long facility_id = 5L;
-
     ProgramSupported programSupported = make(a(defaultProgramSupported));
-    Facility facility = make(a(defaultFacility, with(facilityId, facility_id), with(programSupportedList, asList(programSupported)), with(virtualFacility, true)));
+    Facility facility = make(a(defaultFacility, with(facilityId, FACILITY_ID), with(programSupportedList, asList(programSupported)), with(virtualFacility, true)));
 
     when(facilityService.getOperativeFacilityByCode(DEFAULT_AGENT_CODE)).thenReturn(facility);
     when(programService.getValidatedProgramByCode(DEFAULT_PROGRAM_CODE)).thenReturn(new Program(PROGRAM_ID));
@@ -324,10 +329,8 @@ public class RestRequisitionServiceTest {
     report.setPeriodId(1L);
     report.setEmergency(false);
 
-    Long facility_id = 5L;
-
     ProgramSupported programSupported = make(a(defaultProgramSupported));
-    Facility facility = make(a(defaultFacility, with(facilityId, facility_id), with(programSupportedList, asList(programSupported)), with(virtualFacility, true)));
+    Facility facility = make(a(defaultFacility, with(facilityId, FACILITY_ID), with(programSupportedList, asList(programSupported)), with(virtualFacility, true)));
 
     when(facilityService.getOperativeFacilityByCode(DEFAULT_AGENT_CODE)).thenReturn(facility);
     when(programService.getValidatedProgramByCode(DEFAULT_PROGRAM_CODE)).thenReturn(new Program(PROGRAM_ID));
@@ -378,8 +381,12 @@ public class RestRequisitionServiceTest {
   public void shouldThrowErrorIfProductValidationFails() throws Exception {
     expectedException.expect(DataException.class);
     expectedException.expectMessage("rnr.error");
-    when(programService.getValidatedProgramByCode(anyString())).thenReturn(new Program());
-    when(facilityService.getOperativeFacilityByCode(anyString())).thenReturn(new Facility());
+    Program program = new Program();
+    program.setId(PROGRAM_ID);
+    when(programService.getValidatedProgramByCode(anyString())).thenReturn(program);
+    Facility facility = new Facility();
+    facility.setId(FACILITY_ID);
+    when(facilityService.getOperativeFacilityByCode(anyString())).thenReturn(facility);
     when(requisitionService.getLastRegularRequisition(any(Facility.class), any(Program.class))).thenReturn(new Rnr());
 
     doThrow(new DataException("rnr.error")).when(restRequisitionCalculator).validateProducts(any(List.class), any(Rnr.class));
@@ -730,13 +737,14 @@ public class RestRequisitionServiceTest {
   public void shouldAuthorizeRnr() throws Exception {
     String facilityCode = "agent";
     String programCode = "program";
-    Facility facility = new Facility();
-    Program program = new Program(1l);
+    Facility facility = new Facility();;
+    facility.setId(FACILITY_ID);
+    Program program = new Program(PROGRAM_ID);
     Report report = make(a(defaultReport, with(agentCode, facilityCode), with(ReportBuilder.programCode, programCode)));
     when(facilityService.getOperativeFacilityByCode(facilityCode)).thenReturn(facility);
     when(programService.getValidatedProgramByCode(programCode)).thenReturn(program);
     Rnr rnr = new Rnr(facility, program, new ProcessingPeriod());
-    when(requisitionService.initiate(facility, program, 3l, false, null, null)).thenReturn(rnr);
+    when(requisitionService.initiate(facility, program, 3l, false, processingPeriod, null)).thenReturn(rnr);
     when(requisitionService.submit(rnr)).thenReturn(rnr);
     when(requisitionService.authorize(rnr)).thenReturn(rnr);
 
@@ -752,7 +760,8 @@ public class RestRequisitionServiceTest {
     String programCode = "program";
     Facility facility = new Facility();
     facility.setVirtualFacility(true);
-    Program program = new Program(1l);
+    facility.setId(FACILITY_ID);
+    Program program = new Program(PROGRAM_ID);
     Report report = make(a(defaultReport, with(agentCode, facilityCode), with(ReportBuilder.programCode, programCode)));
     when(facilityService.getOperativeFacilityByCode(facilityCode)).thenReturn(facility);
     when(programService.getValidatedProgramByCode(programCode)).thenReturn(program);

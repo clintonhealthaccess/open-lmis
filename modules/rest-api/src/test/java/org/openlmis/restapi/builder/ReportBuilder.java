@@ -47,8 +47,6 @@ public class ReportBuilder {
       report.setProducts(lookup.valueOf(products, asList(make(a(RnrLineItemBuilder.defaultRnrLineItem)))));
       report.setProgramCode(lookup.valueOf(programCode, DEFAULT_PROGRAM_CODE));
       report.setApproverName(lookup.valueOf(approverName, DEFAULT_APPROVER_NAME));
-      report.setActualPeriodStartDate("2016-05-17 09:00:00");
-      report.setActualPeriodEndDate("2016-06-17 09:00:00");
       Date actualPeriodDate = new Date();
       report.setActualPeriodStartDate(DateUtil.formatDate(actualPeriodDate));
       report.setActualPeriodEndDate(DateUtil.formatDate(actualPeriodDate));

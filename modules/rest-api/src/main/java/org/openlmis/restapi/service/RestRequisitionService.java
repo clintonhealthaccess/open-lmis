@@ -114,8 +114,11 @@ public class RestRequisitionService {
       restRequisitionCalculator.validatePeriod(reportingFacility, reportingProgram, report.getActualPeriodStartDate(), report.getActualPeriodEndDate());
     }
 
-    ProcessingPeriod proposedPeriod =
-        findReportPeriod(report.getActualPeriodStartDate(), report.getActualPeriodEndDate(), reportingFacility.getId(), reportingProgram.getId());
+    ProcessingPeriod proposedPeriod = null;
+    if (!reportingFacility.getVirtualFacility()) {
+       proposedPeriod =
+          findReportPeriod(report.getActualPeriodStartDate(), report.getActualPeriodEndDate(), reportingFacility.getId(), reportingProgram.getId());
+    }
     Rnr rnr = requisitionService.initiate(reportingFacility, reportingProgram, userId, EMERGENCY, proposedPeriod, report.getServiceLineItems());
 
     restRequisitionCalculator.validateProducts(report.getProducts(), rnr);
