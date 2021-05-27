@@ -20,6 +20,7 @@ import org.openlmis.core.exception.DataException;
 import org.openlmis.restapi.domain.Report;
 import org.openlmis.restapi.response.RestResponse;
 import org.openlmis.restapi.service.RestRequisitionService;
+import org.openlmis.restapi.service.backup.RequisitionBackupRequestBodyService;
 import org.openlmis.rnr.domain.Rnr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -51,13 +52,18 @@ public class RestRequisitionController extends BaseController {
   @Autowired
   private RestRequisitionService restRequisitionService;
 
+  @Autowired
+  private RequisitionBackupRequestBodyService requisitionBackupRequestBodyService;
+
   @RequestMapping(value = "/rest-api/requisitions", method = POST, headers = ACCEPT_JSON)
-  public ResponseEntity<RestResponse> submitRequisition(@RequestBody Report report, Principal principal) {
+  public ResponseEntity<RestResponse> submitRequisition(
+          @RequestBody Report report, Principal principal) {
     Rnr requisition;
 
     try {
       requisition = restRequisitionService.submitReport(report, loggedInUserId(principal));
     } catch (DataException e) {
+      requisitionBackupRequestBodyService.backUpRequisitionRequestBody(report, loggedInUserId(principal), e.toString());
       return error(e.getOpenLmisMessage(), BAD_REQUEST);
     }
     if (requisition != null) {

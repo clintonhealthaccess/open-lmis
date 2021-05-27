@@ -26,6 +26,7 @@ import org.openlmis.restapi.domain.ReplenishmentDTO;
 import org.openlmis.restapi.domain.Report;
 import org.openlmis.restapi.response.RestResponse;
 import org.openlmis.restapi.service.RestRequisitionService;
+import org.openlmis.restapi.service.backup.RequisitionBackupRequestBodyService;
 import org.openlmis.rnr.domain.Rnr;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -56,6 +57,9 @@ public class RestRequisitionControllerTest {
 
   @Mock
   RestRequisitionService service;
+
+  @Mock
+  RequisitionBackupRequestBodyService requisitionBackupRequestBodyService;
 
 
   @InjectMocks
