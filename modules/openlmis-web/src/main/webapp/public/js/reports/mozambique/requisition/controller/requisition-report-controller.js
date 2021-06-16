@@ -171,7 +171,7 @@ function RequisitionReportController($scope, $controller, RequisitionReportServi
 
     var expectedRequisitions = _.filter(requisitions, function (requisition) {
       return !requisition.emergency;
-    })
+    });
 
     return {
       programName: selectedProgramName,
