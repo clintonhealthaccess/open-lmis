@@ -169,9 +169,13 @@ function RequisitionReportController($scope, $controller, RequisitionReportServi
       return balanceRequisition.clientSubmittedTime;
     });
 
+    var expectedRequisitions = _.filter(requisitions, function (requisition) {
+      return !requisition.emergency;
+    })
+
     return {
       programName: selectedProgramName,
-      expectedQuantity: requisitions.length,
+      expectedQuantity: expectedRequisitions.length,
       submittedQuantity: submittedRequisitions.length
     };
   };
