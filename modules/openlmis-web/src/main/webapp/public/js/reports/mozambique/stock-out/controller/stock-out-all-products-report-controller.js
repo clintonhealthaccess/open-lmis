@@ -134,7 +134,7 @@ function StockOutAllProductsReportController($scope, $filter, $q, $controller, $
   function formatReportWhenSelectAllFacility() {
     if (!$scope.reportParams.facilityId || $scope.reportParams.facilityId === " ") {
       $scope.reportData.map(function (data) {
-        data.totalDuration = "-";
+        // data.totalDuration = "-";
       });
     }
   }
