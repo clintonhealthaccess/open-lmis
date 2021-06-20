@@ -236,7 +236,7 @@ describe("Stock Out All Products Report Controller", function () {
     httpBackend.flush();
 
     expect(scope.reportParams.reportTitle).toEqual("Maputo Província,Marracuene");
-    // expect(scope.reportData[0].totalDuration).toEqual("-");
+    expect(scope.reportData[0].totalDuration).toEqual(27);
   });
 
 
@@ -252,7 +252,7 @@ describe("Stock Out All Products Report Controller", function () {
       'province': 'Maputo Prov\u00edncia',
       'facility': 'Habel Jafar',
       'occurrences': '2',
-      'totalDuration': '-',
+      'totalDuration': '24',
       'reportStartDate': TIME,
       'reportEndDate': TIME,
       'avgDuration': '12',
@@ -275,7 +275,7 @@ describe("Stock Out All Products Report Controller", function () {
       facility: 'Habel Jafar',
       avgDuration: '12',
       totalStockoutOccurrences: '2',
-      totalDaysStockedOut: '-',
+      totalDaysStockedOut: '24',
       reportStartDate: expectedSyncDate,
       reportEndDate: expectedSyncDate
     };
@@ -528,7 +528,7 @@ describe("Stock Out All Products Report Controller", function () {
     httpBackend.flush();
 
     expect(scope.reportParams.reportTitle).toEqual("Maputo Província,Marracuene");
-    // expect(scope.reportData[0].totalDuration).toEqual("-");
+    expect(scope.reportData[0].totalDuration).toEqual(27);
   });
 
 
