@@ -52,8 +52,8 @@ public class StockStatusService {
       if (0 == soh) {
           return StockOnHandStatus.STOCK_OUT;
       }
-      if (cmm == -1) {
-          return StockOnHandStatus.REGULAR_STOCK;
+      if (cmm <= 0) {
+          return StockOnHandStatus.OVER_STOCK;
       }
 
       if (soh < 1 * cmm) {
