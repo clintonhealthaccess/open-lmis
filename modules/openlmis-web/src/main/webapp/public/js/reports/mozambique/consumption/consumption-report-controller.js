@@ -46,9 +46,10 @@ function ConsumptionReportController($scope, $controller, $filter, $http, $q, Cu
         var consumptionReportContent = {};
         consumptionReportContent.drugCode = $scope.reportParams.productCode;
         consumptionReportContent.drugName = $scope.getDrugByCode($scope.reportParams.productCode).primaryName;
-        consumptionReportContent.province = $scope.reportParams.selectedProvince ? $scope.reportParams.selectedProvince.name : '[All]';
-        consumptionReportContent.district = $scope.reportParams.selectedDistrict ? $scope.reportParams.selectedDistrict.name : '[All]';
         consumptionReportContent.facility = consumptionInPeriod['facility.facility_name'];
+        var facilityCode = consumptionInPeriod['facility.facility_code'];
+        consumptionReportContent.province = $scope.reportParams.selectedProvince ? $scope.reportParams.selectedProvince.name : getLocationByHfCode(facilityCode).provinceName;
+        consumptionReportContent.district = $scope.reportParams.selectedDistrict ? $scope.reportParams.selectedDistrict.name : getLocationByHfCode(facilityCode).districtName;
         consumptionReportContent.period = consumptionInPeriod.period;
         consumptionReportContent.cmm = consumptionInPeriod.cmm;
         consumptionReportContent.consumption = consumptionInPeriod.total_quantity;
@@ -62,6 +63,16 @@ function ConsumptionReportController($scope, $controller, $filter, $http, $q, Cu
 
     ReportExportExcelService.exportAsXlsx(data, messageService.get('report.file.historical.data.report'));
   };
+
+  function getLocationByHfCode(facilityCode) {
+    var location = {};
+    var facility = _.find($scope.facilities, function(hf) { return hf.code == facilityCode; });
+    var district = _.find($scope.districts, function(dst) { return dst.id == facility.geographicZoneId; });
+    var province = _.find($scope.provinces, function(pro) { return pro.id == district.parentId; });
+    location.districtName = district.name;
+    location.provinceName = province.name;
+    return location;
+  }
 
   function renderConsumptionChart(consumptionInPeriods) {
     if (validateGeographicZones()) {

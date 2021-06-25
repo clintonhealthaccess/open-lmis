@@ -70,6 +70,7 @@ describe("consumption report controller", function () {
       startTime: '2017-04-21T00:00:00.000000',
       endTime: '2017-07-20T00:00:00.000000',
       selectedProvince: {name: 'Maputo Província'},
+      selectedDistrict: {name: 'Distrito da Matola'},
       productCode: '08S01Z'
     };
 
@@ -81,7 +82,7 @@ describe("consumption report controller", function () {
       drugCode: '08S01Z',
       drugName: 'Paracetamol120mg/5mLXarope',
       province: 'Maputo Província',
-      district: '[All]',
+      district: 'Distrito da Matola',
       facility: 'CS Manhangane',
       entries: 1,
       period: 'Mar 2017-Apr 2017',
