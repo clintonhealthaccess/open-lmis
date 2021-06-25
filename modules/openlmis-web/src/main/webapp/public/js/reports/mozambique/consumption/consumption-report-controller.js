@@ -7,6 +7,7 @@ function ConsumptionReportController($scope, $controller, $filter, $http, $q, Cu
   });
 
   $scope.consumptionInPeriods = undefined;
+  $scope.consumptionInPeriodsExport = undefined;
 
   $scope.loadReport = function () {
     if ($scope.checkDateValidRange() && validateProduct() &&
@@ -15,6 +16,7 @@ function ConsumptionReportController($scope, $controller, $filter, $http, $q, Cu
       var promises = requestConsumptionDataForEachPeriod();
       $q.all(promises).then(function (consumptionsInPeriods) {
         $scope.consumptionInPeriods = _.pluck(_.pluck(consumptionsInPeriods, 'data'), 'summary');
+        $scope.consumptionInPeriodsExport = _.pluck(_.pluck(consumptionsInPeriods,'data'), 'cells');
         renderConsumptionChart($scope.consumptionInPeriods);
       });
     }
@@ -39,21 +41,23 @@ function ConsumptionReportController($scope, $controller, $filter, $http, $q, Cu
       reportContent: []
     };
 
-    $scope.consumptionInPeriods.forEach(function (consumptionInPeriod) {
-      var consumptionReportContent = {};
-      consumptionReportContent.drugCode = $scope.reportParams.productCode;
-      consumptionReportContent.drugName = $scope.getDrugByCode($scope.reportParams.productCode).primaryName;
-      consumptionReportContent.province = $scope.reportParams.selectedProvince ? $scope.reportParams.selectedProvince.name : '[All]';
-      consumptionReportContent.district = $scope.reportParams.selectedDistrict ? $scope.reportParams.selectedDistrict.name : '[All]';
-      consumptionReportContent.facility = $scope.reportParams.selectedFacility ? $scope.reportParams.selectedFacility.name : '[All]';
-      consumptionReportContent.period = consumptionInPeriod.period;
-      consumptionReportContent.cmm = $scope.reportParams.selectedFacility ? consumptionInPeriod.cmm : '';
-      consumptionReportContent.consumption = consumptionInPeriod.total_quantity;
-      consumptionReportContent.entries = consumptionInPeriod.entries;
-      consumptionReportContent.soh = consumptionInPeriod.soh;
-      consumptionReportContent.reportGeneratedFor = DateFormatService.formatDateWithDateMonthYearForString($scope.reportParams.startTime) + ' - ' + DateFormatService.formatDateWithDateMonthYearForString($scope.reportParams.endTime);
+    $scope.consumptionInPeriodsExport.forEach(function (consumptionInPeriodExport) {
+      consumptionInPeriodExport.forEach(function (consumptionInPeriod) {
+        var consumptionReportContent = {};
+        consumptionReportContent.drugCode = $scope.reportParams.productCode;
+        consumptionReportContent.drugName = $scope.getDrugByCode($scope.reportParams.productCode).primaryName;
+        consumptionReportContent.province = $scope.reportParams.selectedProvince ? $scope.reportParams.selectedProvince.name : '[All]';
+        consumptionReportContent.district = $scope.reportParams.selectedDistrict ? $scope.reportParams.selectedDistrict.name : '[All]';
+        consumptionReportContent.facility = consumptionInPeriod['facility.facility_name'];
+        consumptionReportContent.period = consumptionInPeriod.period;
+        consumptionReportContent.cmm = consumptionInPeriod.cmm;
+        consumptionReportContent.consumption = consumptionInPeriod.total_quantity;
+        consumptionReportContent.entries = consumptionInPeriod.entries;
+        consumptionReportContent.soh = consumptionInPeriod.soh;
+        consumptionReportContent.reportGeneratedFor = DateFormatService.formatDateWithDateMonthYearForString($scope.reportParams.startTime) + ' - ' + DateFormatService.formatDateWithDateMonthYearForString($scope.reportParams.endTime);
 
-      data.reportContent.push(consumptionReportContent);
+        data.reportContent.push(consumptionReportContent);
+      });
     });
 
     ReportExportExcelService.exportAsXlsx(data, messageService.get('report.file.historical.data.report'));
@@ -131,6 +135,7 @@ function ConsumptionReportController($scope, $controller, $filter, $http, $q, Cu
     var periodsInSelectedRange = $scope.splitPeriods($scope.reportParams.startTime, $scope.reportParams.endTime);
     return _.map(periodsInSelectedRange, function (period) {
       var dataFromMV = $scope.pickMVs(period);
+      var drilldownParams = ["facility"];
       var cutParams = CubesGenerateCutParamsService.generateCutsParams("periodstart",
         $filter('date')(period.periodStart, "yyyy,MM,dd"),
         $filter('date')(period.periodStart, "yyyy,MM,dd"),
@@ -164,18 +169,26 @@ function ConsumptionReportController($scope, $controller, $filter, $http, $q, Cu
         ]
       });
       return $http
-        .get(CubesGenerateUrlService.generateAggregateUrl(dataFromMV, [], consumpParams))
+        .get(CubesGenerateUrlService.generateAggregateUrl(dataFromMV, drilldownParams, consumpParams))
         .then(function (consumptionData) {
           return $http
-            .get(CubesGenerateUrlService.generateAggregateUrl(dataFromMV, [], entryParams))
+            .get(CubesGenerateUrlService.generateAggregateUrl(dataFromMV, drilldownParams, entryParams))
             .then(function (entryData) {
-              consumptionData.data.summary.period =
-                DateFormatService.formatDateWithLocaleNoDay(period.periodStart) +
-                "-" +
-                DateFormatService.formatDateWithLocaleNoDay(period.periodEnd);
+              var periodRange = DateFormatService.formatDateWithLocaleNoDay(period.periodStart) +
+                  "-" +
+                  DateFormatService.formatDateWithLocaleNoDay(period.periodEnd);
+              consumptionData.data.summary.period = periodRange;
 
               consumptionData.data.summary.entries = entryData.data.summary.total_quantity;
 
+              _.map(consumptionData.data.cells, function (consumptionCell) {
+                consumptionCell.period = periodRange;
+                _.map(entryData.data.cells, function (entryCell) {
+                  if (consumptionCell['facility.facility_code'] == entryCell['facility.facility_code']) {
+                    consumptionCell.entries = entryCell.total_quantity;
+                  }
+                });
+              });
               return consumptionData;
             });
         });
