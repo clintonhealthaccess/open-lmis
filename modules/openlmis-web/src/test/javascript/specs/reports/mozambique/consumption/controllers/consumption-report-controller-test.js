@@ -86,7 +86,7 @@ describe("consumption report controller", function () {
       facility: 'CS Manhangane',
       entries: 1,
       period: 'Mar 2017-Apr 2017',
-      cmm: null,
+      cmm: 0,
       consumption: 0,
       soh: 4,
       reportGeneratedFor: '21-04-2017 - 20-07-2017'

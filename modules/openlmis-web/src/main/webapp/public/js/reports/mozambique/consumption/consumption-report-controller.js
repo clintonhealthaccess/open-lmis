@@ -51,10 +51,10 @@ function ConsumptionReportController($scope, $controller, $filter, $http, $q, Cu
         consumptionReportContent.province = $scope.reportParams.selectedProvince ? $scope.reportParams.selectedProvince.name : getLocationByHfCode(facilityCode).provinceName;
         consumptionReportContent.district = $scope.reportParams.selectedDistrict ? $scope.reportParams.selectedDistrict.name : getLocationByHfCode(facilityCode).districtName;
         consumptionReportContent.period = consumptionInPeriod.period;
-        consumptionReportContent.cmm = consumptionInPeriod.cmm;
-        consumptionReportContent.consumption = consumptionInPeriod.total_quantity;
-        consumptionReportContent.entries = consumptionInPeriod.entries;
-        consumptionReportContent.soh = consumptionInPeriod.soh;
+        consumptionReportContent.cmm = consumptionInPeriod.cmm?consumptionInPeriod.cmm:0;
+        consumptionReportContent.consumption = consumptionInPeriod.total_quantity?consumptionInPeriod.total_quantity:0;
+        consumptionReportContent.entries = consumptionInPeriod.entries?consumptionInPeriod.entries:0;
+        consumptionReportContent.soh = consumptionInPeriod.soh?consumptionInPeriod.soh:0;
         consumptionReportContent.reportGeneratedFor = DateFormatService.formatDateWithDateMonthYearForString($scope.reportParams.startTime) + ' - ' + DateFormatService.formatDateWithDateMonthYearForString($scope.reportParams.endTime);
 
         data.reportContent.push(consumptionReportContent);
